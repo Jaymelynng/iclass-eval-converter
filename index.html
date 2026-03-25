@@ -1,0 +1,1335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Star Chart Tool — Rise Athletics</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+/* ── PRINT ── */
+@page{size:11in 8.5in;margin:0}
+@media print{
+  html,body{width:11in;height:8.5in;padding:0;background:#fff}
+  .no-print{display:none!important}
+  .page{box-shadow:none!important;margin:0!important}
+  .page:last-child .page-break{page-break-after:auto}
+  *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+}
+
+body{
+  font-family:system-ui,-apple-system,sans-serif;
+  background:#1a1a1a;color:#fff;
+  min-height:100vh;
+}
+
+/* ── LANDING PAGE ── */
+.landing{max-width:1000px;margin:0 auto;padding:40px 20px}
+.landing-header{text-align:center;margin-bottom:32px}
+.landing-header h1{font-size:32px;font-weight:800;letter-spacing:-.5px;margin-bottom:8px}
+.landing-header p{font-size:14px;color:#999;max-width:500px;margin:0 auto}
+.gym-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:3px;color:#888;margin-bottom:16px;padding-left:4px}
+.gym-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+@media(max-width:700px){.gym-grid{grid-template-columns:repeat(2,1fr)}}
+
+.gym-card{
+  background:#2a2a2a;border-radius:10px;padding:16px 18px;
+  display:flex;align-items:center;gap:14px;
+  cursor:pointer;border:2px solid transparent;
+  transition:border-color .2s,transform .15s,box-shadow .2s;
+}
+.gym-card:hover{border-color:var(--card-color,#666);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.4)}
+.gym-card-logo{width:48px;height:48px;border-radius:8px;object-fit:contain;background:#fff;padding:4px;flex-shrink:0}
+.gym-card-info{flex:1;min-width:0}
+.gym-card-name{font-size:14px;font-weight:700;line-height:1.2;margin-bottom:2px}
+.gym-card-code{font-size:11px;color:#888;font-weight:600}
+.gym-card-arrow{font-size:18px;color:#555;flex-shrink:0}
+.gym-card-accent{width:4px;height:100%;border-radius:2px;position:absolute;left:0;top:0}
+
+/* ── MODAL ── */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.7);
+  display:none;align-items:center;justify-content:center;z-index:1000;
+  backdrop-filter:blur(4px);
+}
+.modal-overlay.open{display:flex}
+.modal{
+  background:#222;border-radius:14px;width:680px;max-width:95vw;
+  max-height:90vh;overflow-y:auto;padding:28px;position:relative;
+  border:1px solid #333;box-shadow:0 24px 80px rgba(0,0,0,.6);
+}
+.modal-close{
+  position:absolute;top:14px;right:18px;background:none;border:none;
+  color:#888;font-size:24px;cursor:pointer;line-height:1;
+}
+.modal-close:hover{color:#fff}
+.modal-header{display:flex;align-items:center;gap:14px;margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid #333}
+.modal-logo{width:52px;height:52px;border-radius:8px;object-fit:contain;background:#fff;padding:4px}
+.modal-gym-name{font-size:20px;font-weight:800}
+.modal-gym-sub{font-size:12px;color:#999;margin-top:2px}
+
+.modal-section{margin-bottom:20px}
+.modal-section-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2.5px;color:#888;margin-bottom:12px}
+
+.modal-drop-zones{display:flex;gap:14px}
+
+/* Drop zones */
+.drop-zone{
+  flex:1;min-width:240px;
+  border:2px dashed #444;border-radius:10px;
+  padding:24px 16px;text-align:center;
+  transition:border-color .2s,background .2s;
+  cursor:pointer;position:relative;
+}
+.drop-zone:hover,.drop-zone.dragover{
+  border-color:var(--accent,#666);background:rgba(255,255,255,.05);
+}
+.drop-zone.loaded{
+  border-color:#4caf50;border-style:solid;background:rgba(76,175,80,.08);
+}
+.drop-zone .dz-icon{font-size:28px;margin-bottom:6px;display:block}
+.drop-zone .dz-title{font-size:13px;font-weight:700;margin-bottom:3px}
+.drop-zone .dz-sub{font-size:10px;color:#777;line-height:1.3}
+.drop-zone .dz-file{font-size:11px;color:#4caf50;margin-top:6px;font-weight:600}
+.drop-zone input[type=file]{
+  position:absolute;inset:0;opacity:0;cursor:pointer;
+}
+
+/* Summary */
+.summary{
+  background:#333;border-radius:8px;padding:12px 16px;margin-top:14px;
+  display:none;
+}
+.summary.show{display:block}
+.summary-text{font-size:13px;font-weight:600;margin-bottom:8px}
+.badges{display:flex;gap:6px;flex-wrap:wrap}
+.badge-sm{
+  font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;
+  background:rgba(255,255,255,.1);
+}
+
+/* Print buttons */
+.print-options{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.print-btn{
+  padding:14px 12px;border:none;border-radius:8px;
+  font-size:13px;font-weight:700;color:#fff;cursor:pointer;
+  background:var(--accent,#555);transition:filter .15s;
+  text-align:left;
+}
+.print-btn:hover{filter:brightness(1.15)}
+.print-btn .pb-icon{display:block;font-size:20px;margin-bottom:4px}
+.print-btn .pb-sub{
+  display:block;font-size:9px;font-weight:400;margin-top:3px;
+  opacity:.7;
+}
+
+/* Print instructions */
+.print-instructions{
+  background:#4a3800;border:1px solid #776200;border-radius:6px;
+  padding:8px 14px;margin-top:14px;font-size:11px;font-weight:600;
+  color:#ffd54f;text-align:center;
+}
+
+/* Error */
+.error-msg{
+  background:#4a1010;border:1px solid #772020;border-radius:6px;
+  padding:10px 14px;margin-top:10px;font-size:11px;color:#ff8a8a;
+  display:none;
+}
+.error-msg.show{display:block}
+
+/* ── PAGE STYLES (shared between screen preview and print) ── */
+.page{
+  width:11in;height:8.5in;max-height:8.5in;background:#fff;
+  padding:.16in .20in;
+  display:flex;flex-direction:column;gap:2pt;
+  box-shadow:0 16px 60px rgba(0,0,0,.7);
+  flex-shrink:0;overflow:hidden;
+  page-break-after:always;page-break-inside:avoid;
+  font-family:'Arial Narrow',Arial,sans-serif;
+  color:#222;
+  margin:20px auto;
+}
+.tbl{flex:1;border-collapse:collapse;table-layout:fixed;width:100%;overflow:hidden;max-height:100%}
+
+/* Preview area */
+.preview-area{
+  display:flex;flex-direction:column;align-items:center;
+  padding:30px 20px;gap:30px;
+}
+
+:root{
+  --c1:#c91724;--c2:#262626;--c3:#d0d0d8;--c4:#ffffff;
+  --accent:#c91724;
+  --bg-v:#fdf2f3;--bg-b:#f4f4f6;--bg-e:#fbe8ea;--bg-f:#ebebee;--bg-s:#f0f4f0;
+  --ev-v:var(--c1);--ev-b:var(--c2);--ev-e:color-mix(in srgb,var(--c1) 60%,#000);--ev-f:color-mix(in srgb,var(--c2) 60%,#888);--ev-s:#5a725a;
+  --bd:var(--c3);
+  --row:#e4e4e8;
+}
+
+/* ── HEADER ── */
+.hdr{display:flex;align-items:center;gap:10pt;border-bottom:3pt solid var(--c1);padding-bottom:3pt;flex-shrink:0}
+.hdr-badge{background:var(--c1);color:#fff;font-size:19pt;font-weight:900;letter-spacing:2.5pt;padding:2.5pt 9pt;border-radius:3pt;line-height:1;flex-shrink:0}
+.hm{flex:1;text-align:center}
+.gn{font-size:13pt;font-weight:800;color:var(--c2)}
+.et{font-size:6.5pt;font-weight:700;color:var(--c1);letter-spacing:2.8pt;text-transform:uppercase;margin-top:1pt}
+.hr{display:flex;flex-direction:column;gap:3pt}
+.fr{display:flex;gap:3pt;align-items:baseline;font-size:7.5pt}
+.fl{font-weight:700;color:var(--c2);white-space:nowrap}
+.fv{flex:1;border-bottom:.75pt solid var(--c2);padding-bottom:.3pt;color:var(--c2);min-width:1.1in}
+
+/* ── CLASS BAR ── */
+.cbar{background:var(--c2);color:#fff;font-size:7.5pt;font-weight:600;padding:2pt 8pt;border-radius:2pt;display:flex;justify-content:center;gap:8pt;align-items:center;flex-shrink:0}
+.sep{color:var(--c1);font-weight:900}
+
+/* ── LEGEND ── */
+.leg{background:#f7f7f9;border:.5pt solid var(--c3);border-radius:2pt;padding:2pt 8pt;display:flex;align-items:center;gap:14pt;flex-shrink:0;font-size:6.5pt;color:var(--c2)}
+.li{display:flex;align-items:center;gap:4pt}
+.lc{width:7.5pt;height:7.5pt;border:1.1pt solid var(--c2);border-radius:50%;display:inline-block;flex-shrink:0}
+.lref{margin-left:auto;color:#9a9aaa;font-style:italic;font-size:5.5pt;border-left:.5pt solid var(--c3);padding-left:8pt;white-space:nowrap}
+
+/* ── TABLE ── */
+.col-hdr{height:auto}
+.ch-skill{background:#f0f0f3;border:.5pt solid var(--bd);vertical-align:bottom;padding:2pt 5pt;font-size:7pt;font-weight:700;color:var(--c2);text-transform:uppercase;letter-spacing:.5pt}
+.ch-crit{background:#f0f0f3;border:.5pt solid var(--bd);vertical-align:bottom;padding:2pt 4pt;font-size:6pt;font-weight:700;color:#bbb;text-transform:uppercase;letter-spacing:.3pt;text-align:center}
+.ch-stu{background:#fff;border:.5pt solid var(--bd);vertical-align:bottom;text-align:center;padding-bottom:2pt}
+.ch-stu.bk{background:#f5f5f8}
+.sn{font-size:6pt;font-weight:600;color:var(--c2);display:block;text-align:center;line-height:1.2;padding:2pt 1pt}
+.sn .first{display:block;font-weight:700;font-size:6.5pt}
+.sn .last{display:block;font-weight:400;font-size:5.5pt;color:#777}
+.sn.new{color:#b8b8c4;font-style:italic;font-weight:400}
+
+/* ── EVENT DIVIDERS ── */
+tr.evd td{height:9pt;padding:0 6pt;font-size:5.5pt;font-weight:800;letter-spacing:3pt;color:#fff;text-transform:uppercase;border:none;vertical-align:middle}
+tr.evd.v td{background:var(--ev-v)}
+tr.evd.b td{background:var(--ev-b)}
+tr.evd.e td{background:var(--ev-e)}
+tr.evd.f td{background:var(--ev-f)}
+tr.evd.s td{background:var(--ev-s)}
+
+/* ── SKILL ROWS ── */
+tr.sk{height:auto}
+.td-sk{
+  font-size:7pt;font-weight:700;color:var(--c2);
+  padding:2pt 4pt;
+  border-right:.5pt solid var(--bd);border-bottom:.5pt solid var(--row);
+  vertical-align:middle;line-height:1.3;
+  text-align:center;
+}
+.td-c{
+  font-size:6.5pt;color:var(--c2);
+  padding:2pt 4pt;
+  border-right:.5pt solid var(--bd);border-bottom:.5pt solid var(--row);
+  vertical-align:middle;line-height:1.3;
+}
+.td-c .cnum{color:var(--c1);font-weight:800;font-size:6.5pt;white-space:nowrap}
+.td-c.empty{background:transparent!important}
+
+tr.sk.v .td-sk,tr.sk.v .td-c{background:var(--bg-v)}
+tr.sk.b .td-sk,tr.sk.b .td-c{background:var(--bg-b)}
+tr.sk.e .td-sk,tr.sk.e .td-c{background:var(--bg-e)}
+tr.sk.f .td-sk,tr.sk.f .td-c{background:var(--bg-f)}
+tr.sk.s .td-sk,tr.sk.s .td-c{background:var(--bg-s)}
+
+/* ── STUDENT CELLS (eval) ── */
+.td-st{
+  border-right:.5pt solid var(--bd);
+  border-bottom:.5pt solid var(--row);
+  text-align:center;vertical-align:middle;
+  padding:2.5pt 0;
+}
+tr.sk:nth-child(odd) .td-st{background:#f7f7fa}
+tr.sk:nth-child(even) .td-st{background:#fff}
+
+.cell-row{display:grid;grid-template-columns:repeat(3,auto);gap:2.5pt;justify-content:center;justify-items:center;align-items:center;padding:2pt 1pt}
+.cell-row .s-center{grid-column:1/4;justify-self:center}
+
+.c{
+  width:9pt;height:9pt;
+  border:1.3pt solid #999;border-radius:1.5pt;
+  display:block;cursor:pointer;flex-shrink:0;
+  transition:background .12s,border-color .12s;
+}
+.c:hover{border-color:var(--c1);background:#fde8ea}
+.c.on{background:var(--c1);border-color:var(--c1)}
+.c.fd{border-color:#ccc;cursor:default;background:#f6f6f6}
+.c.fd:hover{background:#f6f6f6;border-color:#ccc}
+
+.s{
+  font-size:13pt;color:#d0d0d8;
+  cursor:pointer;line-height:1;user-select:none;
+  transition:color .12s;display:block;flex-shrink:0;
+  font-weight:900;
+}
+.s:hover{color:#DAA520}
+.s.on{color:#DAA520;text-shadow:0 1pt 3pt rgba(218,165,32,.5)}
+.s.fd{color:#e8e8e8;cursor:default}
+.s.fd:hover{color:#e8e8e8}
+
+/* ── NOTES CELLS ── */
+.td-nt{border-bottom:.5pt solid var(--row);border:.5pt solid var(--bd);background:#fff;vertical-align:top;padding:1.5pt}
+
+/* ── FOOTER ── */
+.footer{border-top:1.5pt solid var(--c1);padding-top:2.5pt;display:flex;gap:14pt;align-items:flex-end;flex-shrink:0}
+.pf{font-size:5.5pt;color:#aaaab2;white-space:nowrap;text-align:right;padding-bottom:1pt;flex:1}
+
+/* ── ROLL SHEET TABLE ── */
+.roll-tbl{
+  flex:1;border-collapse:collapse;table-layout:fixed;width:100%;
+}
+.roll-tbl th{
+  background:var(--c2);color:#fff;font-size:7pt;font-weight:700;
+  padding:3pt 4pt;border:.5pt solid var(--c3);text-align:left;
+  text-transform:uppercase;letter-spacing:.5pt;
+}
+.roll-tbl td{
+  font-size:7.5pt;padding:3pt 4pt;border:.5pt solid var(--c3);
+  vertical-align:middle;
+}
+.roll-tbl tr:nth-child(odd) td{background:#f7f7fa}
+.roll-tbl tr:nth-child(even) td{background:#fff}
+.roll-tbl .stu-name{font-weight:700}
+.roll-tbl .att-cell{
+  width:28pt;text-align:center;
+  background:#fff!important;
+}
+.roll-tbl th.att-hdr{text-align:center;width:28pt}
+
+/* ── ROLL SHEET LEGEND ── */
+.roll-leg{
+  background:#f7f7f9;border:.5pt solid var(--c3);border-radius:2pt;
+  padding:2pt 8pt;display:flex;align-items:center;gap:14pt;flex-shrink:0;
+  font-size:6.5pt;color:var(--c2);
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════ LANDING PAGE ═══════════ -->
+<div class="landing no-print" id="landing">
+  <div class="landing-header">
+    <h1>Star Chart Print Center</h1>
+    <p>Upload your iClassPro exports. Get branded, print-ready roll sheets and evaluations.</p>
+  </div>
+  <div class="gym-label">SELECT YOUR GYM</div>
+  <div class="gym-grid" id="gymGrid"></div>
+</div>
+
+<!-- ═══════════ MODAL ═══════════ -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal" id="modal">
+    <button class="modal-close" id="modalClose">&times;</button>
+    <div class="modal-header" id="modalHeader">
+      <img class="modal-logo" id="modalLogo" src="" alt="">
+      <div>
+        <div class="modal-gym-name" id="modalGymName"></div>
+        <div class="modal-gym-sub">Star Chart Print Center</div>
+      </div>
+    </div>
+
+    <div class="modal-section">
+      <div class="modal-section-label">UPLOAD FILES</div>
+      <div class="drop-zone" id="dzAll" style="min-width:100%">
+        <div class="dz-icon">&#128196; &#128202;</div>
+        <div class="dz-title">Drop Roll Sheet + Eval Export here</div>
+        <div class="dz-sub">Select both files from iClassPro and drop them together &mdash; or click to browse</div>
+        <div class="dz-file" id="dzAllFiles"></div>
+        <input type="file" accept=".pdf,.xls,.xlsx,.csv,.html" multiple id="allInput">
+      </div>
+      <div class="error-msg" id="errorMsg"></div>
+      <div class="summary" id="summary">
+        <div class="summary-text" id="summaryText"></div>
+        <div class="badges" id="summaryBadges"></div>
+      </div>
+    </div>
+
+    <div class="modal-section" id="printSection" style="display:none">
+      <div class="modal-section-label">CHOOSE PRINT FORMAT</div>
+      <div class="print-options">
+        <button class="print-btn" onclick="generatePages('roll-eval')">
+          <span class="pb-icon">&#128196;&#128203;</span>
+          Roll + Eval
+          <span class="pb-sub">Front: Roll Sheet &middot; Back: Star Chart Eval</span>
+        </button>
+        <button class="print-btn" onclick="generatePages('eval-notes')">
+          <span class="pb-icon">&#128203;&#128221;</span>
+          Eval + Notes
+          <span class="pb-sub">Front: Star Chart Eval &middot; Back: Coach Notes</span>
+        </button>
+        <button class="print-btn" onclick="generatePages('eval')">
+          <span class="pb-icon">&#128203;</span>
+          Eval Only
+          <span class="pb-sub">Star chart evaluation grids only</span>
+        </button>
+        <button class="print-btn" onclick="generatePages('roll')">
+          <span class="pb-icon">&#128196;</span>
+          Roll Only
+          <span class="pb-sub">Branded roll sheets only</span>
+        </button>
+      </div>
+      <div class="print-instructions">
+        &#9888;&#65039; Print Settings: <strong>Landscape</strong> &middot; <strong>Double-Sided</strong> &middot; <strong>Scale 100%</strong> &middot; <strong>Color</strong>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ PREVIEW AREA ═══════════ -->
+<div class="preview-area" id="previewArea"></div>
+
+<script>
+/* ═══════════════════════════════════════════
+   DATA
+   ═══════════════════════════════════════════ */
+
+const GYMS = {
+  CCP: { name:'Capital Gymnastics Cedar Park',   c1:'#1f53a3', c2:'#bf0a30', c3:'#d8d8d8', c4:'#ffffff', logo:'https://capgymcpk.activehosted.com/content/d66m4q/2026/02/19/f11d01b7-bbdb-4de8-b5f3-8eeacc4f3017.png' },
+  CPF: { name:'Capital Gymnastics Pflugerville',  c1:'#1f53a3', c2:'#bf0a30', c3:'#d8d8d8', c4:'#ffffff', logo:'https://content.app-us1.com/MaaPRn/2025/09/07/fc44683b-d5a8-4547-97f5-91d46e4e647e.png' },
+  CRR: { name:'Capital Gymnastics Round Rock',    c1:'#ff1493', c2:'#c0c0c0', c3:'#3c3939', c4:'#ffffff', logo:'https://content.app-us1.com/511e9V/2025/09/07/54697754-fdd0-452b-9275-f1ac2421e995.png' },
+  EST: { name:'Estrella Gymnastics',              c1:'#011837', c2:'#666666', c3:'#100f0f', c4:'#ffffff', logo:'https://content.app-us1.com/g55L0q/2025/05/13/eff29c8b-abb0-4595-aec3-ccf32d7e1940.png' },
+  HGA: { name:'Houston Gymnastics Academy',       c1:'#c91724', c2:'#262626', c3:'#d0d0d8', c4:'#ffffff', logo:'https://content.app-us1.com/vqqEDb/2026/01/30/49f475ed-3dae-48f9-a3c7-1f5d98ccc26b.png' },
+  OAS: { name:'Oasis Gymnastics',                 c1:'#3eb29f', c2:'#3e266b', c3:'#e7e6f0', c4:'#ffffff', logo:'https://content.app-us1.com/ARRBG9/2026/01/30/217676e8-f661-411a-8ea8-9a94373c5bb0.png' },
+  RBA: { name:'Rowland Ballard Atascocita',       c1:'#1a3c66', c2:'#c52928', c3:'#739ab9', c4:'#ffffff', logo:'https://content.app-us1.com/obb1M5/2026/01/30/d5e1a9ce-e8aa-4a21-a886-523d5a12bbd5.png' },
+  RBK: { name:'Rowland Ballard Kingwood',         c1:'#1a3c66', c2:'#c52928', c3:'#739ab9', c4:'#ffffff', logo:'https://content.app-us1.com/6ddeKB/2026/01/30/ebe5ff82-80c1-419b-b15d-6db55c974a7c.png' },
+  SGT: { name:'Scottsdale Gymnastics',            c1:'#c72b12', c2:'#e6e6e6', c3:'#000000', c4:'#ffffff', logo:'https://content.app-us1.com/OoonDm/2026/01/09/7d45241b-ea60-4305-8ed9-fcbdafc7906f.png' },
+  TIG: { name:'Tigar Gymnastics',                 c1:'#f57f20', c2:'#0a3651', c3:'#7fc4e0', c4:'#ffffff', logo:'https://content.app-us1.com/J77wkW/2025/08/21/d817cd8d-ad31-4897-88b1-bc74d19334bb.png' },
+};
+
+/* ═══ LANDING PAGE: Build gym cards ═══ */
+let selectedGym = null;
+const gymGrid = document.getElementById('gymGrid');
+const modalOverlay = document.getElementById('modalOverlay');
+const modal = document.getElementById('modal');
+
+Object.entries(GYMS).forEach(([code, gym]) => {
+  const card = document.createElement('div');
+  card.className = 'gym-card';
+  card.style.setProperty('--card-color', gym.c1);
+  card.style.borderLeft = `4px solid ${gym.c1}`;
+  card.innerHTML = `
+    <img class="gym-card-logo" src="${gym.logo}" alt="${code}">
+    <div class="gym-card-info">
+      <div class="gym-card-name">${gym.name}</div>
+      <div class="gym-card-code">${code}</div>
+    </div>
+    <div class="gym-card-arrow">&rsaquo;</div>
+  `;
+  card.addEventListener('click', () => openGymModal(code));
+  gymGrid.appendChild(card);
+});
+
+function openGymModal(code) {
+  selectedGym = code;
+  const gym = GYMS[code];
+  // Set CSS vars
+  document.documentElement.style.setProperty('--c1', gym.c1);
+  document.documentElement.style.setProperty('--c2', gym.c2);
+  document.documentElement.style.setProperty('--c3', gym.c3);
+  document.documentElement.style.setProperty('--c4', gym.c4);
+  document.documentElement.style.setProperty('--accent', gym.c1);
+  // Update modal
+  document.getElementById('modalLogo').src = gym.logo;
+  document.getElementById('modalGymName').textContent = gym.name;
+  // Reset state
+  document.getElementById('dzAll').classList.remove('loaded');
+  document.getElementById('dzAllFiles').textContent = '';
+  document.getElementById('summary').classList.remove('show');
+  document.getElementById('printSection').style.display = 'none';
+  document.getElementById('errorMsg').classList.remove('show');
+  // Style modal accent
+  modal.style.borderTop = `3px solid ${gym.c1}`;
+  // Apply derived colors (after DOM is ready)
+  setTimeout(() => applyGymColors(code), 0);
+  // Show
+  modalOverlay.classList.add('open');
+}
+
+document.getElementById('modalClose').addEventListener('click', () => {
+  modalOverlay.classList.remove('open');
+});
+modalOverlay.addEventListener('click', (e) => {
+  if (e.target === modalOverlay) modalOverlay.classList.remove('open');
+});
+
+/* Program skill definitions — keyed by our internal program names */
+const SKILL_DATA = {
+  'Preschool': {
+    events: [
+      { name:'VAULT', cls:'v', skills:[
+        { name:'Run + Hurdle to<br>Two-Foot Jump', crit:['Runs into hurdle, no stopping','Hurdles 1 foot to land on 2','Arms by ears in jump'] },
+      ]},
+      { name:'BARS', cls:'b', skills:[
+        { name:'Front Support \u2192<br>Fwd Roll (Spot)', crit:['Unassisted front support 3 sec','Looks at belly while rolling','Hands stay on bar until done'] },
+        { name:'Tuck Hang', crit:['Holds for 3 sec','Knees above belly button','Arms by ears'] },
+      ]},
+      { name:'BEAM', cls:'e', skills:[
+        { name:'Walk Across<br>Low Beam', crit:['Chest up, arms out to side','Heel to toe steps','Walks across without wobbles'] },
+        { name:'Bear Crawl<br>on Line', crit:['Hands on the line','Feet on the line','Straight legs'] },
+        { name:'Backward Walk<br>with Coach', crit:['Chest up, arms out to side','Steps heel to toe backward','Eyes forward while walking'] },
+      ]},
+      { name:'FLOOR', cls:'f', skills:[
+        { name:'Monkey Jump<br>Over Panel Mat', crit:['Turns hands to favorite foot','Jumps over without touching','Start & finish arms up'] },
+        { name:'Backward HS<br>Walk Up (5 sec)', crit:['Walks feet up til hips over shoulders','Straight arms covering ears','Straight back'] },
+        { name:'Forward Roll<br>Down Wedge', crit:['Starts in pencil shape','Eyes on belly','Stands up without hands'] },
+        { name:'Tabletop Hold', crit:['Holds for 5 sec','Back flat, no sagging hips','Fingers facing feet'] },
+      ]},
+      { name:'SAFETY', cls:'s', skills:[
+        { name:'Safety', crit:['Follows directions','Stays with the group','Keeps hands to self'] },
+      ]},
+    ]
+  },
+  'Junior': {
+    events: [
+      { name:'VAULT', cls:'v', skills:[
+        { name:'Run + Hurdle +<br>Straight Jump<br>to Panel Mat', crit:['Accelerates, no stutter-steps','Hurdles 1 foot, hits board with 2','Arms down on board, up in air'] },
+      ]},
+      { name:'BARS', cls:'b', skills:[
+        { name:'Pullover<br>(with Mat)', crit:['Chin at bar, walks feet up','Shifts hands fingers forward','Holds front support 3 sec'] },
+        { name:'Forward Roll', crit:['Tips forward, full rotation, no let go','Feet & knees together','Lands on feet with control'] },
+        { name:'Front Support<br>(5 sec hold)', crit:['Straight arms','Belly in, back rounded','Straight legs & pointed toes'] },
+      ]},
+      { name:'BEAM', cls:'e', skills:[
+        { name:'Walk Across<br>Medium Beam', crit:['Chest up, arms out to side','Heel to toe steps','Walks across without wobbles'] },
+        { name:'Lever (Floor)', crit:['Lunge start/finish, no wobbles','Back leg stays straight','Arms by ears'] },
+        { name:'Backward Walk<br>on Low Beam', crit:['Chest up, arms out to side','Steps heel to toe backward','Eyes forward while walking'] },
+      ]},
+      { name:'FLOOR', cls:'f', skills:[
+        { name:'Cartwheel<br>to Lunge', crit:['Favorite foot front, opposite finishes','Straight legs','Legs pass through vertical'] },
+        { name:'Lunge to HS<br>(Mat Supported)', crit:['Starts & finishes in lunge','Straight legs, feet together at vertical','Straight line hands to toes'] },
+        { name:'Forward Roll', crit:['Continuous movement','Feet & knees together','Stands up without hands'] },
+        { name:'Bridge<br>(Feet Elevated)', crit:['Pushes up, no shifting','Straight arms by ears','Holds for 3 sec'] },
+      ]},
+      { name:'SAFETY', cls:'s', skills:[
+        { name:'Safety', crit:['Follows directions','Stays with the group','Keeps hands to self'] },
+      ]},
+    ]
+  },
+  'Advanced Junior': {
+    events: [
+      { name:'VAULT', cls:'v', skills:[
+        { name:'Straight Jump<br>to Resi', crit:['Accelerates into hurdle','Arms down/up','Straight body & legs'] },
+        { name:'Handstand<br>Flatback', crit:['Feet together at vertical','Straight line hands to toes','Lands flat as one piece'] },
+      ]},
+      { name:'BARS', cls:'b', skills:[
+        { name:'Kick Pullover', crit:['Chin at bar til toes over','Shifts hands, fingers forward','Straight legs throughout'] },
+        { name:'Cast', crit:['Straight arms throughout','Legs straight & together','Straight line shoulders to toes'] },
+        { name:'Front Support \u2192<br>Fwd Roll Down', crit:['Front support, straight arms','Chin to chest to initiate','Legs together, lowers slowly'] },
+      ]},
+      { name:'BEAM', cls:'e', skills:[
+        { name:'Beam Mount', crit:['Jump to front support','Leg swings over, no touch','Stands up, arms by ears'] },
+        { name:'Lever', crit:['Arms by ears throughout','Straight line fingers to foot','Back leg stays straight'] },
+        { name:'Relev\u00e9 Walk', crit:['Heels off beam entire walk','Straight legs throughout','Chest up, arms out'] },
+        { name:'Straight Jump', crit:['Arms swing up/down on landing','Toes pointed in air','Lands in same spot'] },
+        { name:'Straight Jump<br>Dismount', crit:['Arms up off beam','Straight line fingers to toes','Sticks safe landing'] },
+      ]},
+      { name:'FLOOR', cls:'f', skills:[
+        { name:'Handstand', crit:['Feet together at vertical','Straight line hands to toes','Straight legs, arms by ears'] },
+        { name:'Cartwheel', crit:['Legs through vertical','2nd hand turned in','Arms by ears','Straight legs throughout','Opposite leg lunge finish'] },
+        { name:'Backward Roll', crit:['Fingers at shoulders','Continuous movement','Feet & knees together'] },
+        { name:'Bridge<br>(5 sec hold)', crit:['Straight arms in bridge','Head between arms','Feet flat & together'] },
+      ]},
+    ]
+  },
+  'Girls Level 1': {
+    events: [
+      { name:'VAULT', cls:'v', skills:[
+        { name:'Straight Jump<br>to Resi', crit:['Accelerates into hurdle','Arms down/up','Straight body & legs'] },
+        { name:'Handstand<br>Flatback', crit:['Feet together at vertical','Straight line hands to toes','Lands flat as one piece'] },
+      ]},
+      { name:'BARS', cls:'b', skills:[
+        { name:'Kick Pullover', crit:['Chin at bar til toes over','Shifts hands, fingers forward','Straight legs throughout'] },
+        { name:'Cast', crit:['Straight arms throughout','Legs straight & together','Straight line shoulders to toes'] },
+        { name:'Front Support \u2192<br>Fwd Roll Down', crit:['Front support, straight arms','Chin to chest to initiate','Legs together, lowers slowly'] },
+      ]},
+      { name:'BEAM', cls:'e', skills:[
+        { name:'Beam Mount', crit:['Jump to front support','Leg swings over, no touch','Stands up, arms by ears'] },
+        { name:'Lever', crit:['Arms by ears throughout','Straight line fingers to foot','Back leg stays straight'] },
+        { name:'Relev\u00e9 Walk', crit:['Heels off beam entire walk','Straight legs throughout','Chest up, arms out'] },
+        { name:'Straight Jump', crit:['Arms swing up/down on landing','Toes pointed in air','Lands in same spot'] },
+        { name:'Straight Jump<br>Dismount', crit:['Arms up off beam','Straight line fingers to toes','Sticks safe landing'] },
+      ]},
+      { name:'FLOOR', cls:'f', skills:[
+        { name:'Handstand', crit:['Feet together at vertical','Straight line hands to toes','Straight legs, arms by ears'] },
+        { name:'Cartwheel', crit:['Legs through vertical','2nd hand turned in','Arms by ears','Straight legs throughout','Opposite leg lunge finish'] },
+        { name:'Backward Roll', crit:['Fingers at shoulders','Continuous movement','Feet & knees together'] },
+        { name:'Bridge<br>(5 sec hold)', crit:['Straight arms in bridge','Head between arms','Feet flat & together'] },
+      ]},
+    ]
+  },
+  'Girls Level 2': {
+    events: [
+      { name:'VAULT', cls:'v', skills:[
+        { name:'Handstand<br>Flatback on Resi', crit:['Arms down on board, up in air','Straight line hands to toes','Lands flat as one piece'] },
+      ]},
+      { name:'BARS', cls:'b', skills:[
+        { name:'Chin-Up<br>Pullover', crit:['Chin to bar (min forehead)','Feet leave floor same time','Legs straight & together'] },
+        { name:'Cast Back<br>Hip Circle', crit:['Straight arms, shoulders lean back','Bar stays against thighs','Eyes on toes throughout'] },
+        { name:'Cast Off<br>Dismount', crit:['Straight arms throughout','Shoulders over bar before push','Cast 45\u00b0 below horizontal'] },
+        { name:'Roll Down to<br>Chin Hang', crit:['Chin finishes above bar','Tucked chin hang 5 sec','Feet & knees together'] },
+      ]},
+      { name:'BEAM', cls:'e', skills:[
+        { name:'Pivot Turn', crit:['Relev\u00e9 lock entire turn','Arms overhead entire turn','Straight legs'] },
+        { name:'Vertical<br>Handstand', crit:['Feet together at vertical','Straight line hands to toes','Arms stay by ears'] },
+        { name:'Side HS<br>Dismount', crit:['Holds HS 1 sec before fall','Straight line shoulder to toes','Shoulders over beam from HS'] },
+      ]},
+      { name:'FLOOR', cls:'f', skills:[
+        { name:'Bridge<br>Kickover', crit:['Straight arms by ears','Legs straight through split','One step bridge to kickover'] },
+        { name:'Round-Off<br>Rebound', crit:['Legs together & straight in snap','Hands off floor before feet hit','Rebounds up & back immediately'] },
+        { name:'Straight Arm<br>Backward Roll', crit:['Pushes on pinkies at start','Arms straight during roll','Finishes in push-up position'] },
+        { name:'Half Turn', crit:['Arms in crown entire turn','Relev\u00e9 entire turn','Toe at knee entire turn'] },
+        { name:'Step Leap', crit:['Chest up, arms at sides','Straight legs in the air','Lands in arabesque (1 sec)'] },
+      ]},
+    ]
+  },
+  'Girls Level 3': {
+    events: [
+      { name:'VAULT', cls:'v', skills:[
+        { name:'Front<br>Handspring', crit:['Hands touch before vertical','Straight body at contact','Straight body after hands leave'] },
+      ]},
+      { name:'BARS', cls:'b', skills:[
+        { name:'Glide Swing', crit:['Jumps to bar, straight arms','Hips extended at front of swing','Returns to same spot as start'] },
+        { name:'Pullover Cast<br>Back Hip Circle', crit:['Cast 45\u00b0 below horizontal','Straight arms in BHC','Legs straight & together'] },
+        { name:'Sole Circle<br>Dismount', crit:['Straight legs throughout','Feet rise as they leave bar','Body extended before landing'] },
+      ]},
+      { name:'BEAM', cls:'e', skills:[
+        { name:'Side HS<br>\u00bc Turn Dismount', crit:['Holds HS 1 sec before turn','Body straight during descent','Straight legs throughout'] },
+        { name:'Half Turn', crit:['Relev\u00e9 entire turn','Arms freeze in crown','Toe at knee entire turn','Finishes before stepping'] },
+        { name:'Split Jump', crit:['Straight legs','Min 90\u00b0 split','Lands in same spot'] },
+        { name:'Cartwheel', crit:['2nd hand turned in','Head between arms','Kicks through vertical, straight legs'] },
+      ]},
+      { name:'FLOOR', cls:'f', skills:[
+        { name:'Back<br>Handspring', crit:['Travels backwards','Open shoulders & hips at contact','Thumbs facing each other','Legs together & straight'] },
+        { name:'Front<br>Handspring', crit:['Straight arms by ears','Lands in tight arch','Rebounds forward, straight legs'] },
+        { name:'Chass\u00e9<br>Split Leap', crit:['Toes pointed in chass\u00e9','Min 120\u00b0 split','Straight legs in split'] },
+        { name:'Full Turn', crit:['Arms in crown entire turn','Relev\u00e9 entire turn','Toe at knee entire turn'] },
+        { name:'Back Walkover', crit:['Front leg lifts as hands reach','Straight legs throughout','Arms stay by ears'] },
+      ]},
+    ]
+  },
+};
+
+/* Program name mapping from iClassPro text */
+const PROGRAM_MAP = {
+  'PRESCHOOL': 'Preschool',
+  'JUNIOR': 'Junior',
+  'ADVANCED JUNIOR': 'Advanced Junior',
+  'ADV JUNIOR': 'Advanced Junior',
+  'ADV JR': 'Advanced Junior',
+  'GIRLS L1': 'Girls Level 1',
+  'GIRLS L2': 'Girls Level 2',
+  'GIRLS L3': 'Girls Level 3',
+};
+
+/* ═══════════════════════════════════════════
+   STATE
+   ═══════════════════════════════════════════ */
+// selectedGym declared above in landing page code
+let parsedClasses = [];  // [{program, schedule, instructor, ages, capacity, students:[{name,age,birthday,guardian,phone,email,start,attendance}], rawProgram}]
+
+/* ═══════════════════════════════════════════
+   GYM SELECTOR
+   ═══════════════════════════════════════════ */
+// Old gymSelect removed — now using gym cards + modal
+// Apply derived colors when gym is selected
+function applyGymColors(code) {
+  const g = GYMS[code];
+  const r = document.documentElement;
+  r.style.setProperty('--ev-v', g.c1);
+  r.style.setProperty('--ev-b', g.c2);
+  r.style.setProperty('--ev-e', g.c1);
+  r.style.setProperty('--ev-f', g.c2);
+  r.style.setProperty('--bg-v', tint(g.c1, 0.06));
+  r.style.setProperty('--bg-b', tint(g.c2, 0.04));
+  r.style.setProperty('--bg-e', tint(g.c1, 0.08));
+  r.style.setProperty('--bg-f', tint(g.c2, 0.04));
+  r.style.setProperty('--bd', g.c3);
+  document.querySelectorAll('.print-btn').forEach(b => b.style.background = g.c1);
+}
+
+function tint(hex, amount) {
+  const r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
+  const tr = Math.round(r + (255-r)*(1-amount)), tg = Math.round(g + (255-g)*(1-amount)), tb = Math.round(b + (255-b)*(1-amount));
+  return `rgb(${tr},${tg},${tb})`;
+}
+
+/* ═══════════════════════════════════════════
+   FILE UPLOADS
+   ═══════════════════════════════════════════ */
+
+// Single drop zone — accepts multiple files, auto-detects type
+const dzAll = document.getElementById('dzAll');
+dzAll.addEventListener('dragover', e => { e.preventDefault(); dzAll.classList.add('dragover'); });
+dzAll.addEventListener('dragleave', () => dzAll.classList.remove('dragover'));
+dzAll.addEventListener('drop', e => {
+  e.preventDefault(); dzAll.classList.remove('dragover');
+  handleFiles(e.dataTransfer.files);
+});
+document.getElementById('allInput').addEventListener('change', function() {
+  if (this.files.length) handleFiles(this.files);
+});
+
+function handleFiles(files) {
+  const fileLabel = document.getElementById('dzAllFiles');
+  const names = [];
+  let rollFile = null;
+  let evalFile = null;
+
+  // Sort files — identify which is roll sheet vs eval export
+  for (let i = 0; i < files.length; i++) {
+    const file = files[i];
+    names.push(file.name);
+    const lower = file.name.toLowerCase();
+    if (lower.includes('roll')) {
+      rollFile = file;
+    } else if (lower.includes('eval') || lower.includes('skill')) {
+      evalFile = file;
+    } else if (lower.endsWith('.pdf') && !rollFile) {
+      rollFile = file; // default unknown PDF to roll sheet
+    } else if ((lower.endsWith('.xls') || lower.endsWith('.xlsx')) && !evalFile) {
+      evalFile = file;
+    }
+  }
+
+  fileLabel.textContent = names.join(' + ');
+  fileLabel.textContent += '\n' + (rollFile ? '✓ Roll Sheet detected' : '✗ No roll sheet found') +
+    ' · ' + (evalFile ? '✓ Eval export detected' : 'No eval export');
+  dzAll.classList.add('loaded');
+
+  // Parse roll sheet (required)
+  if (rollFile) {
+    parsePDF(rollFile);
+  } else {
+    const errEl = document.getElementById('errorMsg');
+    errEl.innerHTML = '<strong>No roll sheet found.</strong> Make sure one of your files is the Roll Sheet PDF from iClassPro (filename should contain "Roll").';
+    errEl.classList.add('show');
+  }
+
+  // Parse eval export (if provided)
+  if (evalFile) {
+    const lower = evalFile.name.toLowerCase();
+    if (lower.endsWith('.xls') || lower.endsWith('.xlsx') || lower.endsWith('.csv')) {
+      parseXLS(evalFile);
+    }
+    // PDF eval parsing — future: extract scores from eval PDF
+  }
+}
+
+/* ═══════════════════════════════════════════
+   PDF PARSING
+   ═══════════════════════════════════════════ */
+async function parsePDF(file) {
+  const errEl = document.getElementById('errorMsg');
+  errEl.classList.remove('show');
+  const fileLabel = document.getElementById('dzAllFiles');
+  try {
+    if (typeof pdfjsLib === 'undefined') throw new Error('PDF.js library not loaded — check internet connection');
+    fileLabel.textContent += ' (parsing...)';
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    const arrayBuf = await file.arrayBuffer();
+    const pdf = await pdfjsLib.getDocument({ data: arrayBuf }).promise;
+    const allClasses = [];
+    for (let p = 1; p <= pdf.numPages; p++) {
+      const page = await pdf.getPage(p);
+      const tc = await page.getTextContent();
+      const lines = [];
+      let lastY = null;
+      let curLine = '';
+      // Sort items by Y (descending) then X (ascending) for reading order
+      const items = tc.items.slice().sort((a,b) => {
+        const dy = b.transform[5] - a.transform[5];
+        if (Math.abs(dy) > 3) return dy;
+        return a.transform[4] - b.transform[4];
+      });
+      items.forEach(item => {
+        const y = Math.round(item.transform[5]);
+        if (lastY !== null && Math.abs(y - lastY) > 3) {
+          if (curLine.trim()) lines.push(curLine.trim());
+          curLine = '';
+        }
+        curLine += item.str + ' ';
+        lastY = y;
+      });
+      if (curLine.trim()) lines.push(curLine.trim());
+
+      const cls = parseClassFromLines(lines);
+      if (cls) allClasses.push(cls);
+    }
+    parsedClasses = allClasses;
+    if (allClasses.length === 0) {
+      // Debug: show first page lines so we can see what PDF.js extracted
+      const dbgPage = await pdf.getPage(1);
+      const dbgTc = await dbgPage.getTextContent();
+      const dbgLines = [];
+      let dbgLastY = null, dbgCur = '';
+      const dbgItems = dbgTc.items.slice().sort((a,b) => {
+        const dy = b.transform[5] - a.transform[5];
+        if (Math.abs(dy) > 3) return dy;
+        return a.transform[4] - b.transform[4];
+      });
+      dbgItems.forEach(item => {
+        const y = Math.round(item.transform[5]);
+        if (dbgLastY !== null && Math.abs(y - dbgLastY) > 3) {
+          if (dbgCur.trim()) dbgLines.push(dbgCur.trim());
+          dbgCur = '';
+        }
+        dbgCur += item.str + ' ';
+        dbgLastY = y;
+      });
+      if (dbgCur.trim()) dbgLines.push(dbgCur.trim());
+
+      errEl.innerHTML = '<strong>No star chart classes found.</strong> PDF had ' + pdf.numPages + ' pages.<br><br><strong>Debug — Page 1 lines:</strong><br><pre style="max-height:200px;overflow:auto;font-size:10px;background:#2a1010;padding:8px;border-radius:4px">' + dbgLines.map((l,i) => i+': '+l).join('\n') + '</pre>';
+      errEl.classList.add('show');
+    }
+    updateUI();
+  } catch(e) {
+    errEl.innerHTML = '<strong>PDF parsing failed.</strong> ' + e.message +
+      '<br><br>If running from a local file, try:<br><code>python -m http.server 8080</code> then open <code>http://localhost:8080/star-chart-tool.html</code>';
+    errEl.classList.add('show');
+  }
+}
+
+function parseClassFromLines(lines) {
+  // Find program line
+  let program = null, schedule = '', instructor = '', ages = '', capacity = '8', date = '';
+  let programIdx = -1;
+
+  for (let i = 0; i < lines.length; i++) {
+    const l = lines[i];
+    // Fields might be on separate lines OR combined on one line
+    if (l.includes('Schedule:')) {
+      const m = l.match(/Schedule:\s*(.+?)(?:\s{2,}|Instructors:|$)/);
+      if (m) schedule = m[1].trim();
+    }
+    if (l.includes('Instructors:')) {
+      const m = l.match(/Instructors:\s*(.+?)(?:\s{2,}|Program:|$)/);
+      if (m) instructor = m[1].trim();
+    }
+    if (l.includes('Program:')) {
+      const m = l.match(/Program:\s*(.+?)(?:\s{2,}|Ages:|Zone:|$)/);
+      const raw = m ? m[1].trim().toUpperCase() : l.toUpperCase();
+      for (const [key, val] of Object.entries(PROGRAM_MAP)) {
+        if (raw.includes(key)) { program = val; break; }
+      }
+      programIdx = i;
+    }
+    if (l.includes('Ages:')) {
+      const m = l.match(/Ages:\s*(.+?)(?:\s{2,}|Capacity:|$)/);
+      if (m) ages = m[1].trim();
+    }
+    if (l.includes('Capacity:')) {
+      const m = l.match(/Capacity:\s*(\d+)/);
+      if (m) capacity = m[1];
+    }
+    // Date from first few lines
+    if (i < 5 && /\d{2}\/\d{2}\/\d{4}/.test(l)) {
+      const dm = l.match(/(\d{2}\/\d{2}\/\d{4})/);
+      if (dm) date = dm[1];
+    }
+  }
+
+  if (!program) return null;
+
+  // Parse schedule for day/time
+  let day = '', time = '';
+  const schedMatch = schedule.match(/(Mon|Tue|Wed|Thu|Fri|Sat|Sun)\w*\s+(\d+:\d+\s*[ap]m)/i);
+  if (schedMatch) {
+    const dayMap = {Mon:'Monday',Tue:'Tuesday',Wed:'Wednesday',Thu:'Thursday',Fri:'Friday',Sat:'Saturday',Sun:'Sunday'};
+    day = dayMap[schedMatch[1].slice(0,3)] || schedMatch[1];
+    time = schedMatch[2];
+  }
+
+  // Parse ages range for display
+  let ageDisplay = ages;
+  const ageMatch = ages.match(/(\d+)Y.*?(\d+)Y/);
+  if (ageMatch) ageDisplay = `Ages ${ageMatch[1]}\u2013${ageMatch[2]}`;
+
+  // Parse students — look for numbered entries after the header section
+  const students = [];
+  // Find start of student data (after "Since Last" or "Level" or "Passed" headers)
+  let startIdx = 0;
+  for (let i = 0; i < lines.length; i++) {
+    if (lines[i].includes('Comments') || lines[i].includes('Passed')) {
+      startIdx = i + 1;
+      break;
+    }
+  }
+
+  // Student blocks: number, name, age+gender+bday, guardian, phone, email, start/drop, attendance
+  let i = startIdx;
+  while (i < lines.length) {
+    // Look for a line that's just a number (student index)
+    if (/^\d+$/.test(lines[i].trim())) {
+      const num = parseInt(lines[i].trim());
+      if (num >= 1 && num <= 30 && i + 6 < lines.length) {
+        const nameLine = lines[i+1] || '';
+        const ageLine = lines[i+2] || '';
+        const guardianLine = lines[i+3] || '';
+        const phoneLine = lines[i+4] || '';
+        const emailLine = lines[i+5] || '';
+        const startLine = lines[i+6] || '';
+
+        // Parse age from "Xy Xm" pattern
+        const ageM = ageLine.match(/(\d+)y\s*(\d+)m/i);
+        const ageStr = ageM ? `${ageM[1]}y ${ageM[2]}m` : '';
+
+        // Parse birthday from MM/DD/YYYY in ageLine
+        const bdayM = ageLine.match(/(\d{2}\/\d{2}\/\d{4})/);
+        const birthday = bdayM ? bdayM[1] : '';
+
+        // Attendance (line after start)
+        let attendance = '-';
+        if (i + 7 < lines.length && /^[\d-]+$/.test(lines[i+7].trim())) {
+          attendance = lines[i+7].trim();
+        }
+
+        students.push({
+          name: nameLine.trim(),
+          age: ageStr,
+          birthday: birthday,
+          guardian: guardianLine.trim(),
+          phone: phoneLine.trim(),
+          email: emailLine.trim(),
+          start: startLine.trim(),
+          attendance: attendance,
+        });
+        i += 7;
+        continue;
+      }
+    }
+    i++;
+  }
+
+  // Derive "pretty" program name for display
+  let prettyProgram = program;
+  if (program === 'Advanced Junior') prettyProgram = "Advanced Junior";
+  if (program === 'Girls Level 1') prettyProgram = "Girl's Level 1";
+  if (program === 'Girls Level 2') prettyProgram = "Girl's Level 2";
+  if (program === 'Girls Level 3') prettyProgram = "Girl's Level 3";
+
+  return {
+    program,
+    prettyProgram,
+    schedule,
+    instructor,
+    ages: ageDisplay,
+    capacity: parseInt(capacity) || 8,
+    students,
+    day,
+    time,
+    date,
+  };
+}
+
+/* ═══════════════════════════════════════════
+   XLS PARSING (optional eval scores)
+   ═══════════════════════════════════════════ */
+let evalScores = null; // placeholder for future XLS parsing
+
+function parseXLS(file) {
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      if (typeof XLSX === 'undefined') return;
+      const wb = XLSX.read(e.target.result, { type: 'array' });
+      // Store raw data for potential score matching
+      evalScores = {};
+      wb.SheetNames.forEach(sn => {
+        evalScores[sn] = XLSX.utils.sheet_to_json(wb.Sheets[sn], { header: 1 });
+      });
+    } catch(err) {
+      // Eval is optional — silently continue
+    }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+/* ═══════════════════════════════════════════
+   UI UPDATE
+   ═══════════════════════════════════════════ */
+function updateUI() {
+  const summary = document.getElementById('summary');
+  const printOptions = document.getElementById('printOptions');
+  const printInstr = document.getElementById('printInstructions');
+
+  if (parsedClasses.length === 0) {
+    summary.classList.remove('show');
+    document.getElementById('printSection').style.display = 'none';
+    return;
+  }
+
+  // Count by program
+  const counts = {};
+  parsedClasses.forEach(c => { counts[c.program] = (counts[c.program]||0) + 1; });
+
+  const total = parsedClasses.length;
+  document.getElementById('summaryText').textContent = `Found ${total} class${total>1?'es':''}`;
+
+  const badgesEl = document.getElementById('summaryBadges');
+  badgesEl.innerHTML = '';
+  Object.entries(counts).forEach(([prog, cnt]) => {
+    const b = document.createElement('span');
+    b.className = 'badge-sm';
+    b.textContent = `${cnt} ${prog}`;
+    badgesEl.appendChild(b);
+  });
+
+  summary.classList.add('show');
+  document.getElementById('printSection').style.display = 'block';
+}
+
+/* ═══════════════════════════════════════════
+   PAGE GENERATION
+   ═══════════════════════════════════════════ */
+function generatePages(mode) {
+  if (!selectedGym) { alert('Select a gym first.'); return; }
+  if (parsedClasses.length === 0) { alert('Upload a roll sheet PDF first.'); return; }
+
+  const preview = document.getElementById('previewArea');
+  preview.innerHTML = '';
+
+  parsedClasses.forEach(cls => {
+    if (mode === 'roll-eval') {
+      preview.innerHTML += buildRollPage(cls);
+      preview.innerHTML += buildEvalPage(cls);
+    } else if (mode === 'eval-notes') {
+      preview.innerHTML += buildEvalPage(cls);
+      preview.innerHTML += buildNotesPage(cls);
+    } else if (mode === 'eval') {
+      preview.innerHTML += buildEvalPage(cls);
+    } else if (mode === 'roll') {
+      preview.innerHTML += buildRollPage(cls);
+    }
+  });
+
+  // Attach click handlers for eval cells
+  preview.querySelectorAll('[data-click]').forEach(el => {
+    el.addEventListener('click', function() {
+      if (this.classList.contains('fd')) return;
+      this.classList.toggle('on');
+    });
+  });
+
+  // Scroll to preview
+  preview.scrollIntoView({ behavior: 'smooth' });
+}
+
+/* ═══════════════════════════════════════════
+   BUILD ROLL SHEET PAGE
+   ═══════════════════════════════════════════ */
+function buildRollPage(cls) {
+  const g = GYMS[selectedGym];
+  const studs = cls.students.slice(0, 8);
+  while (studs.length < 8) studs.push({ name:'', age:'', birthday:'', guardian:'', phone:'', email:'', start:'', attendance:'' });
+
+  let h = '<div class="page">';
+
+  // Header
+  h += '<div class="hdr">';
+  h += `<div class="hdr-badge">${selectedGym}</div>`;
+  h += '<div class="hm">';
+  h += `<div class="gn">${esc(g.name)}</div>`;
+  h += `<div class="et">${esc(cls.prettyProgram)} Roll Sheet</div>`;
+  h += '</div>';
+  h += '<div class="hr">';
+  h += `<div class="fr"><span class="fl">Date:</span><span class="fv">${esc(cls.date)}</span></div>`;
+  h += `<div class="fr"><span class="fl">Coach:</span><span class="fv">${esc(cls.instructor)}</span></div>`;
+  h += '</div></div>';
+
+  // Class bar
+  h += '<div class="cbar">';
+  h += `<span>${esc(cls.prettyProgram)}</span><span class="sep">&middot;</span>`;
+  h += `<span>${esc(cls.ages)}</span><span class="sep">&middot;</span>`;
+  h += `<span>${esc(cls.day)}</span><span class="sep">&middot;</span>`;
+  h += `<span>${esc(cls.time)}</span><span class="sep">&middot;</span>`;
+  h += `<span>${esc(g.name)}</span>`;
+  h += '</div>';
+
+  // Roll legend
+  h += '<div class="roll-leg">';
+  h += '<span style="font-weight:700">P</span> = Present &nbsp;&nbsp;';
+  h += '<span style="font-weight:700">A</span> = Absent &nbsp;&nbsp;';
+  h += '<span style="font-weight:700">L</span> = Late &nbsp;&nbsp;';
+  h += '<span style="font-weight:700">T</span> = Trial';
+  h += '</div>';
+
+  // Table
+  h += '<table class="roll-tbl">';
+  h += '<colgroup>';
+  h += '<col style="width:3%">';  // #
+  h += '<col style="width:16%">'; // Name
+  h += '<col style="width:6%">';  // Age
+  h += '<col style="width:10%">'; // Birthday
+  h += '<col style="width:14%">'; // Guardian
+  h += '<col style="width:12%">'; // Phone
+  h += '<col style="width:5.5%">'; // M
+  h += '<col style="width:5.5%">'; // T
+  h += '<col style="width:5.5%">'; // W
+  h += '<col style="width:5.5%">'; // Th
+  h += '<col style="width:5.5%">'; // F
+  h += '<col>'; // Notes
+  h += '</colgroup>';
+  h += '<thead><tr>';
+  h += '<th>#</th><th>Student Name</th><th>Age</th><th>Birthday</th><th>Guardian</th><th>Phone</th>';
+  h += '<th class="att-hdr">M</th><th class="att-hdr">T</th><th class="att-hdr">W</th><th class="att-hdr">Th</th><th class="att-hdr">F</th>';
+  h += '<th>Notes</th>';
+  h += '</tr></thead><tbody>';
+
+  studs.forEach((s, idx) => {
+    h += '<tr>';
+    h += `<td style="text-align:center;font-weight:700">${s.name ? idx+1 : ''}</td>`;
+    h += `<td class="stu-name">${esc(s.name)}</td>`;
+    h += `<td>${esc(s.age)}</td>`;
+    h += `<td>${esc(s.birthday)}</td>`;
+    h += `<td>${esc(s.guardian)}</td>`;
+    h += `<td>${esc(s.phone)}</td>`;
+    h += '<td class="att-cell"></td><td class="att-cell"></td><td class="att-cell"></td><td class="att-cell"></td><td class="att-cell"></td>';
+    h += '<td></td>';
+    h += '</tr>';
+  });
+
+  h += '</tbody></table>';
+
+  // Footer
+  h += '<div class="footer">';
+  h += `<div class="pf">${esc(cls.prettyProgram)} Roll Sheet &nbsp;&middot;&nbsp; ${esc(g.name)} &nbsp;&middot;&nbsp; ${esc(cls.date)} &nbsp;&middot;&nbsp; Capacity: ${cls.capacity}</div>`;
+  h += '</div>';
+
+  h += '</div>';
+  return h;
+}
+
+/* ═══════════════════════════════════════════
+   BUILD EVAL GRID PAGE
+   ═══════════════════════════════════════════ */
+function buildEvalPage(cls) {
+  const g = GYMS[selectedGym];
+  const skillData = SKILL_DATA[cls.program];
+  if (!skillData) return '';
+
+  const studs = cls.students.map(s => s.name).slice(0, 8);
+  while (studs.length < 8) studs.push('');
+
+  const totalCols = 2 + studs.length; // skill + criteria + 8 students
+
+  let h = '<div class="page">';
+
+  // Header
+  h += '<div class="hdr">';
+  h += `<div class="hdr-badge">${selectedGym}</div>`;
+  h += '<div class="hm">';
+  h += `<div class="gn">${esc(g.name)}</div>`;
+  h += `<div class="et">${esc(cls.prettyProgram)} Star Chart Evaluation</div>`;
+  h += '</div>';
+  h += '<div class="hr">';
+  h += `<div class="fr"><span class="fl">Date:</span><span class="fv">${esc(cls.date)}</span></div>`;
+  h += `<div class="fr"><span class="fl">Coach:</span><span class="fv">${esc(cls.instructor)}</span></div>`;
+  h += '</div></div>';
+
+  // Class bar
+  h += '<div class="cbar">';
+  h += `<span>${esc(cls.prettyProgram)}</span><span class="sep">&middot;</span>`;
+  h += `<span>${esc(cls.ages)}</span><span class="sep">&middot;</span>`;
+  h += `<span>${esc(cls.day)}</span><span class="sep">&middot;</span>`;
+  h += `<span>${esc(cls.time)}</span><span class="sep">&middot;</span>`;
+  h += `<span>${esc(g.name)}</span>`;
+  h += '</div>';
+
+  // Legend
+  h += '<div class="leg">';
+  h += '<div class="li"><span class="lc"></span><span>\u25CB = mark criterion when observed</span></div>';
+  h += '<div class="li"><span style="font-size:10pt;color:var(--c1);line-height:1">\u2605</span><span>= ALL criteria together \u2014 3\u00d7 to master</span></div>';
+  h += '<div class="lref">Full criteria: Reference Sheet</div>';
+  h += '</div>';
+
+  // Table
+  h += '<table class="tbl">';
+  h += '<colgroup>';
+  h += '<col style="width:7%">';   // skill name
+  h += '<col style="width:29%">';  // criteria (single merged column)
+  studs.forEach(() => { h += '<col style="width:8%">'; });
+  h += '</colgroup>';
+
+  // Header row — student names read normally (not rotated)
+  h += '<thead><tr class="col-hdr">';
+  h += '<th class="ch-skill">Skill</th>';
+  h += '<th class="ch-crit">Star Criteria</th>';
+  studs.forEach(name => {
+    const blank = !name;
+    h += `<th class="ch-stu${blank?' bk':''}" style="padding:2pt 1pt">`;
+    if (name) {
+      const parts = name.split(', ');
+      const last = parts[0] || '';
+      const first = parts[1] || '';
+      h += `<span class="sn"><span class="first">${esc(first)}</span><span class="last">${esc(last)}</span></span>`;
+    } else {
+      h += '<span class="sn new"></span>';
+    }
+    h += '</th>';
+  });
+  h += '</tr></thead>';
+
+  // Body
+  h += '<tbody>';
+  skillData.events.forEach(ev => {
+    // Event divider row — 9pt height
+    h += `<tr class="evd ${ev.cls}"><td colspan="${totalCols}">${ev.name}</td></tr>`;
+
+    ev.skills.forEach(sk => {
+      h += `<tr class="sk ${ev.cls}">`;
+
+      // Skill name cell — centered
+      h += `<td class="td-sk" style="text-align:center;padding:2pt 2pt;font-size:7pt;line-height:1.2;font-weight:600">${sk.name}</td>`;
+
+      // Criteria cell — each criterion on its own line, left-aligned
+      h += '<td class="td-c" style="text-align:left;padding:1pt 3pt;font-size:6pt;line-height:1.25">';
+      h += sk.crit.map((c, i) => `<span class="cnum" style="font-size:6pt">\u2605${i+1}</span> ${esc(c)}`).join('<br>');
+      h += '</td>';
+
+      // Student cells — CSS grid, 3 columns
+      studs.forEach(name => {
+        const blank = !name;
+        const numCrit = sk.crit.length;
+        h += '<td class="td-st" style="padding:1.5pt 0">';
+        h += '<div class="cell-row" style="gap:2.5pt;padding:1pt 1pt">';
+
+        // Circles
+        for (let ci = 0; ci < numCrit; ci++) {
+          h += `<span class="c${blank?' fd':''}" style="width:9pt;height:9pt" data-click="1"></span>`;
+        }
+
+        // Star — centered on its own row if crit count divides evenly by 3,
+        // otherwise fills next cell in the grid row
+        const starClass = blank ? 's fd' : 's';
+        const remainder = numCrit % 3;
+        // If numCrit is multiple of 3 (e.g. 3), star goes centered spanning all 3 cols
+        // If numCrit % 3 != 0 (e.g. 4,5), star just goes in the next grid cell
+        if (remainder === 0) {
+          h += `<span class="${starClass} s-center" style="font-size:13pt" data-click="1">\u2605</span>`;
+        } else {
+          h += `<span class="${starClass}" style="font-size:13pt" data-click="1">\u2605</span>`;
+        }
+
+        h += '</div></td>';
+      });
+
+      h += '</tr>';
+    });
+  });
+  h += '</tbody></table>';
+
+  // Footer — one slim line
+  h += '<div class="footer" style="padding-top:1.5pt">';
+  h += `<div class="pf">${esc(cls.prettyProgram)} Star Chart \u00b7 ${esc(g.name)} \u00b7 ${esc(cls.date)}</div>`;
+  h += '</div>';
+
+  h += '</div>';
+  return h;
+}
+
+/* ═══════════════════════════════════════════
+   BUILD NOTES PAGE
+   ═══════════════════════════════════════════ */
+function buildNotesPage(cls) {
+  const g = GYMS[selectedGym];
+  const skillData = SKILL_DATA[cls.program];
+  if (!skillData) return '';
+
+  const studs = cls.students.filter(s => s.name).map(s => s.name);
+  while (studs.length < 8) studs.push('');
+  const totalCols = 1 + studs.length;
+
+  let h = '<div class="page">';
+
+  // Header
+  h += '<div class="hdr">';
+  h += `<div class="hdr-badge">${selectedGym}</div>`;
+  h += '<div class="hm">';
+  h += `<div class="gn">${esc(g.name)}</div>`;
+  h += `<div class="et">${esc(cls.prettyProgram)} \u2014 Coach Notes</div>`;
+  h += '</div>';
+  h += '<div class="hr">';
+  h += `<div class="fr"><span class="fl">Date:</span><span class="fv">${esc(cls.date)}</span></div>`;
+  h += `<div class="fr"><span class="fl">Coach:</span><span class="fv">${esc(cls.instructor)}</span></div>`;
+  h += '</div></div>';
+
+  // Class bar
+  h += '<div class="cbar">';
+  h += `<span>${esc(cls.prettyProgram)}</span><span class="sep">&middot;</span>`;
+  h += `<span>${esc(cls.ages)}</span><span class="sep">&middot;</span>`;
+  h += `<span>${esc(cls.day)}</span><span class="sep">&middot;</span>`;
+  h += `<span>${esc(cls.time)}</span>`;
+  h += '</div>';
+
+  // Table
+  h += '<table class="tbl">';
+  h += '<colgroup><col style="width:12%">';
+  studs.forEach(() => { h += '<col>'; });
+  h += '</colgroup>';
+
+  // Header row
+  h += '<thead><tr class="col-hdr">';
+  h += '<th class="ch-skill">Skill</th>';
+  studs.forEach(name => {
+    if (name) {
+      const parts = name.split(', ');
+      h += `<th class="ch-stu"><span class="sn"><span class="first">${esc(parts[1]||'')}</span><span class="last">${esc(parts[0]||'')}</span></span></th>`;
+    } else {
+      h += '<th class="ch-stu bk"><span class="sn new"></span></th>';
+    }
+  });
+  h += '</tr></thead>';
+
+  // Body
+  h += '<tbody>';
+  skillData.events.forEach(ev => {
+    h += `<tr class="evd ${ev.cls}"><td colspan="${totalCols}">${ev.name}</td></tr>`;
+    ev.skills.forEach(sk => {
+      h += `<tr class="sk ${ev.cls}">`;
+      h += `<td class="td-sk">${sk.name}</td>`;
+      studs.forEach(() => {
+        h += '<td class="td-nt" style="height:24pt"></td>';
+      });
+      h += '</tr>';
+    });
+  });
+  h += '</tbody></table>';
+
+  // Footer
+  h += '<div class="footer">';
+  h += `<div class="pf">Coach Notes &nbsp;&middot;&nbsp; ${esc(cls.prettyProgram)} &nbsp;&middot;&nbsp; ${esc(g.name)} &nbsp;&middot;&nbsp; ${esc(cls.date)}</div>`;
+  h += '</div>';
+
+  h += '</div>';
+  return h;
+}
+
+/* ═══════════════════════════════════════════
+   HELPERS
+   ═══════════════════════════════════════════ */
+function esc(s) {
+  if (!s) return '';
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+/* ═══════════════════════════════════════════
+   MANUAL ENTRY FALLBACK
+   If PDF parsing fails, allow manual class entry
+   ═══════════════════════════════════════════ */
+
+// Also support a demo/test mode — if no PDF is loaded, show a test button
+(function() {
+  // Check if PDF.js loaded after a delay
+  setTimeout(() => {
+    if (typeof pdfjsLib === 'undefined') {
+      const errEl = document.getElementById('errorMsg');
+      errEl.innerHTML = '<strong>PDF.js could not load.</strong> You may be running this from a local file.<br><br>' +
+        'Try: <code>python -m http.server 8080</code> in the folder, then open <code>http://localhost:8080/star-chart-tool.html</code><br><br>' +
+        'Or you can use the demo data below to test the tool.';
+      errEl.classList.add('show');
+    }
+  }, 3000);
+})();
+</script>
+</body>
+</html>
