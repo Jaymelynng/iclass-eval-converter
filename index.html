@@ -2,9 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Star Chart Tool — Rise Athletics</title>
+<title>iClass Eval Converter</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-<script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 
@@ -13,6 +12,8 @@
 @media print{
   html,body{width:11in;height:8.5in;padding:0;background:#fff}
   .no-print{display:none!important}
+  .landing{display:none!important}
+  .modal-overlay{display:none!important}
   .page{box-shadow:none!important;margin:0!important}
   .page:last-child .page-break{page-break-after:auto}
   *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
@@ -309,8 +310,8 @@ tr.sk:nth-child(even) .td-st{background:#fff}
 <!-- ═══════════ LANDING PAGE ═══════════ -->
 <div class="landing no-print" id="landing">
   <div class="landing-header">
-    <h1>Star Chart Print Center</h1>
-    <p>Upload your iClassPro exports. Get branded, print-ready roll sheets and evaluations.</p>
+    <h1>iClass Eval Converter</h1>
+    <p>Upload your iClassPro Skill Evaluation PDF. Get branded, print-ready evaluation grids.</p>
   </div>
   <div class="gym-label">SELECT YOUR GYM</div>
   <div class="gym-grid" id="gymGrid"></div>
@@ -324,18 +325,18 @@ tr.sk:nth-child(even) .td-st{background:#fff}
       <img class="modal-logo" id="modalLogo" src="" alt="">
       <div>
         <div class="modal-gym-name" id="modalGymName"></div>
-        <div class="modal-gym-sub">Star Chart Print Center</div>
+        <div class="modal-gym-sub">iClass Eval Converter</div>
       </div>
     </div>
 
     <div class="modal-section">
-      <div class="modal-section-label">UPLOAD FILES</div>
+      <div class="modal-section-label">UPLOAD FILE</div>
       <div class="drop-zone" id="dzAll" style="min-width:100%">
-        <div class="dz-icon">&#128196; &#128202;</div>
-        <div class="dz-title">Drop Roll Sheet + Eval Export here</div>
-        <div class="dz-sub">Select both files from iClassPro and drop them together &mdash; or click to browse</div>
+        <div class="dz-icon">&#128203;</div>
+        <div class="dz-title">Drop Skill Evaluation PDF here</div>
+        <div class="dz-sub">Download from iClassPro: Classes &rarr; Report &rarr; Class Evaluation Report &rarr; PDF</div>
         <div class="dz-file" id="dzAllFiles"></div>
-        <input type="file" accept=".pdf,.xls,.xlsx,.csv,.html" multiple id="allInput">
+        <input type="file" accept=".pdf" id="allInput">
       </div>
       <div class="error-msg" id="errorMsg"></div>
       <div class="summary" id="summary">
@@ -347,29 +348,19 @@ tr.sk:nth-child(even) .td-st{background:#fff}
     <div class="modal-section" id="printSection" style="display:none">
       <div class="modal-section-label">CHOOSE PRINT FORMAT</div>
       <div class="print-options">
-        <button class="print-btn" onclick="generatePages('roll-eval')">
-          <span class="pb-icon">&#128196;&#128203;</span>
-          Roll + Eval
-          <span class="pb-sub">Front: Roll Sheet &middot; Back: Star Chart Eval</span>
-        </button>
-        <button class="print-btn" onclick="generatePages('eval-notes')">
-          <span class="pb-icon">&#128203;&#128221;</span>
-          Eval + Notes
-          <span class="pb-sub">Front: Star Chart Eval &middot; Back: Coach Notes</span>
-        </button>
         <button class="print-btn" onclick="generatePages('eval')">
           <span class="pb-icon">&#128203;</span>
-          Eval Only
-          <span class="pb-sub">Star chart evaluation grids only</span>
+          Eval Grids
+          <span class="pb-sub">Evaluation grids from PDF data &middot; scores pre-filled</span>
         </button>
-        <button class="print-btn" onclick="generatePages('roll')">
+        <button class="print-btn" onclick="generatePages('blank')">
           <span class="pb-icon">&#128196;</span>
-          Roll Only
-          <span class="pb-sub">Branded roll sheets only</span>
+          Blank Grids
+          <span class="pb-sub">Empty eval grids using built-in skill data</span>
         </button>
       </div>
       <div class="print-instructions">
-        &#9888;&#65039; Print Settings: <strong>Landscape</strong> &middot; <strong>Double-Sided</strong> &middot; <strong>Scale 100%</strong> &middot; <strong>Color</strong>
+        &#9888;&#65039; Print Settings: <strong>Landscape</strong> &middot; <strong>Scale 100%</strong> &middot; <strong>Color</strong>
       </div>
     </div>
   </div>
@@ -422,26 +413,22 @@ Object.entries(GYMS).forEach(([code, gym]) => {
 function openGymModal(code) {
   selectedGym = code;
   const gym = GYMS[code];
-  // Set CSS vars
   document.documentElement.style.setProperty('--c1', gym.c1);
   document.documentElement.style.setProperty('--c2', gym.c2);
   document.documentElement.style.setProperty('--c3', gym.c3);
   document.documentElement.style.setProperty('--c4', gym.c4);
   document.documentElement.style.setProperty('--accent', gym.c1);
-  // Update modal
   document.getElementById('modalLogo').src = gym.logo;
   document.getElementById('modalGymName').textContent = gym.name;
-  // Reset state
   document.getElementById('dzAll').classList.remove('loaded');
   document.getElementById('dzAllFiles').textContent = '';
   document.getElementById('summary').classList.remove('show');
   document.getElementById('printSection').style.display = 'none';
   document.getElementById('errorMsg').classList.remove('show');
-  // Style modal accent
+  parsedEvalData = null;
+  parsedClasses = [];
   modal.style.borderTop = `3px solid ${gym.c1}`;
-  // Apply derived colors (after DOM is ready)
   setTimeout(() => applyGymColors(code), 0);
-  // Show
   modalOverlay.classList.add('open');
 }
 
@@ -624,14 +611,12 @@ const PROGRAM_MAP = {
 /* ═══════════════════════════════════════════
    STATE
    ═══════════════════════════════════════════ */
-// selectedGym declared above in landing page code
-let parsedClasses = [];  // [{program, schedule, instructor, ages, capacity, students:[{name,age,birthday,guardian,phone,email,start,attendance}], rawProgram}]
+let parsedClasses = [];
+let parsedEvalData = null; // Array of eval data objects from PDF
 
 /* ═══════════════════════════════════════════
-   GYM SELECTOR
+   GYM COLORS
    ═══════════════════════════════════════════ */
-// Old gymSelect removed — now using gym cards + modal
-// Apply derived colors when gym is selected
 function applyGymColors(code) {
   const g = GYMS[code];
   const r = document.documentElement;
@@ -656,8 +641,6 @@ function tint(hex, amount) {
 /* ═══════════════════════════════════════════
    FILE UPLOADS
    ═══════════════════════════════════════════ */
-
-// Single drop zone — accepts multiple files, auto-detects type
 const dzAll = document.getElementById('dzAll');
 dzAll.addEventListener('dragover', e => { e.preventDefault(); dzAll.classList.add('dragover'); });
 dzAll.addEventListener('dragleave', () => dzAll.classList.remove('dragover'));
@@ -671,277 +654,407 @@ document.getElementById('allInput').addEventListener('change', function() {
 
 function handleFiles(files) {
   const fileLabel = document.getElementById('dzAllFiles');
-  const names = [];
-  let rollFile = null;
-  let evalFile = null;
+  const errEl = document.getElementById('errorMsg');
+  errEl.classList.remove('show');
 
-  // Sort files — identify which is roll sheet vs eval export
-  for (let i = 0; i < files.length; i++) {
-    const file = files[i];
-    names.push(file.name);
-    const lower = file.name.toLowerCase();
-    if (lower.includes('roll')) {
-      rollFile = file;
-    } else if (lower.includes('eval') || lower.includes('skill')) {
-      evalFile = file;
-    } else if (lower.endsWith('.pdf') && !rollFile) {
-      rollFile = file; // default unknown PDF to roll sheet
-    } else if ((lower.endsWith('.xls') || lower.endsWith('.xlsx')) && !evalFile) {
-      evalFile = file;
-    }
-  }
+  if (files.length === 0) return;
 
-  fileLabel.textContent = names.join(' + ');
-  fileLabel.textContent += '\n' + (rollFile ? '✓ Roll Sheet detected' : '✗ No roll sheet found') +
-    ' · ' + (evalFile ? '✓ Eval export detected' : 'No eval export');
-  dzAll.classList.add('loaded');
-
-  // Parse roll sheet (required)
-  if (rollFile) {
-    parsePDF(rollFile);
-  } else {
-    const errEl = document.getElementById('errorMsg');
-    errEl.innerHTML = '<strong>No roll sheet found.</strong> Make sure one of your files is the Roll Sheet PDF from iClassPro (filename should contain "Roll").';
+  const file = files[0];
+  if (!file.name.toLowerCase().endsWith('.pdf')) {
+    errEl.innerHTML = '<strong>Please upload a PDF file.</strong> This tool accepts the Skill Evaluation Printout PDF from iClassPro.';
     errEl.classList.add('show');
+    return;
   }
 
-  // Parse eval export (if provided)
-  if (evalFile) {
-    const lower = evalFile.name.toLowerCase();
-    if (lower.endsWith('.xls') || lower.endsWith('.xlsx') || lower.endsWith('.csv')) {
-      parseXLS(evalFile);
-    }
-    // PDF eval parsing — future: extract scores from eval PDF
-  }
+  fileLabel.textContent = file.name;
+  dzAll.classList.add('loaded');
+  parseEvalPDF(file);
 }
 
 /* ═══════════════════════════════════════════
-   PDF PARSING
+   EVAL PDF PARSING
    ═══════════════════════════════════════════ */
-async function parsePDF(file) {
+async function parseEvalPDF(file) {
   const errEl = document.getElementById('errorMsg');
-  errEl.classList.remove('show');
   const fileLabel = document.getElementById('dzAllFiles');
+  errEl.classList.remove('show');
+
   try {
     if (typeof pdfjsLib === 'undefined') throw new Error('PDF.js library not loaded — check internet connection');
-    fileLabel.textContent += ' (parsing...)';
+    fileLabel.textContent = file.name + ' (parsing...)';
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
     const arrayBuf = await file.arrayBuffer();
     const pdf = await pdfjsLib.getDocument({ data: arrayBuf }).promise;
-    const allClasses = [];
+
+    // Extract all text with coordinates from all pages
+    const allLines = [];
     for (let p = 1; p <= pdf.numPages; p++) {
       const page = await pdf.getPage(p);
       const tc = await page.getTextContent();
-      const lines = [];
-      let lastY = null;
-      let curLine = '';
-      // Sort items by Y (descending) then X (ascending) for reading order
-      const items = tc.items.slice().sort((a,b) => {
-        const dy = b.transform[5] - a.transform[5];
-        if (Math.abs(dy) > 3) return dy;
-        return a.transform[4] - b.transform[4];
+
+      // Collect items with their X,Y positions
+      const items = tc.items.map(item => ({
+        text: item.str,
+        x: item.transform[4],
+        y: item.transform[5],
+        width: item.width,
+        height: item.height
+      })).filter(item => item.text.trim() !== '');
+
+      // Sort by Y (descending = top to bottom) then X (ascending = left to right)
+      items.sort((a, b) => {
+        const dy = b.y - a.y;
+        if (Math.abs(dy) > 5) return dy;
+        return a.x - b.x;
       });
+
+      // Group into lines by Y coordinate (threshold ~5 units)
+      let currentLineY = null;
+      let currentLineItems = [];
+
       items.forEach(item => {
-        const y = Math.round(item.transform[5]);
-        if (lastY !== null && Math.abs(y - lastY) > 3) {
-          if (curLine.trim()) lines.push(curLine.trim());
-          curLine = '';
+        if (currentLineY === null || Math.abs(item.y - currentLineY) > 5) {
+          if (currentLineItems.length > 0) {
+            allLines.push({
+              items: currentLineItems.slice(),
+              text: currentLineItems.map(i => i.text).join(' ').trim(),
+              y: currentLineY,
+              page: p
+            });
+          }
+          currentLineItems = [item];
+          currentLineY = item.y;
+        } else {
+          currentLineItems.push(item);
         }
-        curLine += item.str + ' ';
-        lastY = y;
       });
-      if (curLine.trim()) lines.push(curLine.trim());
-
-      const cls = parseClassFromLines(lines);
-      if (cls) allClasses.push(cls);
+      if (currentLineItems.length > 0) {
+        allLines.push({
+          items: currentLineItems.slice(),
+          text: currentLineItems.map(i => i.text).join(' ').trim(),
+          y: currentLineY,
+          page: p
+        });
+      }
     }
-    parsedClasses = allClasses;
-    if (allClasses.length === 0) {
-      // Debug: show first page lines so we can see what PDF.js extracted
-      const dbgPage = await pdf.getPage(1);
-      const dbgTc = await dbgPage.getTextContent();
-      const dbgLines = [];
-      let dbgLastY = null, dbgCur = '';
-      const dbgItems = dbgTc.items.slice().sort((a,b) => {
-        const dy = b.transform[5] - a.transform[5];
-        if (Math.abs(dy) > 3) return dy;
-        return a.transform[4] - b.transform[4];
-      });
-      dbgItems.forEach(item => {
-        const y = Math.round(item.transform[5]);
-        if (dbgLastY !== null && Math.abs(y - dbgLastY) > 3) {
-          if (dbgCur.trim()) dbgLines.push(dbgCur.trim());
-          dbgCur = '';
-        }
-        dbgCur += item.str + ' ';
-        dbgLastY = y;
-      });
-      if (dbgCur.trim()) dbgLines.push(dbgCur.trim());
 
-      errEl.innerHTML = '<strong>No star chart classes found.</strong> PDF had ' + pdf.numPages + ' pages.<br><br><strong>Debug — Page 1 lines:</strong><br><pre style="max-height:200px;overflow:auto;font-size:10px;background:#2a1010;padding:8px;border-radius:4px">' + dbgLines.map((l,i) => i+': '+l).join('\n') + '</pre>';
+    // Now parse the structure from allLines
+    const evalResults = parseEvalLines(allLines);
+
+    if (evalResults.length === 0) {
+      // Debug output
+      const first30 = allLines.slice(0, 30).map((l, i) => `${i}: ${l.text}`).join('\n');
+      errEl.innerHTML = '<strong>No evaluation data found in PDF.</strong> PDF had ' + pdf.numPages + ' pages.<br><br>' +
+        '<strong>Debug — First 30 lines:</strong><br>' +
+        '<pre style="max-height:200px;overflow:auto;font-size:10px;background:#2a1010;padding:8px;border-radius:4px">' +
+        esc(first30) + '</pre>';
       errEl.classList.add('show');
+      return;
     }
+
+    parsedEvalData = evalResults;
+    fileLabel.textContent = file.name + ' (' + evalResults.length + ' class' + (evalResults.length > 1 ? 'es' : '') + ' found)';
+
+    // Also try to map to internal programs for blank grid support
+    parsedClasses = evalResults.map(ed => {
+      let program = null;
+      const upper = ed.className.toUpperCase();
+      for (const [key, val] of Object.entries(PROGRAM_MAP)) {
+        if (upper.includes(key)) { program = val; break; }
+      }
+      return {
+        program: program || 'Unknown',
+        prettyProgram: ed.className,
+        schedule: '',
+        instructor: '',
+        ages: '',
+        capacity: ed.students.length,
+        students: ed.students.map(s => ({ name: s })),
+        day: '',
+        time: '',
+        date: ed.reportDate || '',
+      };
+    });
+
     updateUI();
+
   } catch(e) {
-    errEl.innerHTML = '<strong>PDF parsing failed.</strong> ' + e.message +
-      '<br><br>If running from a local file, try:<br><code>python -m http.server 8080</code> then open <code>http://localhost:8080/star-chart-tool.html</code>';
+    errEl.innerHTML = '<strong>PDF parsing failed.</strong> ' + esc(e.message) +
+      '<br><br>If running from a local file, try:<br><code>python -m http.server 8080</code> then open <code>http://localhost:8080/index.html</code>';
     errEl.classList.add('show');
   }
 }
 
-function parseClassFromLines(lines) {
-  // Find program line
-  let program = null, schedule = '', instructor = '', ages = '', capacity = '8', date = '';
-  let programIdx = -1;
+function parseEvalLines(allLines) {
+  const results = [];
+  const timestampRe = /^\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}$/;
+  const timestampPartialRe = /^\d{4}-\d{2}-\d{2}/;
+  const footerRe = /CLA-\d+|Page\s+\d+\s+of\s+\d+/i;
+  const scoreRe = /^[01]$/;
+  const studentNameRe = /^(.+?)\s*\((\d+)\)$/;
+  // Section header: contains " - " and " , "
+  const sectionHeaderRe = /^(.+?)\s+-\s+(.+?)\s*,\s*(\S.*)$/;
+  // Also handle the pattern: "ClassName - ProgramName , EventName"
+  // and the report title lines
+  const reportTitleRe = /^Skill Evaluation Printout/i;
+  const reportSubRe = /^Skill Report for/i;
+  // Student name line with dates: "FirstName LastName - MM/DD/YYYY"
+  const studentHeaderRe = /^(.+?)\s*-\s*\d{2}\/\d{2}\/\d{4}$/;
 
-  for (let i = 0; i < lines.length; i++) {
-    const l = lines[i];
-    // Fields might be on separate lines OR combined on one line
-    if (l.includes('Schedule:')) {
-      const m = l.match(/Schedule:\s*(.+?)(?:\s{2,}|Instructors:|$)/);
-      if (m) schedule = m[1].trim();
+  let currentClass = null;
+  let currentEvent = null;
+  let currentSkill = null;
+  let currentCriterion = null;
+  let studentNames = [];
+  let studentXPositions = [];
+  let reportDate = '';
+
+  // State tracking
+  let expectingStudents = false;
+  let inScoreSection = false;
+  let scoreIndex = 0;
+
+  for (let li = 0; li < allLines.length; li++) {
+    const line = allLines[li];
+    const text = line.text.trim();
+
+    // Skip empty
+    if (!text) continue;
+
+    // Skip footer lines
+    if (footerRe.test(text)) continue;
+
+    // Skip timestamp lines
+    if (timestampRe.test(text)) continue;
+    if (timestampPartialRe.test(text) && text.length <= 19) continue;
+
+    // Capture report date from title
+    if (reportTitleRe.test(text)) {
+      const dm = text.match(/(\d{2}\/\d{2}\/\d{4})/);
+      if (dm) reportDate = dm[1];
+      continue;
     }
-    if (l.includes('Instructors:')) {
-      const m = l.match(/Instructors:\s*(.+?)(?:\s{2,}|Program:|$)/);
-      if (m) instructor = m[1].trim();
-    }
-    if (l.includes('Program:')) {
-      const m = l.match(/Program:\s*(.+?)(?:\s{2,}|Ages:|Zone:|$)/);
-      const raw = m ? m[1].trim().toUpperCase() : l.toUpperCase();
-      for (const [key, val] of Object.entries(PROGRAM_MAP)) {
-        if (raw.includes(key)) { program = val; break; }
-      }
-      programIdx = i;
-    }
-    if (l.includes('Ages:')) {
-      const m = l.match(/Ages:\s*(.+?)(?:\s{2,}|Capacity:|$)/);
-      if (m) ages = m[1].trim();
-    }
-    if (l.includes('Capacity:')) {
-      const m = l.match(/Capacity:\s*(\d+)/);
-      if (m) capacity = m[1];
-    }
-    // Date from first few lines
-    if (i < 5 && /\d{2}\/\d{2}\/\d{4}/.test(l)) {
-      const dm = l.match(/(\d{2}\/\d{2}\/\d{4})/);
-      if (dm) date = dm[1];
-    }
-  }
+    if (reportSubRe.test(text)) continue;
 
-  if (!program) return null;
+    // Skip student-date header lines like "Leia Jessing - 03/25/2026"
+    if (studentHeaderRe.test(text)) continue;
 
-  // Parse schedule for day/time
-  let day = '', time = '';
-  const schedMatch = schedule.match(/(Mon|Tue|Wed|Thu|Fri|Sat|Sun)\w*\s+(\d+:\d+\s*[ap]m)/i);
-  if (schedMatch) {
-    const dayMap = {Mon:'Monday',Tue:'Tuesday',Wed:'Wednesday',Thu:'Thursday',Fri:'Friday',Sat:'Saturday',Sun:'Sunday'};
-    day = dayMap[schedMatch[1].slice(0,3)] || schedMatch[1];
-    time = schedMatch[2];
-  }
+    // Check for section header: "ClassName - ProgramName , EventName"
+    const sectionMatch = text.match(sectionHeaderRe);
+    if (sectionMatch) {
+      const classNameRaw = sectionMatch[1].trim();
+      const middlePart = sectionMatch[2].trim();
+      const eventName = sectionMatch[3].trim();
 
-  // Parse ages range for display
-  let ageDisplay = ages;
-  const ageMatch = ages.match(/(\d+)Y.*?(\d+)Y/);
-  if (ageMatch) ageDisplay = `Ages ${ageMatch[1]}\u2013${ageMatch[2]}`;
-
-  // Parse students — look for numbered entries after the header section
-  const students = [];
-  // Find start of student data (after "Since Last" or "Level" or "Passed" headers)
-  let startIdx = 0;
-  for (let i = 0; i < lines.length; i++) {
-    if (lines[i].includes('Comments') || lines[i].includes('Passed')) {
-      startIdx = i + 1;
-      break;
-    }
-  }
-
-  // Student blocks: number, name, age+gender+bday, guardian, phone, email, start/drop, attendance
-  let i = startIdx;
-  while (i < lines.length) {
-    // Look for a line that's just a number (student index)
-    if (/^\d+$/.test(lines[i].trim())) {
-      const num = parseInt(lines[i].trim());
-      if (num >= 1 && num <= 30 && i + 6 < lines.length) {
-        const nameLine = lines[i+1] || '';
-        const ageLine = lines[i+2] || '';
-        const guardianLine = lines[i+3] || '';
-        const phoneLine = lines[i+4] || '';
-        const emailLine = lines[i+5] || '';
-        const startLine = lines[i+6] || '';
-
-        // Parse age from "Xy Xm" pattern
-        const ageM = ageLine.match(/(\d+)y\s*(\d+)m/i);
-        const ageStr = ageM ? `${ageM[1]}y ${ageM[2]}m` : '';
-
-        // Parse birthday from MM/DD/YYYY in ageLine
-        const bdayM = ageLine.match(/(\d{2}\/\d{2}\/\d{4})/);
-        const birthday = bdayM ? bdayM[1] : '';
-
-        // Attendance (line after start)
-        let attendance = '-';
-        if (i + 7 < lines.length && /^[\d-]+$/.test(lines[i+7].trim())) {
-          attendance = lines[i+7].trim();
+      // The className is the part before " - "
+      // Check if this is a new class
+      if (!currentClass || currentClass.className !== classNameRaw) {
+        // Save previous class
+        if (currentClass) {
+          finalizeClass(currentClass);
+          results.push(currentClass);
         }
+        currentClass = {
+          className: classNameRaw,
+          students: [],
+          events: [],
+          reportDate: reportDate
+        };
+        studentNames = [];
+        studentXPositions = [];
+      }
 
-        students.push({
-          name: nameLine.trim(),
-          age: ageStr,
-          birthday: birthday,
-          guardian: guardianLine.trim(),
-          phone: phoneLine.trim(),
-          email: emailLine.trim(),
-          start: startLine.trim(),
-          attendance: attendance,
-        });
-        i += 7;
+      // Start new event
+      currentEvent = { name: eventName, skills: [] };
+      currentClass.events.push(currentEvent);
+      currentSkill = null;
+      currentCriterion = null;
+      expectingStudents = true;
+      inScoreSection = false;
+      continue;
+    }
+
+    // Check for student name line: "FirstName LastName (1) FirstName LastName (2) ..."
+    if (expectingStudents && line.items.length >= 1) {
+      // Check if any item matches the student name pattern
+      const possibleStudents = [];
+      const possibleXPositions = [];
+      let fullText = text;
+
+      // Try to parse student names from individual items first
+      // Items on this line could be: "Elliana" "James" "(1)" "Raiylah" "James" "(2)" etc.
+      // Or the full text might be: "Elliana James (1) Raiylah James (2) ..."
+      const studentPattern = /([A-Z][a-z]+(?:\s+[A-Z][a-z'-]+)+)\s*\((\d+)\)/g;
+      let sm;
+      while ((sm = studentPattern.exec(fullText)) !== null) {
+        possibleStudents.push({ name: sm[1].trim(), index: parseInt(sm[2]) });
+      }
+
+      if (possibleStudents.length > 0) {
+        // We found student names on this line
+        if (currentClass && currentClass.students.length === 0) {
+          // Sort by index
+          possibleStudents.sort((a, b) => a.index - b.index);
+          currentClass.students = possibleStudents.map(s => s.name);
+
+          // Try to determine X positions for score mapping
+          // For each student name, find the X position of the "(N)" text in items
+          line.items.forEach(item => {
+            const m = item.text.match(/\((\d+)\)/);
+            if (m) {
+              studentXPositions.push(item.x);
+            }
+          });
+        }
+        expectingStudents = false;
+        inScoreSection = true;
         continue;
       }
     }
-    i++;
+
+    // If we're in score section, check for skill names, criteria, and scores
+    if (inScoreSection && currentEvent) {
+      // Is this a pure score line?
+      if (scoreRe.test(text)) {
+        // This is a score — assign to current criterion
+        if (currentCriterion) {
+          currentCriterion.scores.push(parseInt(text));
+        }
+        continue;
+      }
+
+      // Is this a score line with multiple scores? (sometimes multiple items on one Y line)
+      // Check if ALL items on this line are scores or timestamps
+      const lineScoresOnly = line.items.every(item => {
+        const t = item.text.trim();
+        return scoreRe.test(t) || timestampPartialRe.test(t) || t === '';
+      });
+      if (lineScoresOnly && line.items.some(item => scoreRe.test(item.text.trim()))) {
+        if (currentCriterion) {
+          line.items.forEach(item => {
+            const t = item.text.trim();
+            if (scoreRe.test(t)) {
+              currentCriterion.scores.push(parseInt(t));
+            }
+          });
+        }
+        continue;
+      }
+
+      // Check if this could be a new section header (new event)
+      if (sectionHeaderRe.test(text)) {
+        // Will be handled in the next iteration
+        li--;
+        inScoreSection = false;
+        continue;
+      }
+
+      // Not a score, not a timestamp, not a footer — could be skill name or criterion
+      // Heuristic: if we don't have a current skill, or if this looks like a "bold header" (skill name),
+      // treat it as a new skill. In the PDF, skill names tend to be standalone lines
+      // that aren't criteria (they're shorter, don't end with periods usually).
+
+      // Check if this is a "Puts it all together correctly 3 times in a row" type line
+      // These are criteria lines.
+
+      // Strategy: The first non-score text after students is the skill name.
+      // Subsequent non-score texts are criteria.
+      // When we hit a new batch of scores after criteria, the next non-score text is a new skill.
+
+      if (!currentSkill) {
+        // First text = skill name
+        currentSkill = { name: text, criteria: [] };
+        currentEvent.skills.push(currentSkill);
+        continue;
+      }
+
+      // If the current skill has criteria and the last criterion has scores,
+      // then this new text line could be either:
+      // 1. Another criterion for the same skill
+      // 2. A new skill name
+      // Heuristic: if the previous criterion collected scores, and this is new text,
+      // check if there's another text line right after — if so, this might be a new skill.
+      // Actually, the simplest approach: criteria always follow their skill,
+      // and scores follow criteria. A new skill appears after all criteria+scores for the previous skill.
+
+      // Better heuristic: look ahead. If the next non-empty, non-timestamp, non-footer line is a score,
+      // this is a criterion. If the next such line is text, this could be a skill name or criterion.
+
+      // Simplest approach: if the last criterion has received scores equal to or more than the
+      // number of students, we've moved past it. If we get new text, it could be a new skill
+      // if the NEXT text is also non-score (meaning this text is a skill header and next is criterion).
+
+      // Most reliable: check if this text line is followed by score lines.
+      // Look ahead to see if scores follow soon.
+      let hasScoresFollowing = false;
+      for (let peek = li + 1; peek < allLines.length && peek <= li + 3; peek++) {
+        const peekText = allLines[peek].text.trim();
+        if (scoreRe.test(peekText)) { hasScoresFollowing = true; break; }
+        if (footerRe.test(peekText) || timestampRe.test(peekText)) continue;
+        break;
+      }
+
+      if (hasScoresFollowing) {
+        // This is a criterion (scores follow it)
+        currentCriterion = { text: text, scores: [] };
+        currentSkill.criteria.push(currentCriterion);
+      } else {
+        // No scores immediately following — this is a new skill name
+        // But first, check: maybe this is the LAST criterion with no scores
+        // (some criteria at the end might not have any scores)
+        // Look further ahead — if the next non-blank line is another text (not score),
+        // then this was a new skill name.
+        let nextIsText = false;
+        for (let peek = li + 1; peek < allLines.length && peek <= li + 5; peek++) {
+          const peekText = allLines[peek].text.trim();
+          if (!peekText) continue;
+          if (footerRe.test(peekText) || timestampRe.test(peekText) || timestampPartialRe.test(peekText)) continue;
+          if (scoreRe.test(peekText)) break;
+          if (sectionHeaderRe.test(peekText)) { nextIsText = true; break; }
+          nextIsText = true;
+          break;
+        }
+
+        if (nextIsText) {
+          // New skill
+          currentSkill = { name: text, criteria: [] };
+          currentEvent.skills.push(currentSkill);
+        } else {
+          // Criterion with no scores (or end of section)
+          currentCriterion = { text: text, scores: [] };
+          currentSkill.criteria.push(currentCriterion);
+        }
+      }
+    }
   }
 
-  // Derive "pretty" program name for display
-  let prettyProgram = program;
-  if (program === 'Advanced Junior') prettyProgram = "Advanced Junior";
-  if (program === 'Girls Level 1') prettyProgram = "Girl's Level 1";
-  if (program === 'Girls Level 2') prettyProgram = "Girl's Level 2";
-  if (program === 'Girls Level 3') prettyProgram = "Girl's Level 3";
+  // Save last class
+  if (currentClass) {
+    finalizeClass(currentClass);
+    results.push(currentClass);
+  }
 
-  return {
-    program,
-    prettyProgram,
-    schedule,
-    instructor,
-    ages: ageDisplay,
-    capacity: parseInt(capacity) || 8,
-    students,
-    day,
-    time,
-    date,
-  };
+  return results;
 }
 
-/* ═══════════════════════════════════════════
-   XLS PARSING (optional eval scores)
-   ═══════════════════════════════════════════ */
-let evalScores = null; // placeholder for future XLS parsing
-
-function parseXLS(file) {
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    try {
-      if (typeof XLSX === 'undefined') return;
-      const wb = XLSX.read(e.target.result, { type: 'array' });
-      // Store raw data for potential score matching
-      evalScores = {};
-      wb.SheetNames.forEach(sn => {
-        evalScores[sn] = XLSX.utils.sheet_to_json(wb.Sheets[sn], { header: 1 });
+function finalizeClass(classData) {
+  // Pad criterion scores to match student count
+  const numStudents = classData.students.length;
+  classData.events.forEach(ev => {
+    ev.skills.forEach(sk => {
+      sk.criteria.forEach(cr => {
+        // Pad with nulls if fewer scores than students
+        while (cr.scores.length < numStudents) {
+          cr.scores.push(null);
+        }
+        // Truncate if somehow more
+        if (cr.scores.length > numStudents) {
+          cr.scores = cr.scores.slice(0, numStudents);
+        }
       });
-    } catch(err) {
-      // Eval is optional — silently continue
-    }
-  };
-  reader.readAsArrayBuffer(file);
+    });
+  });
 }
 
 /* ═══════════════════════════════════════════
@@ -949,28 +1062,23 @@ function parseXLS(file) {
    ═══════════════════════════════════════════ */
 function updateUI() {
   const summary = document.getElementById('summary');
-  const printOptions = document.getElementById('printOptions');
-  const printInstr = document.getElementById('printInstructions');
 
-  if (parsedClasses.length === 0) {
+  if (!parsedEvalData || parsedEvalData.length === 0) {
     summary.classList.remove('show');
     document.getElementById('printSection').style.display = 'none';
     return;
   }
 
-  // Count by program
-  const counts = {};
-  parsedClasses.forEach(c => { counts[c.program] = (counts[c.program]||0) + 1; });
-
-  const total = parsedClasses.length;
-  document.getElementById('summaryText').textContent = `Found ${total} class${total>1?'es':''}`;
+  const total = parsedEvalData.length;
+  document.getElementById('summaryText').textContent = `Found ${total} class${total > 1 ? 'es' : ''}`;
 
   const badgesEl = document.getElementById('summaryBadges');
   badgesEl.innerHTML = '';
-  Object.entries(counts).forEach(([prog, cnt]) => {
+  parsedEvalData.forEach(ed => {
     const b = document.createElement('span');
     b.className = 'badge-sm';
-    b.textContent = `${cnt} ${prog}`;
+    const eventNames = ed.events.map(e => e.name).join(', ');
+    b.textContent = `${ed.className} (${ed.students.length} students, ${eventNames})`;
     badgesEl.appendChild(b);
   });
 
@@ -983,24 +1091,29 @@ function updateUI() {
    ═══════════════════════════════════════════ */
 function generatePages(mode) {
   if (!selectedGym) { alert('Select a gym first.'); return; }
-  if (parsedClasses.length === 0) { alert('Upload a roll sheet PDF first.'); return; }
 
   const preview = document.getElementById('previewArea');
   preview.innerHTML = '';
 
-  parsedClasses.forEach(cls => {
-    if (mode === 'roll-eval') {
-      preview.innerHTML += buildRollPage(cls);
-      preview.innerHTML += buildEvalPage(cls);
-    } else if (mode === 'eval-notes') {
-      preview.innerHTML += buildEvalPage(cls);
-      preview.innerHTML += buildNotesPage(cls);
-    } else if (mode === 'eval') {
-      preview.innerHTML += buildEvalPage(cls);
-    } else if (mode === 'roll') {
-      preview.innerHTML += buildRollPage(cls);
+  if (mode === 'eval') {
+    if (!parsedEvalData || parsedEvalData.length === 0) {
+      alert('Upload a Skill Evaluation PDF first.');
+      return;
     }
-  });
+    parsedEvalData.forEach(evalData => {
+      preview.innerHTML += buildEvalPageFromPDF(evalData, selectedGym);
+    });
+  } else if (mode === 'blank') {
+    // Use SKILL_DATA for blank grids — need parsedClasses or at least program info
+    if (parsedClasses.length > 0) {
+      parsedClasses.forEach(cls => {
+        preview.innerHTML += buildEvalPage(cls);
+      });
+    } else {
+      alert('Upload a Skill Evaluation PDF first (needed for class and student info).');
+      return;
+    }
+  }
 
   // Attach click handlers for eval cells
   preview.querySelectorAll('[data-click]').forEach(el => {
@@ -1010,89 +1123,161 @@ function generatePages(mode) {
     });
   });
 
-  // Scroll to preview
   preview.scrollIntoView({ behavior: 'smooth' });
 }
 
 /* ═══════════════════════════════════════════
-   BUILD ROLL SHEET PAGE
+   EVENT NAME TO CSS CLASS MAPPING
    ═══════════════════════════════════════════ */
-function buildRollPage(cls) {
-  const g = GYMS[selectedGym];
-  const studs = cls.students.slice(0, 8);
-  while (studs.length < 8) studs.push({ name:'', age:'', birthday:'', guardian:'', phone:'', email:'', start:'', attendance:'' });
+function eventToCss(eventName) {
+  const lower = eventName.toLowerCase();
+  if (lower.includes('vault')) return 'v';
+  if (lower.includes('bar')) return 'b';
+  if (lower.includes('beam')) return 'e';
+  if (lower.includes('floor')) return 'f';
+  if (lower.includes('safety')) return 's';
+  // Default to floor styling for unknown events
+  return 'f';
+}
+
+/* ═══════════════════════════════════════════
+   BUILD EVAL GRID PAGE FROM PDF DATA
+   ═══════════════════════════════════════════ */
+function buildEvalPageFromPDF(evalData, gymCode) {
+  const g = GYMS[gymCode];
+
+  // Clean student names (strip "(N)" suffix)
+  const studs = evalData.students.map(s => s.replace(/\s*\(\d+\)\s*$/, '')).slice(0, 8);
+  while (studs.length < 8) studs.push('');
+
+  const totalCols = 2 + studs.length; // skill + criteria + students
 
   let h = '<div class="page">';
 
   // Header
   h += '<div class="hdr">';
-  h += `<div class="hdr-badge">${selectedGym}</div>`;
+  h += `<div class="hdr-badge">${gymCode}</div>`;
   h += '<div class="hm">';
   h += `<div class="gn">${esc(g.name)}</div>`;
-  h += `<div class="et">${esc(cls.prettyProgram)} Roll Sheet</div>`;
+  h += `<div class="et">${esc(evalData.className)} Skill Evaluation</div>`;
   h += '</div>';
   h += '<div class="hr">';
-  h += `<div class="fr"><span class="fl">Date:</span><span class="fv">${esc(cls.date)}</span></div>`;
-  h += `<div class="fr"><span class="fl">Coach:</span><span class="fv">${esc(cls.instructor)}</span></div>`;
+  h += `<div class="fr"><span class="fl">Date:</span><span class="fv">${esc(evalData.reportDate)}</span></div>`;
+  h += `<div class="fr"><span class="fl">Coach:</span><span class="fv"></span></div>`;
   h += '</div></div>';
 
   // Class bar
   h += '<div class="cbar">';
-  h += `<span>${esc(cls.prettyProgram)}</span><span class="sep">&middot;</span>`;
-  h += `<span>${esc(cls.ages)}</span><span class="sep">&middot;</span>`;
-  h += `<span>${esc(cls.day)}</span><span class="sep">&middot;</span>`;
-  h += `<span>${esc(cls.time)}</span><span class="sep">&middot;</span>`;
-  h += `<span>${esc(g.name)}</span>`;
+  h += `<span>${esc(evalData.className)}</span>`;
+  const eventNames = evalData.events.map(e => e.name).join(' / ');
+  if (eventNames) {
+    h += `<span class="sep">&middot;</span><span>${esc(eventNames)}</span>`;
+  }
+  h += `<span class="sep">&middot;</span><span>${esc(g.name)}</span>`;
   h += '</div>';
 
-  // Roll legend
-  h += '<div class="roll-leg">';
-  h += '<span style="font-weight:700">P</span> = Present &nbsp;&nbsp;';
-  h += '<span style="font-weight:700">A</span> = Absent &nbsp;&nbsp;';
-  h += '<span style="font-weight:700">L</span> = Late &nbsp;&nbsp;';
-  h += '<span style="font-weight:700">T</span> = Trial';
+  // Legend
+  h += '<div class="leg">';
+  h += '<div class="li"><span class="lc" style="background:var(--c1);border-color:var(--c1)"></span><span>= Earned (from iClassPro)</span></div>';
+  h += '<div class="li"><span class="lc"></span><span>= Not yet earned</span></div>';
+  h += '<div class="li"><span class="lc" style="border-style:dashed;border-color:#ccc"></span><span>= Not evaluated</span></div>';
   h += '</div>';
 
   // Table
-  h += '<table class="roll-tbl">';
+  h += '<table class="tbl">';
   h += '<colgroup>';
-  h += '<col style="width:3%">';  // #
-  h += '<col style="width:16%">'; // Name
-  h += '<col style="width:6%">';  // Age
-  h += '<col style="width:10%">'; // Birthday
-  h += '<col style="width:14%">'; // Guardian
-  h += '<col style="width:12%">'; // Phone
-  h += '<col style="width:5.5%">'; // M
-  h += '<col style="width:5.5%">'; // T
-  h += '<col style="width:5.5%">'; // W
-  h += '<col style="width:5.5%">'; // Th
-  h += '<col style="width:5.5%">'; // F
-  h += '<col>'; // Notes
+  h += '<col style="width:7%">';   // skill name
+  h += '<col style="width:29%">';  // criteria
+  studs.forEach(() => { h += '<col style="width:8%">'; });
   h += '</colgroup>';
-  h += '<thead><tr>';
-  h += '<th>#</th><th>Student Name</th><th>Age</th><th>Birthday</th><th>Guardian</th><th>Phone</th>';
-  h += '<th class="att-hdr">M</th><th class="att-hdr">T</th><th class="att-hdr">W</th><th class="att-hdr">Th</th><th class="att-hdr">F</th>';
-  h += '<th>Notes</th>';
-  h += '</tr></thead><tbody>';
 
-  studs.forEach((s, idx) => {
-    h += '<tr>';
-    h += `<td style="text-align:center;font-weight:700">${s.name ? idx+1 : ''}</td>`;
-    h += `<td class="stu-name">${esc(s.name)}</td>`;
-    h += `<td>${esc(s.age)}</td>`;
-    h += `<td>${esc(s.birthday)}</td>`;
-    h += `<td>${esc(s.guardian)}</td>`;
-    h += `<td>${esc(s.phone)}</td>`;
-    h += '<td class="att-cell"></td><td class="att-cell"></td><td class="att-cell"></td><td class="att-cell"></td><td class="att-cell"></td>';
-    h += '<td></td>';
-    h += '</tr>';
+  // Header row — student names
+  h += '<thead><tr class="col-hdr">';
+  h += '<th class="ch-skill">Skill</th>';
+  h += '<th class="ch-crit">Criteria</th>';
+  studs.forEach(name => {
+    const blank = !name;
+    h += `<th class="ch-stu${blank ? ' bk' : ''}" style="padding:2pt 1pt">`;
+    if (name) {
+      const parts = name.trim().split(/\s+/);
+      const first = parts[0] || '';
+      const last = parts.slice(1).join(' ') || '';
+      h += `<span class="sn"><span class="first">${esc(first)}</span><span class="last">${esc(last)}</span></span>`;
+    } else {
+      h += '<span class="sn new"></span>';
+    }
+    h += '</th>';
   });
+  h += '</tr></thead>';
 
+  // Body
+  h += '<tbody>';
+  evalData.events.forEach(ev => {
+    const cssCls = eventToCss(ev.name);
+
+    // Event divider
+    h += `<tr class="evd ${cssCls}"><td colspan="${totalCols}">${esc(ev.name.toUpperCase())}</td></tr>`;
+
+    ev.skills.forEach(sk => {
+      h += `<tr class="sk ${cssCls}">`;
+
+      // Skill name
+      h += `<td class="td-sk" style="text-align:center;padding:2pt 2pt;font-size:7pt;line-height:1.2;font-weight:600">${esc(sk.name)}</td>`;
+
+      // Criteria column
+      h += '<td class="td-c" style="text-align:left;padding:1pt 3pt;font-size:6pt;line-height:1.25">';
+      h += sk.criteria.map((cr, i) => `<span class="cnum" style="font-size:6pt">\u2605${i + 1}</span> ${esc(cr.text)}`).join('<br>');
+      h += '</td>';
+
+      // Student cells
+      studs.forEach((name, si) => {
+        const blank = !name;
+        const numCrit = sk.criteria.length;
+        h += '<td class="td-st" style="padding:1.5pt 0">';
+        h += '<div class="cell-row" style="gap:2.5pt;padding:1pt 1pt">';
+
+        for (let ci = 0; ci < numCrit; ci++) {
+          const score = sk.criteria[ci] && si < sk.criteria[ci].scores.length ? sk.criteria[ci].scores[si] : null;
+          if (blank) {
+            h += '<span class="c fd" style="width:9pt;height:9pt"></span>';
+          } else if (score === 1) {
+            h += '<span class="c on" style="width:9pt;height:9pt" data-click="1"></span>';
+          } else if (score === 0) {
+            h += '<span class="c" style="width:9pt;height:9pt" data-click="1"></span>';
+          } else {
+            // null = not evaluated — dashed border
+            h += '<span class="c" style="width:9pt;height:9pt;border-style:dashed;border-color:#ccc" data-click="1"></span>';
+          }
+        }
+
+        // Star
+        const starClass = blank ? 's fd' : 's';
+        const remainder = numCrit % 3;
+        // Check if all criteria are scored 1 for this student
+        let allEarned = !blank && numCrit > 0;
+        for (let ci = 0; ci < numCrit; ci++) {
+          const sc = sk.criteria[ci] && si < sk.criteria[ci].scores.length ? sk.criteria[ci].scores[si] : null;
+          if (sc !== 1) { allEarned = false; break; }
+        }
+        const starOn = allEarned ? ' on' : '';
+
+        if (remainder === 0) {
+          h += `<span class="${starClass}${starOn} s-center" style="font-size:13pt" data-click="1">\u2605</span>`;
+        } else {
+          h += `<span class="${starClass}${starOn}" style="font-size:13pt" data-click="1">\u2605</span>`;
+        }
+
+        h += '</div></td>';
+      });
+
+      h += '</tr>';
+    });
+  });
   h += '</tbody></table>';
 
   // Footer
-  h += '<div class="footer">';
-  h += `<div class="pf">${esc(cls.prettyProgram)} Roll Sheet &nbsp;&middot;&nbsp; ${esc(g.name)} &nbsp;&middot;&nbsp; ${esc(cls.date)} &nbsp;&middot;&nbsp; Capacity: ${cls.capacity}</div>`;
+  h += '<div class="footer" style="padding-top:1.5pt">';
+  h += `<div class="pf">${esc(evalData.className)} Skill Evaluation \u00b7 ${esc(g.name)} \u00b7 ${esc(evalData.reportDate)}</div>`;
   h += '</div>';
 
   h += '</div>';
@@ -1100,17 +1285,20 @@ function buildRollPage(cls) {
 }
 
 /* ═══════════════════════════════════════════
-   BUILD EVAL GRID PAGE
+   BUILD EVAL GRID PAGE (BLANK — from SKILL_DATA)
    ═══════════════════════════════════════════ */
 function buildEvalPage(cls) {
   const g = GYMS[selectedGym];
   const skillData = SKILL_DATA[cls.program];
   if (!skillData) return '';
 
-  const studs = cls.students.map(s => s.name).slice(0, 8);
+  const studs = cls.students.map(s => {
+    // Handle "First Last" format from eval PDF (not "Last, First")
+    return s.name || '';
+  }).slice(0, 8);
   while (studs.length < 8) studs.push('');
 
-  const totalCols = 2 + studs.length; // skill + criteria + 8 students
+  const totalCols = 2 + studs.length;
 
   let h = '<div class="page">';
 
@@ -1145,22 +1333,22 @@ function buildEvalPage(cls) {
   // Table
   h += '<table class="tbl">';
   h += '<colgroup>';
-  h += '<col style="width:7%">';   // skill name
-  h += '<col style="width:29%">';  // criteria (single merged column)
+  h += '<col style="width:7%">';
+  h += '<col style="width:29%">';
   studs.forEach(() => { h += '<col style="width:8%">'; });
   h += '</colgroup>';
 
-  // Header row — student names read normally (not rotated)
+  // Header row
   h += '<thead><tr class="col-hdr">';
   h += '<th class="ch-skill">Skill</th>';
   h += '<th class="ch-crit">Star Criteria</th>';
   studs.forEach(name => {
     const blank = !name;
-    h += `<th class="ch-stu${blank?' bk':''}" style="padding:2pt 1pt">`;
+    h += `<th class="ch-stu${blank ? ' bk' : ''}" style="padding:2pt 1pt">`;
     if (name) {
-      const parts = name.split(', ');
-      const last = parts[0] || '';
-      const first = parts[1] || '';
+      const parts = name.trim().split(/\s+/);
+      const first = parts[0] || '';
+      const last = parts.slice(1).join(' ') || '';
       h += `<span class="sn"><span class="first">${esc(first)}</span><span class="last">${esc(last)}</span></span>`;
     } else {
       h += '<span class="sn new"></span>';
@@ -1172,38 +1360,28 @@ function buildEvalPage(cls) {
   // Body
   h += '<tbody>';
   skillData.events.forEach(ev => {
-    // Event divider row — 9pt height
     h += `<tr class="evd ${ev.cls}"><td colspan="${totalCols}">${ev.name}</td></tr>`;
 
     ev.skills.forEach(sk => {
       h += `<tr class="sk ${ev.cls}">`;
-
-      // Skill name cell — centered
       h += `<td class="td-sk" style="text-align:center;padding:2pt 2pt;font-size:7pt;line-height:1.2;font-weight:600">${sk.name}</td>`;
 
-      // Criteria cell — each criterion on its own line, left-aligned
       h += '<td class="td-c" style="text-align:left;padding:1pt 3pt;font-size:6pt;line-height:1.25">';
-      h += sk.crit.map((c, i) => `<span class="cnum" style="font-size:6pt">\u2605${i+1}</span> ${esc(c)}`).join('<br>');
+      h += sk.crit.map((c, i) => `<span class="cnum" style="font-size:6pt">\u2605${i + 1}</span> ${esc(c)}`).join('<br>');
       h += '</td>';
 
-      // Student cells — CSS grid, 3 columns
       studs.forEach(name => {
         const blank = !name;
         const numCrit = sk.crit.length;
         h += '<td class="td-st" style="padding:1.5pt 0">';
         h += '<div class="cell-row" style="gap:2.5pt;padding:1pt 1pt">';
 
-        // Circles
         for (let ci = 0; ci < numCrit; ci++) {
-          h += `<span class="c${blank?' fd':''}" style="width:9pt;height:9pt" data-click="1"></span>`;
+          h += `<span class="c${blank ? ' fd' : ''}" style="width:9pt;height:9pt" data-click="1"></span>`;
         }
 
-        // Star — centered on its own row if crit count divides evenly by 3,
-        // otherwise fills next cell in the grid row
         const starClass = blank ? 's fd' : 's';
         const remainder = numCrit % 3;
-        // If numCrit is multiple of 3 (e.g. 3), star goes centered spanning all 3 cols
-        // If numCrit % 3 != 0 (e.g. 4,5), star just goes in the next grid cell
         if (remainder === 0) {
           h += `<span class="${starClass} s-center" style="font-size:13pt" data-click="1">\u2605</span>`;
         } else {
@@ -1218,86 +1396,9 @@ function buildEvalPage(cls) {
   });
   h += '</tbody></table>';
 
-  // Footer — one slim line
+  // Footer
   h += '<div class="footer" style="padding-top:1.5pt">';
   h += `<div class="pf">${esc(cls.prettyProgram)} Star Chart \u00b7 ${esc(g.name)} \u00b7 ${esc(cls.date)}</div>`;
-  h += '</div>';
-
-  h += '</div>';
-  return h;
-}
-
-/* ═══════════════════════════════════════════
-   BUILD NOTES PAGE
-   ═══════════════════════════════════════════ */
-function buildNotesPage(cls) {
-  const g = GYMS[selectedGym];
-  const skillData = SKILL_DATA[cls.program];
-  if (!skillData) return '';
-
-  const studs = cls.students.filter(s => s.name).map(s => s.name);
-  while (studs.length < 8) studs.push('');
-  const totalCols = 1 + studs.length;
-
-  let h = '<div class="page">';
-
-  // Header
-  h += '<div class="hdr">';
-  h += `<div class="hdr-badge">${selectedGym}</div>`;
-  h += '<div class="hm">';
-  h += `<div class="gn">${esc(g.name)}</div>`;
-  h += `<div class="et">${esc(cls.prettyProgram)} \u2014 Coach Notes</div>`;
-  h += '</div>';
-  h += '<div class="hr">';
-  h += `<div class="fr"><span class="fl">Date:</span><span class="fv">${esc(cls.date)}</span></div>`;
-  h += `<div class="fr"><span class="fl">Coach:</span><span class="fv">${esc(cls.instructor)}</span></div>`;
-  h += '</div></div>';
-
-  // Class bar
-  h += '<div class="cbar">';
-  h += `<span>${esc(cls.prettyProgram)}</span><span class="sep">&middot;</span>`;
-  h += `<span>${esc(cls.ages)}</span><span class="sep">&middot;</span>`;
-  h += `<span>${esc(cls.day)}</span><span class="sep">&middot;</span>`;
-  h += `<span>${esc(cls.time)}</span>`;
-  h += '</div>';
-
-  // Table
-  h += '<table class="tbl">';
-  h += '<colgroup><col style="width:12%">';
-  studs.forEach(() => { h += '<col>'; });
-  h += '</colgroup>';
-
-  // Header row
-  h += '<thead><tr class="col-hdr">';
-  h += '<th class="ch-skill">Skill</th>';
-  studs.forEach(name => {
-    if (name) {
-      const parts = name.split(', ');
-      h += `<th class="ch-stu"><span class="sn"><span class="first">${esc(parts[1]||'')}</span><span class="last">${esc(parts[0]||'')}</span></span></th>`;
-    } else {
-      h += '<th class="ch-stu bk"><span class="sn new"></span></th>';
-    }
-  });
-  h += '</tr></thead>';
-
-  // Body
-  h += '<tbody>';
-  skillData.events.forEach(ev => {
-    h += `<tr class="evd ${ev.cls}"><td colspan="${totalCols}">${ev.name}</td></tr>`;
-    ev.skills.forEach(sk => {
-      h += `<tr class="sk ${ev.cls}">`;
-      h += `<td class="td-sk">${sk.name}</td>`;
-      studs.forEach(() => {
-        h += '<td class="td-nt" style="height:24pt"></td>';
-      });
-      h += '</tr>';
-    });
-  });
-  h += '</tbody></table>';
-
-  // Footer
-  h += '<div class="footer">';
-  h += `<div class="pf">Coach Notes &nbsp;&middot;&nbsp; ${esc(cls.prettyProgram)} &nbsp;&middot;&nbsp; ${esc(g.name)} &nbsp;&middot;&nbsp; ${esc(cls.date)}</div>`;
   h += '</div>';
 
   h += '</div>';
@@ -1313,19 +1414,14 @@ function esc(s) {
 }
 
 /* ═══════════════════════════════════════════
-   MANUAL ENTRY FALLBACK
-   If PDF parsing fails, allow manual class entry
+   STARTUP CHECK
    ═══════════════════════════════════════════ */
-
-// Also support a demo/test mode — if no PDF is loaded, show a test button
 (function() {
-  // Check if PDF.js loaded after a delay
   setTimeout(() => {
     if (typeof pdfjsLib === 'undefined') {
       const errEl = document.getElementById('errorMsg');
       errEl.innerHTML = '<strong>PDF.js could not load.</strong> You may be running this from a local file.<br><br>' +
-        'Try: <code>python -m http.server 8080</code> in the folder, then open <code>http://localhost:8080/star-chart-tool.html</code><br><br>' +
-        'Or you can use the demo data below to test the tool.';
+        'Try: <code>python -m http.server 8080</code> in the folder, then open <code>http://localhost:8080/index.html</code>';
       errEl.classList.add('show');
     }
   }, 3000);
