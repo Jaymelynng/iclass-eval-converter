@@ -3,19 +3,19 @@
 <head>
 <meta charset="UTF-8">
 <title>iClass Eval Converter</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 
 /* ── PRINT ── */
-@page{size:11in 8.5in;margin:0}
+@page{size:11in 8.5in;margin:0.12in 0.18in}
 @media print{
-  html,body{width:11in;height:8.5in;padding:0;background:#fff}
-  .no-print{display:none!important}
-  .landing{display:none!important}
-  .modal-overlay{display:none!important}
-  .page{box-shadow:none!important;margin:0!important}
-  .page:last-child .page-break{page-break-after:auto}
+  html,body{width:11in;height:8.5in;padding:0;margin:0;background:#fff!important;color:#000}
+  body>*:not(.preview-area){display:none!important}
+  .preview-area{display:block!important;padding:0!important;gap:0!important}
+  .no-print,.landing,.modal-overlay,.gym-grid,.landing-header,.gym-label{display:none!important}
+  .page{box-shadow:none!important;margin:0!important;break-inside:avoid;page-break-inside:avoid}
+  .page:last-child{page-break-after:auto}
   *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
 }
 
@@ -46,7 +46,6 @@ body{
 .gym-card-name{font-size:14px;font-weight:700;line-height:1.2;margin-bottom:2px}
 .gym-card-code{font-size:11px;color:#888;font-weight:600}
 .gym-card-arrow{font-size:18px;color:#555;flex-shrink:0}
-.gym-card-accent{width:4px;height:100%;border-radius:2px;position:absolute;left:0;top:0}
 
 /* ── MODAL ── */
 .modal-overlay{
@@ -72,8 +71,6 @@ body{
 
 .modal-section{margin-bottom:20px}
 .modal-section-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2.5px;color:#888;margin-bottom:12px}
-
-.modal-drop-zones{display:flex;gap:14px}
 
 /* Drop zones */
 .drop-zone{
@@ -140,19 +137,18 @@ body{
 }
 .error-msg.show{display:block}
 
-/* ── PAGE STYLES (shared between screen preview and print) ── */
+/* ── PAGE STYLES ── */
 .page{
-  width:11in;height:8.5in;max-height:8.5in;background:#fff;
-  padding:.16in .20in;
-  display:flex;flex-direction:column;gap:2pt;
+  width:11in;min-height:8.5in;max-height:8.5in;background:#fff;
+  padding:.14in .22in;
+  display:flex;flex-direction:column;
   box-shadow:0 16px 60px rgba(0,0,0,.7);
   flex-shrink:0;overflow:hidden;
   page-break-after:always;page-break-inside:avoid;
-  font-family:'Arial Narrow',Arial,sans-serif;
-  color:#222;
+  font-family:Arial,Helvetica,sans-serif;
+  color:#262626;
   margin:20px auto;
 }
-.tbl{flex:1;border-collapse:collapse;table-layout:fixed;width:100%;overflow:hidden;max-height:100%}
 
 /* Preview area */
 .preview-area{
@@ -160,16 +156,18 @@ body{
   padding:30px 20px;gap:30px;
 }
 
-:root{
-  --c1:#c91724;--c2:#262626;--c3:#d0d0d8;--c4:#ffffff;
-  --accent:#c91724;
-  --bg-v:#fdf2f3;--bg-b:#f4f4f6;--bg-e:#fbe8ea;--bg-f:#ebebee;--bg-s:#f0f4f0;
-  --ev-v:var(--c1);--ev-b:var(--c2);--ev-e:color-mix(in srgb,var(--c1) 60%,#000);--ev-f:color-mix(in srgb,var(--c2) 60%,#888);--ev-s:#5a725a;
-  --bd:var(--c3);
-  --row:#e4e4e8;
-}
+/* ── STAR LAYOUT STYLES (from final-layout-template.html) ── */
+.s-earned{font-size:9pt;line-height:1}
+.s-not{font-size:9pt;color:transparent;line-height:1;-webkit-text-stroke:1.2px #bbb}
+.m-earned{font-size:10pt;color:#FFD700;line-height:1}
+.m-not{font-size:10pt;color:transparent;line-height:1;-webkit-text-stroke:1.2px #bbb}
+.t-dark{background:#333!important;border-bottom:0.5px solid #222!important}
+.c-dark1{background:#ffffff}
+.c-dark2{background:#f0f0f0}
+td.col-shade{filter:brightness(0.965)}
 
-/* ── HEADER ── */
+/* ── OLD LAYOUT STYLES (for blank grid fallback) ── */
+:root{--c1:#c91724;--c2:#262626;--c3:#d0d0d8;--c4:#ffffff;--accent:#c91724;--bd:#d0d0d8;--row:#e4e4e8}
 .hdr{display:flex;align-items:center;gap:10pt;border-bottom:3pt solid var(--c1);padding-bottom:3pt;flex-shrink:0}
 .hdr-badge{background:var(--c1);color:#fff;font-size:19pt;font-weight:900;letter-spacing:2.5pt;padding:2.5pt 9pt;border-radius:3pt;line-height:1;flex-shrink:0}
 .hm{flex:1;text-align:center}
@@ -179,19 +177,13 @@ body{
 .fr{display:flex;gap:3pt;align-items:baseline;font-size:7.5pt}
 .fl{font-weight:700;color:var(--c2);white-space:nowrap}
 .fv{flex:1;border-bottom:.75pt solid var(--c2);padding-bottom:.3pt;color:var(--c2);min-width:1.1in}
-
-/* ── CLASS BAR ── */
 .cbar{background:var(--c2);color:#fff;font-size:7.5pt;font-weight:600;padding:2pt 8pt;border-radius:2pt;display:flex;justify-content:center;gap:8pt;align-items:center;flex-shrink:0}
 .sep{color:var(--c1);font-weight:900}
-
-/* ── LEGEND ── */
+.tbl{flex:1;border-collapse:collapse;table-layout:fixed;width:100%;overflow:hidden;max-height:100%}
 .leg{background:#f7f7f9;border:.5pt solid var(--c3);border-radius:2pt;padding:2pt 8pt;display:flex;align-items:center;gap:14pt;flex-shrink:0;font-size:6.5pt;color:var(--c2)}
 .li{display:flex;align-items:center;gap:4pt}
 .lc{width:7.5pt;height:7.5pt;border:1.1pt solid var(--c2);border-radius:50%;display:inline-block;flex-shrink:0}
 .lref{margin-left:auto;color:#9a9aaa;font-style:italic;font-size:5.5pt;border-left:.5pt solid var(--c3);padding-left:8pt;white-space:nowrap}
-
-/* ── TABLE ── */
-.col-hdr{height:auto}
 .ch-skill{background:#f0f0f3;border:.5pt solid var(--bd);vertical-align:bottom;padding:2pt 5pt;font-size:7pt;font-weight:700;color:var(--c2);text-transform:uppercase;letter-spacing:.5pt}
 .ch-crit{background:#f0f0f3;border:.5pt solid var(--bd);vertical-align:bottom;padding:2pt 4pt;font-size:6pt;font-weight:700;color:#bbb;text-transform:uppercase;letter-spacing:.3pt;text-align:center}
 .ch-stu{background:#fff;border:.5pt solid var(--bd);vertical-align:bottom;text-align:center;padding-bottom:2pt}
@@ -200,109 +192,30 @@ body{
 .sn .first{display:block;font-weight:700;font-size:6.5pt}
 .sn .last{display:block;font-weight:400;font-size:5.5pt;color:#777}
 .sn.new{color:#b8b8c4;font-style:italic;font-weight:400}
-
-/* ── EVENT DIVIDERS ── */
 tr.evd td{height:9pt;padding:0 6pt;font-size:5.5pt;font-weight:800;letter-spacing:3pt;color:#fff;text-transform:uppercase;border:none;vertical-align:middle}
-tr.evd.v td{background:var(--ev-v)}
-tr.evd.b td{background:var(--ev-b)}
-tr.evd.e td{background:var(--ev-e)}
-tr.evd.f td{background:var(--ev-f)}
-tr.evd.s td{background:var(--ev-s)}
-
-/* ── SKILL ROWS ── */
-tr.sk{height:auto}
-.td-sk{
-  font-size:7pt;font-weight:700;color:var(--c2);
-  padding:2pt 4pt;
-  border-right:.5pt solid var(--bd);border-bottom:.5pt solid var(--row);
-  vertical-align:middle;line-height:1.3;
-  text-align:center;
-}
-.td-c{
-  font-size:6.5pt;color:var(--c2);
-  padding:2pt 4pt;
-  border-right:.5pt solid var(--bd);border-bottom:.5pt solid var(--row);
-  vertical-align:middle;line-height:1.3;
-}
+tr.evd.v td{background:var(--c1)}
+tr.evd.b td{background:var(--c2)}
+tr.evd.e td{background:var(--c1)}
+tr.evd.f td{background:var(--c2)}
+tr.evd.s td{background:#5a725a}
+.td-sk{font-size:7pt;font-weight:700;color:var(--c2);padding:2pt 4pt;border-right:.5pt solid var(--bd);border-bottom:.5pt solid var(--row);vertical-align:middle;line-height:1.3;text-align:center}
+.td-c{font-size:6.5pt;color:var(--c2);padding:2pt 4pt;border-right:.5pt solid var(--bd);border-bottom:.5pt solid var(--row);vertical-align:middle;line-height:1.3}
 .td-c .cnum{color:var(--c1);font-weight:800;font-size:6.5pt;white-space:nowrap}
-.td-c.empty{background:transparent!important}
-
-tr.sk.v .td-sk,tr.sk.v .td-c{background:var(--bg-v)}
-tr.sk.b .td-sk,tr.sk.b .td-c{background:var(--bg-b)}
-tr.sk.e .td-sk,tr.sk.e .td-c{background:var(--bg-e)}
-tr.sk.f .td-sk,tr.sk.f .td-c{background:var(--bg-f)}
-tr.sk.s .td-sk,tr.sk.s .td-c{background:var(--bg-s)}
-
-/* ── STUDENT CELLS (eval) ── */
-.td-st{
-  border-right:.5pt solid var(--bd);
-  border-bottom:.5pt solid var(--row);
-  text-align:center;vertical-align:middle;
-  padding:2.5pt 0;
-}
-tr.sk:nth-child(odd) .td-st{background:#f7f7fa}
-tr.sk:nth-child(even) .td-st{background:#fff}
-
+.td-st{border-right:.5pt solid var(--bd);border-bottom:.5pt solid var(--row);text-align:center;vertical-align:middle;padding:2.5pt 0}
 .cell-row{display:grid;grid-template-columns:repeat(3,auto);gap:2.5pt;justify-content:center;justify-items:center;align-items:center;padding:2pt 1pt}
 .cell-row .s-center{grid-column:1/4;justify-self:center}
-
-.c{
-  width:9pt;height:9pt;
-  border:1.3pt solid #999;border-radius:1.5pt;
-  display:block;cursor:pointer;flex-shrink:0;
-  transition:background .12s,border-color .12s;
-}
+.c{width:9pt;height:9pt;border:1.3pt solid #999;border-radius:1.5pt;display:block;cursor:pointer;flex-shrink:0;transition:background .12s,border-color .12s}
 .c:hover{border-color:var(--c1);background:#fde8ea}
 .c.on{background:var(--c1);border-color:var(--c1)}
 .c.fd{border-color:#ccc;cursor:default;background:#f6f6f6}
 .c.fd:hover{background:#f6f6f6;border-color:#ccc}
-
-.s{
-  font-size:13pt;color:#d0d0d8;
-  cursor:pointer;line-height:1;user-select:none;
-  transition:color .12s;display:block;flex-shrink:0;
-  font-weight:900;
-}
-.s:hover{color:#DAA520}
-.s.on{color:#DAA520;text-shadow:0 1pt 3pt rgba(218,165,32,.5)}
-.s.fd{color:#e8e8e8;cursor:default}
-.s.fd:hover{color:#e8e8e8}
-
-/* ── NOTES CELLS ── */
-.td-nt{border-bottom:.5pt solid var(--row);border:.5pt solid var(--bd);background:#fff;vertical-align:top;padding:1.5pt}
-
-/* ── FOOTER ── */
+span.s{font-size:13pt;color:#d0d0d8;cursor:pointer;line-height:1;user-select:none;transition:color .12s;display:block;flex-shrink:0;font-weight:900}
+span.s:hover{color:#DAA520}
+span.s.on{color:#DAA520;text-shadow:0 1pt 3pt rgba(218,165,32,.5)}
+span.s.fd{color:#e8e8e8;cursor:default}
+span.s.fd:hover{color:#e8e8e8}
 .footer{border-top:1.5pt solid var(--c1);padding-top:2.5pt;display:flex;gap:14pt;align-items:flex-end;flex-shrink:0}
 .pf{font-size:5.5pt;color:#aaaab2;white-space:nowrap;text-align:right;padding-bottom:1pt;flex:1}
-
-/* ── ROLL SHEET TABLE ── */
-.roll-tbl{
-  flex:1;border-collapse:collapse;table-layout:fixed;width:100%;
-}
-.roll-tbl th{
-  background:var(--c2);color:#fff;font-size:7pt;font-weight:700;
-  padding:3pt 4pt;border:.5pt solid var(--c3);text-align:left;
-  text-transform:uppercase;letter-spacing:.5pt;
-}
-.roll-tbl td{
-  font-size:7.5pt;padding:3pt 4pt;border:.5pt solid var(--c3);
-  vertical-align:middle;
-}
-.roll-tbl tr:nth-child(odd) td{background:#f7f7fa}
-.roll-tbl tr:nth-child(even) td{background:#fff}
-.roll-tbl .stu-name{font-weight:700}
-.roll-tbl .att-cell{
-  width:28pt;text-align:center;
-  background:#fff!important;
-}
-.roll-tbl th.att-hdr{text-align:center;width:28pt}
-
-/* ── ROLL SHEET LEGEND ── */
-.roll-leg{
-  background:#f7f7f9;border:.5pt solid var(--c3);border-radius:2pt;
-  padding:2pt 8pt;display:flex;align-items:center;gap:14pt;flex-shrink:0;
-  font-size:6.5pt;color:var(--c2);
-}
 </style>
 </head>
 <body>
@@ -311,7 +224,7 @@ tr.sk:nth-child(even) .td-st{background:#fff}
 <div class="landing no-print" id="landing">
   <div class="landing-header">
     <h1>iClass Eval Converter</h1>
-    <p>Upload your iClassPro Skill Evaluation PDF. Get branded, print-ready evaluation grids.</p>
+    <p>Upload your iClassPro Skill Evaluation XLS file. Get branded, print-ready evaluation grids.</p>
   </div>
   <div class="gym-label">SELECT YOUR GYM</div>
   <div class="gym-grid" id="gymGrid"></div>
@@ -333,10 +246,10 @@ tr.sk:nth-child(even) .td-st{background:#fff}
       <div class="modal-section-label">UPLOAD FILE</div>
       <div class="drop-zone" id="dzAll" style="min-width:100%">
         <div class="dz-icon">&#128203;</div>
-        <div class="dz-title">Drop Skill Evaluation PDF here</div>
-        <div class="dz-sub">Download from iClassPro: Classes &rarr; Report &rarr; Class Evaluation Report &rarr; PDF</div>
+        <div class="dz-title">Drop Skill Evaluation XLS here</div>
+        <div class="dz-sub">Download from iClassPro: Classes &rarr; Report &rarr; Class Evaluation Report &rarr; XLS</div>
         <div class="dz-file" id="dzAllFiles"></div>
-        <input type="file" accept=".pdf" id="allInput">
+        <input type="file" accept=".xlsx,.xls" id="allInput">
       </div>
       <div class="error-msg" id="errorMsg"></div>
       <div class="summary" id="summary">
@@ -351,13 +264,20 @@ tr.sk:nth-child(even) .td-st{background:#fff}
         <button class="print-btn" onclick="generatePages('eval')">
           <span class="pb-icon">&#128203;</span>
           Eval Grids
-          <span class="pb-sub">Evaluation grids from PDF data &middot; scores pre-filled</span>
+          <span class="pb-sub">Evaluation grids from XLS data &middot; scores pre-filled</span>
         </button>
         <button class="print-btn" onclick="generatePages('blank')">
           <span class="pb-icon">&#128196;</span>
           Blank Grids
           <span class="pb-sub">Empty eval grids using built-in skill data</span>
         </button>
+      </div>
+      <div id="downloadPdfWrap" style="display:none;margin-top:10px">
+        <button id="downloadPdfBtn" onclick="smartPrint()" style="
+          width:100%;padding:14px 12px;border:none;border-radius:8px;
+          font-size:14px;font-weight:700;color:#fff;cursor:pointer;
+          background:#2e7d32;transition:filter .15s;text-align:center;
+        ">&#128196; Download PDF (opens print dialog &mdash; choose &ldquo;Save as PDF&rdquo;)</button>
       </div>
       <div class="print-instructions">
         &#9888;&#65039; Print Settings: <strong>Landscape</strong> &middot; <strong>Scale 100%</strong> &middot; <strong>Color</strong>
@@ -389,6 +309,7 @@ const GYMS = {
 
 /* ═══ LANDING PAGE: Build gym cards ═══ */
 let selectedGym = null;
+
 const gymGrid = document.getElementById('gymGrid');
 const modalOverlay = document.getElementById('modalOverlay');
 const modal = document.getElementById('modal');
@@ -439,7 +360,7 @@ modalOverlay.addEventListener('click', (e) => {
   if (e.target === modalOverlay) modalOverlay.classList.remove('open');
 });
 
-/* Program skill definitions — keyed by our internal program names */
+/* Program skill definitions */
 const SKILL_DATA = {
   'Preschool': {
     events: [
@@ -612,7 +533,7 @@ const PROGRAM_MAP = {
    STATE
    ═══════════════════════════════════════════ */
 let parsedClasses = [];
-let parsedEvalData = null; // Array of eval data objects from PDF
+let parsedEvalData = null;
 
 /* ═══════════════════════════════════════════
    GYM COLORS
@@ -620,14 +541,8 @@ let parsedEvalData = null; // Array of eval data objects from PDF
 function applyGymColors(code) {
   const g = GYMS[code];
   const r = document.documentElement;
-  r.style.setProperty('--ev-v', g.c1);
-  r.style.setProperty('--ev-b', g.c2);
-  r.style.setProperty('--ev-e', g.c1);
-  r.style.setProperty('--ev-f', g.c2);
-  r.style.setProperty('--bg-v', tint(g.c1, 0.06));
-  r.style.setProperty('--bg-b', tint(g.c2, 0.04));
-  r.style.setProperty('--bg-e', tint(g.c1, 0.08));
-  r.style.setProperty('--bg-f', tint(g.c2, 0.04));
+  r.style.setProperty('--c1', g.c1);
+  r.style.setProperty('--c2', g.c2);
   r.style.setProperty('--bd', g.c3);
   document.querySelectorAll('.print-btn').forEach(b => b.style.background = g.c1);
 }
@@ -652,6 +567,16 @@ document.getElementById('allInput').addEventListener('change', function() {
   if (this.files.length) handleFiles(this.files);
 });
 
+function smartPrint() {
+  const origTitle = document.title;
+  const gymName = selectedGym || 'Eval';
+  const program = window._lastParsedProgram || 'Eval';
+  const today = new Date().toISOString().slice(0, 10);
+  document.title = `${gymName}_${program}_${today}_StarChart`;
+  window.print();
+  document.title = origTitle;
+}
+
 function handleFiles(files) {
   const fileLabel = document.getElementById('dzAllFiles');
   const errEl = document.getElementById('errorMsg');
@@ -660,95 +585,304 @@ function handleFiles(files) {
   if (files.length === 0) return;
 
   const file = files[0];
-  if (!file.name.toLowerCase().endsWith('.pdf')) {
-    errEl.innerHTML = '<strong>Please upload a PDF file.</strong> This tool accepts the Skill Evaluation Printout PDF from iClassPro.';
+  const lower = file.name.toLowerCase();
+  const isXLS = lower.endsWith('.xlsx') || lower.endsWith('.xls');
+
+  if (!isXLS) {
+    errEl.innerHTML = '<strong>Please upload an Excel (.xlsx/.xls) file.</strong> Download the Class Evaluation Report from iClassPro as XLS.';
     errEl.classList.add('show');
     return;
   }
 
   fileLabel.textContent = file.name;
   dzAll.classList.add('loaded');
-  parseEvalPDF(file);
+  parseEvalXLS(file);
 }
 
 /* ═══════════════════════════════════════════
-   EVAL PDF PARSING
+   TAB NAME PARSER
+   Parses truncated sheet tab names like "Mon 330 Preschool 34 yrs"
    ═══════════════════════════════════════════ */
-async function parseEvalPDF(file) {
+function parseTabName(tabName) {
+  const result = { day:'', time:'', section:'', program:'', age:'' };
+  const parts = tabName.trim().split(/\s+/);
+  let rest = [];
+
+  // Detect day code
+  const dayRe = /^(Mon|Tue|Wed|Thu|Fri|Sat|Sun)$/i;
+  if (parts.length > 0 && dayRe.test(parts[0])) {
+    result.day = parts[0].charAt(0).toUpperCase() + parts[0].slice(1).toLowerCase();
+    parts.shift();
+  }
+
+  // Detect time: 3-4 digit number, optionally followed by section letter (A/B/C)
+  if (parts.length > 0) {
+    const timeMatch = parts[0].match(/^(\d{3,4})([A-Za-z])?$/);
+    if (timeMatch) {
+      const digits = timeMatch[1];
+      if (digits.length === 3) {
+        result.time = digits[0] + ':' + digits.slice(1);
+      } else {
+        result.time = digits.slice(0,2) + ':' + digits.slice(2);
+      }
+      if (timeMatch[2]) result.section = timeMatch[2].toUpperCase();
+      parts.shift();
+    }
+  }
+
+  // Detect age range at end: "34" -> "3-4", "712" -> "7-12"
+  // Look for pattern like "34" or "712" followed by optional "yrs"
+  if (parts.length >= 1) {
+    const lastIdx = parts.length - 1;
+    if (/^yrs?$/i.test(parts[lastIdx])) {
+      parts.pop(); // remove "yrs"
+    }
+    if (parts.length >= 1) {
+      const ageStr = parts[parts.length - 1];
+      const ageMatch = ageStr.match(/^(\d{1,2})(\d{1,2})$/);
+      if (ageMatch && parseInt(ageMatch[1]) < parseInt(ageMatch[2])) {
+        result.age = ageMatch[1] + '-' + ageMatch[2];
+        parts.pop();
+      }
+    }
+  }
+
+  // Remaining = program name
+  result.program = parts.join(' ');
+
+  return result;
+}
+
+/* ═══════════════════════════════════════════
+   EVAL XLS/XLSX PARSING
+   ═══════════════════════════════════════════ */
+async function parseEvalXLS(file) {
   const errEl = document.getElementById('errorMsg');
   const fileLabel = document.getElementById('dzAllFiles');
   errEl.classList.remove('show');
 
   try {
-    if (typeof pdfjsLib === 'undefined') throw new Error('PDF.js library not loaded — check internet connection');
+    if (typeof XLSX === 'undefined') throw new Error('SheetJS library not loaded — check internet connection');
     fileLabel.textContent = file.name + ' (parsing...)';
-    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
     const arrayBuf = await file.arrayBuffer();
-    const pdf = await pdfjsLib.getDocument({ data: arrayBuf }).promise;
+    const wb = XLSX.read(arrayBuf, { type: 'array' });
 
-    // Extract all text with coordinates from all pages
-    const allLines = [];
-    for (let p = 1; p <= pdf.numPages; p++) {
-      const page = await pdf.getPage(p);
-      const tc = await page.getTextContent();
+    const evalResults = [];
 
-      // Collect items with their X,Y positions
-      const items = tc.items.map(item => ({
-        text: item.str,
-        x: item.transform[4],
-        y: item.transform[5],
-        width: item.width,
-        height: item.height
-      })).filter(item => item.text.trim() !== '');
+    wb.SheetNames.forEach(sheetName => {
+      const ws = wb.Sheets[sheetName];
+      const rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' });
 
-      // Sort by Y (descending = top to bottom) then X (ascending = left to right)
-      items.sort((a, b) => {
-        const dy = b.y - a.y;
-        if (Math.abs(dy) > 5) return dy;
-        return a.x - b.x;
-      });
+      if (rows.length < 6) return; // need at least header + 1 data row
 
-      // Group into lines by Y coordinate (threshold ~5 units)
-      let currentLineY = null;
-      let currentLineItems = [];
+      // Row 0: Date info
+      const reportDateRaw = (rows[0] && rows[0][0]) ? String(rows[0][0]) : '';
 
-      items.forEach(item => {
-        if (currentLineY === null || Math.abs(item.y - currentLineY) > 5) {
-          if (currentLineItems.length > 0) {
-            allLines.push({
-              items: currentLineItems.slice(),
-              text: currentLineItems.map(i => i.text).join(' ').trim(),
-              y: currentLineY,
-              page: p
-            });
+      // Find ALL header rows — rows where col[0]="Discipline" and col[1]="Level"
+      const headerRowIndices = [];
+      for (let i = 0; i < rows.length; i++) {
+        if (rows[i] && String(rows[i][0]).trim().toLowerCase() === 'discipline' &&
+            String(rows[i][1]).trim().toLowerCase() === 'level') {
+          headerRowIndices.push(i);
+        }
+      }
+      if (headerRowIndices.length === 0) return;
+
+      // Extract student names from ALL header rows and merge
+      const allStudentNames = [];
+      const studentNameSet = new Set();
+      headerRowIndices.forEach(hIdx => {
+        const headerRow = rows[hIdx];
+        for (let c = 4; c < headerRow.length; c++) {
+          const name = String(headerRow[c]).trim();
+          if (name && !studentNameSet.has(name)) {
+            studentNameSet.add(name);
+            allStudentNames.push(name);
           }
-          currentLineItems = [item];
-          currentLineY = item.y;
-        } else {
-          currentLineItems.push(item);
         }
       });
-      if (currentLineItems.length > 0) {
-        allLines.push({
-          items: currentLineItems.slice(),
-          text: currentLineItems.map(i => i.text).join(' ').trim(),
-          y: currentLineY,
-          page: p
+      if (allStudentNames.length === 0) return;
+
+      // Build student index map: for each header group, map column positions to global student indices
+      const headerGroupMaps = [];
+      headerRowIndices.forEach(hIdx => {
+        const headerRow = rows[hIdx];
+        const groupNames = [];
+        for (let c = 4; c < headerRow.length; c++) {
+          const name = String(headerRow[c]).trim();
+          if (name) groupNames.push({ col: c, name: name });
+        }
+        const colToGlobalIdx = {};
+        groupNames.forEach(gn => {
+          colToGlobalIdx[gn.col] = allStudentNames.indexOf(gn.name);
+        });
+        headerGroupMaps.push({ startRow: hIdx, colMap: colToGlobalIdx, groupCols: groupNames.map(gn => gn.col) });
+      });
+
+      // Extract report date
+      let reportDate = '';
+      // Try "Month Day, Year" format first
+      const dateMatch2 = reportDateRaw.match(/(January|February|March|April|May|June|July|August|September|October|November|December)\s+(\d{1,2}),?\s+(\d{4})/i);
+      if (dateMatch2) {
+        const months = {january:'01',february:'02',march:'03',april:'04',may:'05',june:'06',july:'07',august:'08',september:'09',october:'10',november:'11',december:'12'};
+        const mm = months[dateMatch2[1].toLowerCase()] || '01';
+        const dd = dateMatch2[2].padStart(2,'0');
+        reportDate = `${mm}/${dd}/${dateMatch2[3]}`;
+      } else {
+        const dateMatch = reportDateRaw.match(/(\d{2}\/\d{2}\/\d{4})/);
+        if (dateMatch) reportDate = dateMatch[1];
+      }
+
+      // Parse tab name for class metadata
+      const tabInfo = parseTabName(sheetName);
+
+      // Parse data rows from ALL groups
+      const eventMap = {}; // apparatus -> { skillMap: { skillName -> { criteria: [] } } }
+      let className = '';
+
+      // Determine which header group a data row belongs to
+      function getGroupForRow(rowIdx) {
+        // Find the latest header that's before this row
+        let bestGroup = null;
+        for (let g = headerGroupMaps.length - 1; g >= 0; g--) {
+          if (headerGroupMaps[g].startRow < rowIdx) {
+            bestGroup = headerGroupMaps[g];
+            break;
+          }
+        }
+        return bestGroup || headerGroupMaps[0];
+      }
+
+      for (let r = 0; r < rows.length; r++) {
+        const row = rows[r];
+        if (!row || row.length < 4) continue;
+
+        const discipline = String(row[0]).trim();
+        const level = String(row[1]).trim();
+        const event = String(row[2]).trim();
+        const skill = String(row[3]).trim();
+
+        // Skip header rows themselves
+        if (discipline.toLowerCase() === 'discipline') continue;
+
+        // Skip footer rows
+        if (/^CLA-\d+/.test(discipline)) continue;
+        if (!event && !skill) continue;
+
+        // Skip "Puts it all together correctly 3 times in a row" criteria — maps to mastery star
+        if (/puts?\s+it\s+all\s+together/i.test(skill)) continue;
+
+        // Build class name from discipline
+        if (!className && discipline) {
+          className = discipline.replace(/^NEW\s+/i, '').trim();
+        }
+
+        if (!event) continue;
+
+        const apparatus = level;
+        const skillName = event;
+        const criterionText = skill;
+
+        if (!apparatus) continue;
+
+        if (!eventMap[apparatus]) eventMap[apparatus] = { name: apparatus, skillMap: {} };
+        const evObj = eventMap[apparatus];
+
+        if (!evObj.skillMap[skillName]) evObj.skillMap[skillName] = { name: skillName, criteria: [] };
+
+        // Determine which header group this row belongs to
+        const group = getGroupForRow(r);
+
+        // Extract scores mapped to global student indices
+        const scores = new Array(allStudentNames.length).fill(null);
+        group.groupCols.forEach(col => {
+          const globalIdx = group.colMap[col];
+          if (globalIdx === undefined) return;
+          const val = row[col];
+          if (val === 1 || val === '1') scores[globalIdx] = 1;
+          else if (val === 0 || val === '0') scores[globalIdx] = 0;
+          // else stays null
+        });
+
+        evObj.skillMap[skillName].criteria.push({
+          text: criterionText,
+          scores: scores
         });
       }
-    }
 
-    // Now parse the structure from allLines
-    const evalResults = parseEvalLines(allLines);
+      // Convert eventMap to array
+      const events = [];
+      const apparatusOrder = ['Vault', 'Bars', 'Beam', 'Floor', 'Safety'];
+      const usedKeys = new Set();
+
+      apparatusOrder.forEach(appName => {
+        const matchKey = Object.keys(eventMap).find(k => k.toLowerCase() === appName.toLowerCase());
+        if (matchKey) {
+          usedKeys.add(matchKey);
+          const evObj = eventMap[matchKey];
+          const skills = Object.values(evObj.skillMap).map(sk => ({
+            name: sk.name,
+            criteria: sk.criteria
+          }));
+          if (skills.length > 0) {
+            events.push({ name: evObj.name, skills: skills });
+          }
+        }
+      });
+
+      // Remaining events
+      Object.keys(eventMap).forEach(key => {
+        if (usedKeys.has(key)) return;
+        const evObj = eventMap[key];
+        const skills = Object.values(evObj.skillMap).map(sk => ({
+          name: sk.name,
+          criteria: sk.criteria
+        }));
+        if (skills.length > 0) {
+          events.push({ name: evObj.name, skills: skills });
+        }
+      });
+
+      if (events.length === 0) return;
+
+      // Build the xlsScoreMap for the hybrid builder
+      const xlsScoreMap = {};
+      events.forEach(ev => {
+        const evKey = ev.name.toLowerCase().trim();
+        const scoreRows = [];
+        ev.skills.forEach(sk => {
+          sk.criteria.forEach(cr => {
+            scoreRows.push(cr.scores.slice());
+          });
+          // Mastery row: 1 if ALL criteria are 1 for this student
+          const starRow = [];
+          for (let si = 0; si < allStudentNames.length; si++) {
+            let allPassed = sk.criteria.length > 0;
+            sk.criteria.forEach(cr => {
+              if (cr.scores[si] !== 1) allPassed = false;
+            });
+            starRow.push(allPassed ? 1 : 0);
+          }
+          scoreRows.push(starRow);
+        });
+        xlsScoreMap[evKey] = scoreRows;
+      });
+
+      const result = {
+        className: className || tabInfo.program || sheetName.replace(/^NEW\s+/i, '').trim(),
+        students: allStudentNames,
+        events: events,
+        reportDate: reportDate,
+        tabInfo: tabInfo,
+        _xlsScoreMap: xlsScoreMap
+      };
+
+      evalResults.push(result);
+    });
 
     if (evalResults.length === 0) {
-      // Debug output
-      const first30 = allLines.slice(0, 30).map((l, i) => `${i}: ${l.text}`).join('\n');
-      errEl.innerHTML = '<strong>No evaluation data found in PDF.</strong> PDF had ' + pdf.numPages + ' pages.<br><br>' +
-        '<strong>Debug — First 30 lines:</strong><br>' +
-        '<pre style="max-height:200px;overflow:auto;font-size:10px;background:#2a1010;padding:8px;border-radius:4px">' +
-        esc(first30) + '</pre>';
+      errEl.innerHTML = '<strong>No evaluation data found in Excel file.</strong> Make sure this is a Skill Evaluation report from iClassPro.';
       errEl.classList.add('show');
       return;
     }
@@ -756,7 +890,7 @@ async function parseEvalPDF(file) {
     parsedEvalData = evalResults;
     fileLabel.textContent = file.name + ' (' + evalResults.length + ' class' + (evalResults.length > 1 ? 'es' : '') + ' found)';
 
-    // Also try to map to internal programs for blank grid support
+    // Map to internal programs
     parsedClasses = evalResults.map(ed => {
       let program = null;
       const upper = ed.className.toUpperCase();
@@ -768,11 +902,11 @@ async function parseEvalPDF(file) {
         prettyProgram: ed.className,
         schedule: '',
         instructor: '',
-        ages: '',
+        ages: ed.tabInfo ? ed.tabInfo.age : '',
         capacity: ed.students.length,
         students: ed.students.map(s => ({ name: s })),
-        day: '',
-        time: '',
+        day: ed.tabInfo ? ed.tabInfo.day : '',
+        time: ed.tabInfo ? ed.tabInfo.time : '',
         date: ed.reportDate || '',
       };
     });
@@ -780,281 +914,9 @@ async function parseEvalPDF(file) {
     updateUI();
 
   } catch(e) {
-    errEl.innerHTML = '<strong>PDF parsing failed.</strong> ' + esc(e.message) +
-      '<br><br>If running from a local file, try:<br><code>python -m http.server 8080</code> then open <code>http://localhost:8080/index.html</code>';
+    errEl.innerHTML = '<strong>Excel parsing failed.</strong> ' + esc(e.message);
     errEl.classList.add('show');
   }
-}
-
-function parseEvalLines(allLines) {
-  const results = [];
-  const timestampRe = /^\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}$/;
-  const timestampPartialRe = /^\d{4}-\d{2}-\d{2}/;
-  const footerRe = /CLA-\d+|Page\s+\d+\s+of\s+\d+/i;
-  const scoreRe = /^[01]$/;
-  const studentNameRe = /^(.+?)\s*\((\d+)\)$/;
-  // Section header: contains " - " and " , "
-  const sectionHeaderRe = /^(.+?)\s+-\s+(.+?)\s*,\s*(\S.*)$/;
-  // Also handle the pattern: "ClassName - ProgramName , EventName"
-  // and the report title lines
-  const reportTitleRe = /^Skill Evaluation Printout/i;
-  const reportSubRe = /^Skill Report for/i;
-  // Student name line with dates: "FirstName LastName - MM/DD/YYYY"
-  const studentHeaderRe = /^(.+?)\s*-\s*\d{2}\/\d{2}\/\d{4}$/;
-
-  let currentClass = null;
-  let currentEvent = null;
-  let currentSkill = null;
-  let currentCriterion = null;
-  let studentNames = [];
-  let studentXPositions = [];
-  let reportDate = '';
-
-  // State tracking
-  let expectingStudents = false;
-  let inScoreSection = false;
-  let scoreIndex = 0;
-
-  for (let li = 0; li < allLines.length; li++) {
-    const line = allLines[li];
-    const text = line.text.trim();
-
-    // Skip empty
-    if (!text) continue;
-
-    // Skip footer lines
-    if (footerRe.test(text)) continue;
-
-    // Skip timestamp lines
-    if (timestampRe.test(text)) continue;
-    if (timestampPartialRe.test(text) && text.length <= 19) continue;
-
-    // Capture report date from title
-    if (reportTitleRe.test(text)) {
-      const dm = text.match(/(\d{2}\/\d{2}\/\d{4})/);
-      if (dm) reportDate = dm[1];
-      continue;
-    }
-    if (reportSubRe.test(text)) continue;
-
-    // Skip student-date header lines like "Leia Jessing - 03/25/2026"
-    if (studentHeaderRe.test(text)) continue;
-
-    // Check for section header: "ClassName - ProgramName , EventName"
-    const sectionMatch = text.match(sectionHeaderRe);
-    if (sectionMatch) {
-      const classNameRaw = sectionMatch[1].trim();
-      const middlePart = sectionMatch[2].trim();
-      const eventName = sectionMatch[3].trim();
-
-      // The className is the part before " - "
-      // Check if this is a new class
-      if (!currentClass || currentClass.className !== classNameRaw) {
-        // Save previous class
-        if (currentClass) {
-          finalizeClass(currentClass);
-          results.push(currentClass);
-        }
-        currentClass = {
-          className: classNameRaw,
-          students: [],
-          events: [],
-          reportDate: reportDate
-        };
-        studentNames = [];
-        studentXPositions = [];
-      }
-
-      // Start new event
-      currentEvent = { name: eventName, skills: [] };
-      currentClass.events.push(currentEvent);
-      currentSkill = null;
-      currentCriterion = null;
-      expectingStudents = true;
-      inScoreSection = false;
-      continue;
-    }
-
-    // Check for student name line: "FirstName LastName (1) FirstName LastName (2) ..."
-    if (expectingStudents && line.items.length >= 1) {
-      // Check if any item matches the student name pattern
-      const possibleStudents = [];
-      const possibleXPositions = [];
-      let fullText = text;
-
-      // Try to parse student names from individual items first
-      // Items on this line could be: "Elliana" "James" "(1)" "Raiylah" "James" "(2)" etc.
-      // Or the full text might be: "Elliana James (1) Raiylah James (2) ..."
-      const studentPattern = /([A-Z][a-z]+(?:\s+[A-Z][a-z'-]+)+)\s*\((\d+)\)/g;
-      let sm;
-      while ((sm = studentPattern.exec(fullText)) !== null) {
-        possibleStudents.push({ name: sm[1].trim(), index: parseInt(sm[2]) });
-      }
-
-      if (possibleStudents.length > 0) {
-        // We found student names on this line
-        if (currentClass && currentClass.students.length === 0) {
-          // Sort by index
-          possibleStudents.sort((a, b) => a.index - b.index);
-          currentClass.students = possibleStudents.map(s => s.name);
-
-          // Try to determine X positions for score mapping
-          // For each student name, find the X position of the "(N)" text in items
-          line.items.forEach(item => {
-            const m = item.text.match(/\((\d+)\)/);
-            if (m) {
-              studentXPositions.push(item.x);
-            }
-          });
-        }
-        expectingStudents = false;
-        inScoreSection = true;
-        continue;
-      }
-    }
-
-    // If we're in score section, check for skill names, criteria, and scores
-    if (inScoreSection && currentEvent) {
-      // Is this a pure score line?
-      if (scoreRe.test(text)) {
-        // This is a score — assign to current criterion
-        if (currentCriterion) {
-          currentCriterion.scores.push(parseInt(text));
-        }
-        continue;
-      }
-
-      // Is this a score line with multiple scores? (sometimes multiple items on one Y line)
-      // Check if ALL items on this line are scores or timestamps
-      const lineScoresOnly = line.items.every(item => {
-        const t = item.text.trim();
-        return scoreRe.test(t) || timestampPartialRe.test(t) || t === '';
-      });
-      if (lineScoresOnly && line.items.some(item => scoreRe.test(item.text.trim()))) {
-        if (currentCriterion) {
-          line.items.forEach(item => {
-            const t = item.text.trim();
-            if (scoreRe.test(t)) {
-              currentCriterion.scores.push(parseInt(t));
-            }
-          });
-        }
-        continue;
-      }
-
-      // Check if this could be a new section header (new event)
-      if (sectionHeaderRe.test(text)) {
-        // Will be handled in the next iteration
-        li--;
-        inScoreSection = false;
-        continue;
-      }
-
-      // Not a score, not a timestamp, not a footer — could be skill name or criterion
-      // Heuristic: if we don't have a current skill, or if this looks like a "bold header" (skill name),
-      // treat it as a new skill. In the PDF, skill names tend to be standalone lines
-      // that aren't criteria (they're shorter, don't end with periods usually).
-
-      // Check if this is a "Puts it all together correctly 3 times in a row" type line
-      // These are criteria lines.
-
-      // Strategy: The first non-score text after students is the skill name.
-      // Subsequent non-score texts are criteria.
-      // When we hit a new batch of scores after criteria, the next non-score text is a new skill.
-
-      if (!currentSkill) {
-        // First text = skill name
-        currentSkill = { name: text, criteria: [] };
-        currentEvent.skills.push(currentSkill);
-        continue;
-      }
-
-      // If the current skill has criteria and the last criterion has scores,
-      // then this new text line could be either:
-      // 1. Another criterion for the same skill
-      // 2. A new skill name
-      // Heuristic: if the previous criterion collected scores, and this is new text,
-      // check if there's another text line right after — if so, this might be a new skill.
-      // Actually, the simplest approach: criteria always follow their skill,
-      // and scores follow criteria. A new skill appears after all criteria+scores for the previous skill.
-
-      // Better heuristic: look ahead. If the next non-empty, non-timestamp, non-footer line is a score,
-      // this is a criterion. If the next such line is text, this could be a skill name or criterion.
-
-      // Simplest approach: if the last criterion has received scores equal to or more than the
-      // number of students, we've moved past it. If we get new text, it could be a new skill
-      // if the NEXT text is also non-score (meaning this text is a skill header and next is criterion).
-
-      // Most reliable: check if this text line is followed by score lines.
-      // Look ahead to see if scores follow soon.
-      let hasScoresFollowing = false;
-      for (let peek = li + 1; peek < allLines.length && peek <= li + 3; peek++) {
-        const peekText = allLines[peek].text.trim();
-        if (scoreRe.test(peekText)) { hasScoresFollowing = true; break; }
-        if (footerRe.test(peekText) || timestampRe.test(peekText)) continue;
-        break;
-      }
-
-      if (hasScoresFollowing) {
-        // This is a criterion (scores follow it)
-        currentCriterion = { text: text, scores: [] };
-        currentSkill.criteria.push(currentCriterion);
-      } else {
-        // No scores immediately following — this is a new skill name
-        // But first, check: maybe this is the LAST criterion with no scores
-        // (some criteria at the end might not have any scores)
-        // Look further ahead — if the next non-blank line is another text (not score),
-        // then this was a new skill name.
-        let nextIsText = false;
-        for (let peek = li + 1; peek < allLines.length && peek <= li + 5; peek++) {
-          const peekText = allLines[peek].text.trim();
-          if (!peekText) continue;
-          if (footerRe.test(peekText) || timestampRe.test(peekText) || timestampPartialRe.test(peekText)) continue;
-          if (scoreRe.test(peekText)) break;
-          if (sectionHeaderRe.test(peekText)) { nextIsText = true; break; }
-          nextIsText = true;
-          break;
-        }
-
-        if (nextIsText) {
-          // New skill
-          currentSkill = { name: text, criteria: [] };
-          currentEvent.skills.push(currentSkill);
-        } else {
-          // Criterion with no scores (or end of section)
-          currentCriterion = { text: text, scores: [] };
-          currentSkill.criteria.push(currentCriterion);
-        }
-      }
-    }
-  }
-
-  // Save last class
-  if (currentClass) {
-    finalizeClass(currentClass);
-    results.push(currentClass);
-  }
-
-  return results;
-}
-
-function finalizeClass(classData) {
-  // Pad criterion scores to match student count
-  const numStudents = classData.students.length;
-  classData.events.forEach(ev => {
-    ev.skills.forEach(sk => {
-      sk.criteria.forEach(cr => {
-        // Pad with nulls if fewer scores than students
-        while (cr.scores.length < numStudents) {
-          cr.scores.push(null);
-        }
-        // Truncate if somehow more
-        if (cr.scores.length > numStudents) {
-          cr.scores = cr.scores.slice(0, numStudents);
-        }
-      });
-    });
-  });
 }
 
 /* ═══════════════════════════════════════════
@@ -1097,32 +959,25 @@ function generatePages(mode) {
 
   if (mode === 'eval') {
     if (!parsedEvalData || parsedEvalData.length === 0) {
-      alert('Upload a Skill Evaluation PDF first.');
+      alert('Upload a Skill Evaluation XLS file first.');
       return;
     }
     parsedEvalData.forEach(evalData => {
-      preview.innerHTML += buildEvalPageFromPDF(evalData, selectedGym);
+      const pages = buildStarChartPages(evalData, selectedGym);
+      pages.forEach(p => { preview.innerHTML += p; });
     });
   } else if (mode === 'blank') {
-    // Use SKILL_DATA for blank grids — need parsedClasses or at least program info
     if (parsedClasses.length > 0) {
       parsedClasses.forEach(cls => {
-        preview.innerHTML += buildEvalPage(cls);
+        preview.innerHTML += buildBlankEvalPage(cls);
       });
     } else {
-      alert('Upload a Skill Evaluation PDF first (needed for class and student info).');
+      alert('Upload a Skill Evaluation XLS file first (needed for class and student info).');
       return;
     }
   }
 
-  // Attach click handlers for eval cells
-  preview.querySelectorAll('[data-click]').forEach(el => {
-    el.addEventListener('click', function() {
-      if (this.classList.contains('fd')) return;
-      this.classList.toggle('on');
-    });
-  });
-
+  document.getElementById('downloadPdfWrap').style.display = 'block';
   preview.scrollIntoView({ behavior: 'smooth' });
 }
 
@@ -1136,148 +991,251 @@ function eventToCss(eventName) {
   if (lower.includes('beam')) return 'e';
   if (lower.includes('floor')) return 'f';
   if (lower.includes('safety')) return 's';
-  // Default to floor styling for unknown events
   return 'f';
 }
 
 /* ═══════════════════════════════════════════
-   BUILD EVAL GRID PAGE FROM PDF DATA
+   STAR CHART PAGE BUILDER (NEW LAYOUT)
+   Builds pages using final-layout-template.html design
+   Splits students across multiple pages (6 per page)
    ═══════════════════════════════════════════ */
-function buildEvalPageFromPDF(evalData, gymCode) {
+function buildStarChartPages(evalData, gymCode) {
   const g = GYMS[gymCode];
+  const pc = g.c1;
+  const MAX_STU = 6;
 
-  // Clean student names (strip "(N)" suffix)
-  const studs = evalData.students.map(s => s.replace(/\s*\(\d+\)\s*$/, '')).slice(0, 8);
-  while (studs.length < 8) studs.push('');
-
-  const totalCols = 2 + studs.length; // skill + criteria + students
-
-  let h = '<div class="page">';
-
-  // Header
-  h += '<div class="hdr">';
-  h += `<div class="hdr-badge">${gymCode}</div>`;
-  h += '<div class="hm">';
-  h += `<div class="gn">${esc(g.name)}</div>`;
-  h += `<div class="et">${esc(evalData.className)} Skill Evaluation</div>`;
-  h += '</div>';
-  h += '<div class="hr">';
-  h += `<div class="fr"><span class="fl">Date:</span><span class="fv">${esc(evalData.reportDate)}</span></div>`;
-  h += `<div class="fr"><span class="fl">Coach:</span><span class="fv"></span></div>`;
-  h += '</div></div>';
-
-  // Class bar
-  h += '<div class="cbar">';
-  h += `<span>${esc(evalData.className)}</span>`;
-  const eventNames = evalData.events.map(e => e.name).join(' / ');
-  if (eventNames) {
-    h += `<span class="sep">&middot;</span><span>${esc(eventNames)}</span>`;
+  // Detect program
+  let program = null;
+  const upper = evalData.className.toUpperCase();
+  for (const [key, val] of Object.entries(PROGRAM_MAP)) {
+    if (upper.includes(key)) { program = val; break; }
   }
-  h += `<span class="sep">&middot;</span><span>${esc(g.name)}</span>`;
+  const skillData = program ? SKILL_DATA[program] : null;
+  window._lastParsedProgram = program || evalData.className;
+
+  // Students from XLS
+  const allStudents = evalData.students.map(s => s.replace(/\s*\(\d+\)\s*$/, ''));
+  const pdfScoreMap = evalData._xlsScoreMap || {};
+
+  // ═══ SCORE VERIFICATION LOGGING ═══
+  console.log(`\n${'='.repeat(60)}\n=== SCORE VERIFICATION ===\nClass: ${evalData.className}\nStudents: ${allStudents.join(', ')}\n${'='.repeat(60)}`);
+  console.log('\n--- RAW xlsScoreMap DATA ---');
+  Object.entries(pdfScoreMap).forEach(([evName, rows]) => {
+    console.log(`\n  EVENT: "${evName}" (${rows.length} score rows)`);
+    rows.forEach((row, ri) => {
+      const rowStr = row.map((s, si) => {
+        if (si >= allStudents.length) return '';
+        return s === 1 ? '1' : s === 0 ? '0' : '_';
+      }).filter(x => x !== '').join(' ');
+      console.log(`    Row ${ri}: [${rowStr}]`);
+    });
+  });
+
+  if (skillData) {
+    console.log('\n--- SKILL-BY-SKILL BREAKDOWN ---');
+    skillData.events.forEach(ev => {
+      const evKey = ev.name.toLowerCase().trim();
+      const scores = pdfScoreMap[evKey] || [];
+      let critIdx = 0;
+      console.log(`\n${ev.name}`);
+      ev.skills.forEach(sk => {
+        const numCrit = sk.crit.length;
+        const skillName = sk.name.replace(/<br>/g, ' ').replace(/<[^>]+>/g, '');
+        const stuDisplays = allStudents.map((name, si) => {
+          let checks = '';
+          for (let ci = 0; ci < numCrit; ci++) {
+            const pdfRow = scores[critIdx + ci] || [];
+            const score = si < pdfRow.length ? pdfRow[si] : null;
+            checks += score === 1 ? '\u25A0' : '\u25A1';
+          }
+          const starRow = scores[critIdx + numCrit] || [];
+          const starScore = si < starRow.length ? starRow[si] : null;
+          const star = starScore === 1 ? '\u2605' : '\u2606';
+          return `${name.split(' ')[0]}: ${checks}${star}`;
+        });
+        console.log(`  ${skillName}\n    ${stuDisplays.join(' | ')}`);
+        critIdx += numCrit + 1;
+      });
+    });
+    console.log(`\n${'='.repeat(60)}\n`);
+  }
+
+  // Split students into groups of MAX_STU
+  const pages = [];
+  const numPages = Math.max(1, Math.ceil(allStudents.length / MAX_STU));
+
+  for (let pageIdx = 0; pageIdx < numPages; pageIdx++) {
+    const startStu = pageIdx * MAX_STU;
+    const pageStudents = allStudents.slice(startStu, startStu + MAX_STU);
+    // Pad to MAX_STU with empty strings for write-in columns
+    while (pageStudents.length < MAX_STU) pageStudents.push('');
+
+    const useSkillData = skillData; // use SKILL_DATA layout if available
+    const eventsToRender = useSkillData ? useSkillData.events : evalData.events;
+
+    pages.push(buildOnePage(eventsToRender, pageStudents, startStu, evalData, gymCode, useSkillData, pdfScoreMap));
+  }
+
+  return pages;
+}
+
+function buildOnePage(eventsToRender, pageStudents, startStuIdx, evalData, gymCode, useSkillData, scoreMap) {
+  const g = GYMS[gymCode];
+  const pc = g.c1;
+  const MAX_STU = 6;
+  const tabInfo = evalData.tabInfo || {};
+
+  // Build subtitle line
+  const subtitleParts = [];
+  if (evalData.className) subtitleParts.push(evalData.className.toUpperCase());
+  if (tabInfo.day && tabInfo.time) subtitleParts.push(tabInfo.day.toUpperCase() + ' ' + tabInfo.time);
+  subtitleParts.push('SKILLS & STARS EVALUATION');
+  if (evalData.reportDate) subtitleParts.push(evalData.reportDate);
+
+  let h = '<div class="page" style="font-family:Arial,Helvetica,sans-serif;color:#262626;background:white;-webkit-print-color-adjust:exact;print-color-adjust:exact;display:flex;flex-direction:column">';
+
+  // ─── Header ───
+  h += `<div style="display:flex;align-items:flex-end;justify-content:space-between;padding-bottom:2px;border-bottom:2px solid ${pc};margin-bottom:2px">`;
+  h += `<div style="display:flex;align-items:center;gap:10px">`;
+  h += `<div style="background:${pc};color:#fff;font-weight:900;font-size:11pt;padding:4px 10px;letter-spacing:1px">${esc(gymCode)}</div>`;
+  h += `<div>`;
+  h += `<div style="font-size:12pt;font-weight:700">${esc(g.name)}</div>`;
+  h += `<div style="font-size:7pt;color:${pc};font-weight:700;letter-spacing:.05em">${subtitleParts.join(' \u00b7 ')}</div>`;
+  h += `</div></div>`;
+  h += `<div style="font-size:7pt;color:#444">Coach: <span style="display:inline-block;width:90px;border-bottom:0.75px solid #999"></span></div>`;
   h += '</div>';
 
-  // Legend
-  h += '<div class="leg">';
-  h += '<div class="li"><span class="lc" style="background:var(--c1);border-color:var(--c1)"></span><span>= Earned (from iClassPro)</span></div>';
-  h += '<div class="li"><span class="lc"></span><span>= Not yet earned</span></div>';
-  h += '<div class="li"><span class="lc" style="border-style:dashed;border-color:#ccc"></span><span>= Not evaluated</span></div>';
+  // ─── Legend bar ───
+  h += '<div style="display:flex;align-items:center;gap:14px;margin-bottom:2px;padding:1px 8px;background:#262626;border-radius:2px;font-size:6.5pt;color:#d0d0d8">';
+  h += '<strong style="color:#fff;margin-right:2px">KEY:</strong>';
+  h += `<div style="display:flex;align-items:center;gap:4px;white-space:nowrap"><span style="font-size:9pt;color:transparent;-webkit-text-stroke:1.2px #bbb">\u2605</span> not earned</div>`;
+  h += `<div style="display:flex;align-items:center;gap:4px;white-space:nowrap"><span style="font-size:9pt;color:${pc}">\u2605</span> criterion passed</div>`;
+  h += '<div style="width:0.5px;height:12px;background:#555"></div>';
+  h += `<div style="display:flex;align-items:center;gap:4px;white-space:nowrap"><span style="font-size:10pt;color:transparent;-webkit-text-stroke:1.5px #bbb">\u2605</span> not mastered</div>`;
+  h += `<div style="display:flex;align-items:center;gap:4px;white-space:nowrap"><span style="font-size:10pt;color:#FFD700">\u2605</span> MASTERED &mdash; all criteria 3&times; in a row</div>`;
   h += '</div>';
 
-  // Table
-  h += '<table class="tbl">';
-  h += '<colgroup>';
-  h += '<col style="width:7%">';   // skill name
-  h += '<col style="width:29%">';  // criteria
-  studs.forEach(() => { h += '<col style="width:8%">'; });
+  // ─── Table ───
+  const totalCols = 1 + MAX_STU;
+  h += '<table style="width:100%;border-collapse:collapse;table-layout:fixed;flex:1">';
+  h += '<colgroup><col style="width:30%">';
+  for (let i = 0; i < MAX_STU; i++) h += `<col style="width:${(70/MAX_STU).toFixed(2)}%">`;
   h += '</colgroup>';
 
-  // Header row — student names
-  h += '<thead><tr class="col-hdr">';
-  h += '<th class="ch-skill">Skill</th>';
-  h += '<th class="ch-crit">Criteria</th>';
-  studs.forEach(name => {
-    const blank = !name;
-    h += `<th class="ch-stu${blank ? ' bk' : ''}" style="padding:2pt 1pt">`;
+  // ─── Table header: student names ───
+  h += '<thead><tr>';
+  h += '<th style="border:0.5px solid #d0d0d8;padding:2px 3px;text-align:left;font-weight:400;font-size:6.5pt;color:#888;height:18px;vertical-align:bottom">Skill / Criteria</th>';
+  pageStudents.forEach((name, si) => {
+    const shade = si % 2 === 1 ? ' col-shade' : '';
+    const thStyle = `border:0.5px solid #d0d0d8;padding:2px 3px;text-align:center;vertical-align:bottom;font-size:6.5pt;font-weight:700;height:18px;color:#262626`;
     if (name) {
       const parts = name.trim().split(/\s+/);
       const first = parts[0] || '';
       const last = parts.slice(1).join(' ') || '';
-      h += `<span class="sn"><span class="first">${esc(first)}</span><span class="last">${esc(last)}</span></span>`;
+      h += `<th class="${shade}" style="${thStyle}"><span style="display:block;font-size:6.5pt;font-weight:700">${esc(first)}</span><span style="display:block;font-size:5.5pt;color:#888">${esc(last)}</span></th>`;
     } else {
-      h += '<span class="sn new"></span>';
+      h += `<th class="${shade}" style="${thStyle}"><span style="display:block;border-bottom:1px solid #262626;width:90%;margin:0 auto;height:14px"></span></th>`;
     }
-    h += '</th>';
   });
-  h += '</tr></thead>';
+  h += '</tr></thead><tbody>';
 
-  // Body
-  h += '<tbody>';
-  evalData.events.forEach(ev => {
-    const cssCls = eventToCss(ev.name);
+  // ─── Body: events and skills ───
+  eventsToRender.forEach(ev => {
+    // Determine event key and score data
+    const evName = useSkillData ? ev.name : ev.name;
+    const evKey = evName.toLowerCase().trim();
+    const evScores = scoreMap[evKey] || [];
+    let critIdx = 0;
 
-    // Event divider
-    h += `<tr class="evd ${cssCls}"><td colspan="${totalCols}">${esc(ev.name.toUpperCase())}</td></tr>`;
+    // Event section band
+    h += `<tr><td colspan="${totalCols}" style="background:${pc};color:#fff;font-size:6.5pt;font-weight:700;letter-spacing:.14em;padding:1px 6px;border:none">${esc(evName)}</td></tr>`;
 
-    ev.skills.forEach(sk => {
-      h += `<tr class="sk ${cssCls}">`;
+    const skills = useSkillData ? ev.skills : ev.skills;
 
-      // Skill name
-      h += `<td class="td-sk" style="text-align:center;padding:2pt 2pt;font-size:7pt;line-height:1.2;font-weight:600">${esc(sk.name)}</td>`;
+    skills.forEach(sk => {
+      const numCrit = useSkillData ? sk.crit.length : sk.criteria.length;
+      const critTexts = useSkillData ? sk.crit : sk.criteria.map(c => c.text);
+      const skillName = (sk.name || '').replace(/<br>/g, ' ').replace(/<[^>]+>/g, '');
 
-      // Criteria column
-      h += '<td class="td-c" style="text-align:left;padding:1pt 3pt;font-size:6pt;line-height:1.25">';
-      h += sk.criteria.map((cr, i) => `<span class="cnum" style="font-size:6pt">\u2605${i + 1}</span> ${esc(cr.text)}`).join('<br>');
+      // ── Skill row ──
+      h += '<tr>';
+
+      // Left: skill cell with title bar + criteria lines
+      h += '<td style="border:0.5px solid #d0d0d8;padding:0;vertical-align:top">';
+      // Title bar
+      h += '<div class="t-dark" style="display:flex;align-items:center;padding:2px 6px;height:15px;min-height:15px;max-height:15px;border-bottom:0.5px solid #d0d0d8;overflow:hidden">';
+      h += `<span style="font-weight:700;font-size:6.5pt;color:#fff">${esc(skillName)}</span>`;
+      h += '<span style="font-size:5.5pt;font-weight:700;color:#d0d0d8;white-space:nowrap;margin-left:auto;padding-left:4px">\u2606 fill when mastered 3\u00d7</span>';
+      h += '</div>';
+      // Criteria lines
+      critTexts.forEach((c, ci) => {
+        const bgClass = ci % 2 === 0 ? 'c-dark1' : 'c-dark2';
+        h += `<div class="${bgClass}" style="display:flex;align-items:center;padding:0 6px;min-height:11px;font-size:6pt;color:#262626;border-bottom:${ci < numCrit - 1 ? '0.5px solid #d0d0d8' : 'none'}">${esc(c)}</div>`;
+      });
       h += '</td>';
 
       // Student cells
-      studs.forEach((name, si) => {
+      pageStudents.forEach((name, si) => {
         const blank = !name;
-        const numCrit = sk.criteria.length;
-        h += '<td class="td-st" style="padding:1.5pt 0">';
-        h += '<div class="cell-row" style="gap:2.5pt;padding:1pt 1pt">';
+        const shade = si % 2 === 1 ? ' col-shade' : '';
+        const globalStuIdx = startStuIdx + si;
 
-        for (let ci = 0; ci < numCrit; ci++) {
-          const score = sk.criteria[ci] && si < sk.criteria[ci].scores.length ? sk.criteria[ci].scores[si] : null;
-          if (blank) {
-            h += '<span class="c fd" style="width:9pt;height:9pt"></span>';
-          } else if (score === 1) {
-            h += '<span class="c on" style="width:9pt;height:9pt" data-click="1"></span>';
-          } else if (score === 0) {
-            h += '<span class="c" style="width:9pt;height:9pt" data-click="1"></span>';
-          } else {
-            // null = not evaluated — dashed border
-            h += '<span class="c" style="width:9pt;height:9pt;border-style:dashed;border-color:#ccc" data-click="1"></span>';
-          }
-        }
+        h += `<td class="${shade}" style="border:0.5px solid #d0d0d8;padding:0;vertical-align:top;text-align:center">`;
+        h += '<div style="display:flex;flex-direction:column;height:100%">';
 
-        // Star
-        const starClass = blank ? 's fd' : 's';
-        const remainder = numCrit % 3;
-        // Check if all criteria are scored 1 for this student
+        // Check mastery: all criteria earned AND the "puts it all together" row (star row)
         let allEarned = !blank && numCrit > 0;
         for (let ci = 0; ci < numCrit; ci++) {
-          const sc = sk.criteria[ci] && si < sk.criteria[ci].scores.length ? sk.criteria[ci].scores[si] : null;
-          if (sc !== 1) { allEarned = false; break; }
+          const row = evScores[critIdx + ci] || [];
+          const score = globalStuIdx < row.length ? row[globalStuIdx] : null;
+          if (score !== 1) allEarned = false;
         }
-        const starOn = allEarned ? ' on' : '';
+        // Check star row (mastery from XLS — "puts it all together" criterion)
+        const starRow = evScores[critIdx + numCrit] || [];
+        const starScore = globalStuIdx < starRow.length ? starRow[globalStuIdx] : null;
+        const mastered = (starScore === 1) && allEarned;
 
-        if (remainder === 0) {
-          h += `<span class="${starClass}${starOn} s-center" style="font-size:13pt" data-click="1">\u2605</span>`;
+        // Mastery star in title bar
+        h += '<div class="t-dark" style="display:flex;align-items:center;justify-content:center;height:15px;min-height:15px;max-height:15px;flex:none;border-bottom:0.5px solid #d0d0d8;overflow:hidden;flex-direction:column;justify-content:center">';
+        if (blank) {
+          h += '<span class="m-not">\u2605</span>';
+        } else if (mastered) {
+          h += '<span class="m-earned">\u2605</span>';
         } else {
-          h += `<span class="${starClass}${starOn}" style="font-size:13pt" data-click="1">\u2605</span>`;
+          h += '<span class="m-not">\u2605</span>';
+        }
+        h += '</div>';
+
+        // Criteria star rows
+        for (let ci = 0; ci < numCrit; ci++) {
+          const bgClass = ci % 2 === 0 ? 'c-dark1' : 'c-dark2';
+          const row = evScores[critIdx + ci] || [];
+          const score = globalStuIdx < row.length ? row[globalStuIdx] : null;
+
+          h += `<div class="${bgClass}" style="display:flex;align-items:center;justify-content:center;min-height:11px;flex:1;border-bottom:${ci < numCrit - 1 ? '0.5px solid #d0d0d8' : 'none'}">`;
+          if (blank) {
+            h += '<span class="s-not">\u2605</span>';
+          } else if (score === 1) {
+            h += `<span class="s-earned" style="color:${pc}">\u2605</span>`;
+          } else {
+            h += '<span class="s-not">\u2605</span>';
+          }
+          h += '</div>';
         }
 
         h += '</div></td>';
       });
 
+      critIdx += numCrit + 1; // +1 for the mastery/star row
       h += '</tr>';
     });
   });
   h += '</tbody></table>';
 
-  // Footer
-  h += '<div class="footer" style="padding-top:1.5pt">';
-  h += `<div class="pf">${esc(evalData.className)} Skill Evaluation \u00b7 ${esc(g.name)} \u00b7 ${esc(evalData.reportDate)}</div>`;
+  // ─── Footer ───
+  h += '<div style="margin-top:3px;font-size:6pt;color:#aaa;display:flex;justify-content:space-between;border-top:0.5px solid #d0d0d8;padding-top:2px">';
+  h += `<span>\u2605 <span style="color:${pc}">&bull;</span> = criterion passed &middot; \u2605 <span style="color:#FFD700">&bull;</span> = all criteria mastered 3&times; in a row</span>`;
+  h += `<span>Skills &amp; Stars \u00b7 ${esc(evalData.className)} \u00b7 ${esc(g.name)}</span>`;
   h += '</div>';
 
   h += '</div>';
@@ -1285,107 +1243,113 @@ function buildEvalPageFromPDF(evalData, gymCode) {
 }
 
 /* ═══════════════════════════════════════════
-   BUILD EVAL GRID PAGE (BLANK — from SKILL_DATA)
+   BUILD BLANK EVAL GRID PAGE (from SKILL_DATA)
    ═══════════════════════════════════════════ */
-function buildEvalPage(cls) {
+function buildBlankEvalPage(cls) {
   const g = GYMS[selectedGym];
   const skillData = SKILL_DATA[cls.program];
   if (!skillData) return '';
+  const pc = g.c1;
+  const MAX_STU = 6;
 
-  const studs = cls.students.map(s => {
-    // Handle "First Last" format from eval PDF (not "Last, First")
-    return s.name || '';
-  }).slice(0, 8);
-  while (studs.length < 8) studs.push('');
+  const studs = cls.students.map(s => s.name || '').slice(0, MAX_STU);
+  while (studs.length < MAX_STU) studs.push('');
 
-  const totalCols = 2 + studs.length;
+  const totalCols = 1 + MAX_STU;
 
-  let h = '<div class="page">';
+  let h = '<div class="page" style="font-family:Arial,Helvetica,sans-serif;color:#262626;background:white;-webkit-print-color-adjust:exact;print-color-adjust:exact;display:flex;flex-direction:column">';
 
   // Header
-  h += '<div class="hdr">';
-  h += `<div class="hdr-badge">${selectedGym}</div>`;
-  h += '<div class="hm">';
-  h += `<div class="gn">${esc(g.name)}</div>`;
-  h += `<div class="et">${esc(cls.prettyProgram)} Star Chart Evaluation</div>`;
-  h += '</div>';
-  h += '<div class="hr">';
-  h += `<div class="fr"><span class="fl">Date:</span><span class="fv">${esc(cls.date)}</span></div>`;
-  h += `<div class="fr"><span class="fl">Coach:</span><span class="fv">${esc(cls.instructor)}</span></div>`;
-  h += '</div></div>';
+  const subtitleParts = [];
+  if (cls.prettyProgram) subtitleParts.push(cls.prettyProgram.toUpperCase());
+  if (cls.day && cls.time) subtitleParts.push(cls.day.toUpperCase() + ' ' + cls.time);
+  subtitleParts.push('SKILLS & STARS EVALUATION');
+  if (cls.date) subtitleParts.push(cls.date);
 
-  // Class bar
-  h += '<div class="cbar">';
-  h += `<span>${esc(cls.prettyProgram)}</span><span class="sep">&middot;</span>`;
-  h += `<span>${esc(cls.ages)}</span><span class="sep">&middot;</span>`;
-  h += `<span>${esc(cls.day)}</span><span class="sep">&middot;</span>`;
-  h += `<span>${esc(cls.time)}</span><span class="sep">&middot;</span>`;
-  h += `<span>${esc(g.name)}</span>`;
+  h += `<div style="display:flex;align-items:flex-end;justify-content:space-between;padding-bottom:2px;border-bottom:2px solid ${pc};margin-bottom:2px">`;
+  h += `<div style="display:flex;align-items:center;gap:10px">`;
+  h += `<div style="background:${pc};color:#fff;font-weight:900;font-size:11pt;padding:4px 10px;letter-spacing:1px">${esc(selectedGym)}</div>`;
+  h += `<div>`;
+  h += `<div style="font-size:12pt;font-weight:700">${esc(g.name)}</div>`;
+  h += `<div style="font-size:7pt;color:${pc};font-weight:700;letter-spacing:.05em">${subtitleParts.join(' \u00b7 ')}</div>`;
+  h += `</div></div>`;
+  h += `<div style="font-size:7pt;color:#444">Coach: <span style="display:inline-block;width:90px;border-bottom:0.75px solid #999"></span></div>`;
   h += '</div>';
 
-  // Legend
-  h += '<div class="leg">';
-  h += '<div class="li"><span class="lc"></span><span>\u25CB = mark criterion when observed</span></div>';
-  h += '<div class="li"><span style="font-size:10pt;color:var(--c1);line-height:1">\u2605</span><span>= ALL criteria together \u2014 3\u00d7 to master</span></div>';
-  h += '<div class="lref">Full criteria: Reference Sheet</div>';
+  // Legend bar
+  h += '<div style="display:flex;align-items:center;gap:14px;margin-bottom:2px;padding:1px 8px;background:#262626;border-radius:2px;font-size:6.5pt;color:#d0d0d8">';
+  h += '<strong style="color:#fff;margin-right:2px">KEY:</strong>';
+  h += `<div style="display:flex;align-items:center;gap:4px;white-space:nowrap"><span style="font-size:9pt;color:transparent;-webkit-text-stroke:1.2px #bbb">\u2605</span> not earned</div>`;
+  h += `<div style="display:flex;align-items:center;gap:4px;white-space:nowrap"><span style="font-size:9pt;color:${pc}">\u2605</span> criterion passed</div>`;
+  h += '<div style="width:0.5px;height:12px;background:#555"></div>';
+  h += `<div style="display:flex;align-items:center;gap:4px;white-space:nowrap"><span style="font-size:10pt;color:transparent;-webkit-text-stroke:1.5px #bbb">\u2605</span> not mastered</div>`;
+  h += `<div style="display:flex;align-items:center;gap:4px;white-space:nowrap"><span style="font-size:10pt;color:#FFD700">\u2605</span> MASTERED &mdash; all criteria 3&times; in a row</div>`;
   h += '</div>';
 
   // Table
-  h += '<table class="tbl">';
-  h += '<colgroup>';
-  h += '<col style="width:7%">';
-  h += '<col style="width:29%">';
-  studs.forEach(() => { h += '<col style="width:8%">'; });
+  h += '<table style="width:100%;border-collapse:collapse;table-layout:fixed;flex:1">';
+  h += '<colgroup><col style="width:30%">';
+  for (let i = 0; i < MAX_STU; i++) h += `<col style="width:${(70/MAX_STU).toFixed(2)}%">`;
   h += '</colgroup>';
 
-  // Header row
-  h += '<thead><tr class="col-hdr">';
-  h += '<th class="ch-skill">Skill</th>';
-  h += '<th class="ch-crit">Star Criteria</th>';
-  studs.forEach(name => {
-    const blank = !name;
-    h += `<th class="ch-stu${blank ? ' bk' : ''}" style="padding:2pt 1pt">`;
+  // Table header
+  h += '<thead><tr>';
+  h += '<th style="border:0.5px solid #d0d0d8;padding:2px 3px;text-align:left;font-weight:400;font-size:6.5pt;color:#888;height:18px;vertical-align:bottom">Skill / Criteria</th>';
+  studs.forEach((name, si) => {
+    const shade = si % 2 === 1 ? ' col-shade' : '';
+    const thStyle = `border:0.5px solid #d0d0d8;padding:2px 3px;text-align:center;vertical-align:bottom;font-size:6.5pt;font-weight:700;height:18px;color:#262626`;
     if (name) {
       const parts = name.trim().split(/\s+/);
       const first = parts[0] || '';
       const last = parts.slice(1).join(' ') || '';
-      h += `<span class="sn"><span class="first">${esc(first)}</span><span class="last">${esc(last)}</span></span>`;
+      h += `<th class="${shade}" style="${thStyle}"><span style="display:block;font-size:6.5pt;font-weight:700">${esc(first)}</span><span style="display:block;font-size:5.5pt;color:#888">${esc(last)}</span></th>`;
     } else {
-      h += '<span class="sn new"></span>';
+      h += `<th class="${shade}" style="${thStyle}"><span style="display:block;border-bottom:1px solid #262626;width:90%;margin:0 auto;height:14px"></span></th>`;
     }
-    h += '</th>';
   });
-  h += '</tr></thead>';
+  h += '</tr></thead><tbody>';
 
   // Body
-  h += '<tbody>';
   skillData.events.forEach(ev => {
-    h += `<tr class="evd ${ev.cls}"><td colspan="${totalCols}">${ev.name}</td></tr>`;
+    h += `<tr><td colspan="${totalCols}" style="background:${pc};color:#fff;font-size:6.5pt;font-weight:700;letter-spacing:.14em;padding:1px 6px;border:none">${esc(ev.name)}</td></tr>`;
 
     ev.skills.forEach(sk => {
-      h += `<tr class="sk ${ev.cls}">`;
-      h += `<td class="td-sk" style="text-align:center;padding:2pt 2pt;font-size:7pt;line-height:1.2;font-weight:600">${sk.name}</td>`;
+      const numCrit = sk.crit.length;
+      const skillName = (sk.name || '').replace(/<br>/g, ' ').replace(/<[^>]+>/g, '');
 
-      h += '<td class="td-c" style="text-align:left;padding:1pt 3pt;font-size:6pt;line-height:1.25">';
-      h += sk.crit.map((c, i) => `<span class="cnum" style="font-size:6pt">\u2605${i + 1}</span> ${esc(c)}`).join('<br>');
+      h += '<tr>';
+
+      // Skill cell
+      h += '<td style="border:0.5px solid #d0d0d8;padding:0;vertical-align:top">';
+      h += '<div class="t-dark" style="display:flex;align-items:center;padding:2px 6px;height:15px;min-height:15px;max-height:15px;border-bottom:0.5px solid #d0d0d8;overflow:hidden">';
+      h += `<span style="font-weight:700;font-size:6.5pt;color:#fff">${esc(skillName)}</span>`;
+      h += '<span style="font-size:5.5pt;font-weight:700;color:#d0d0d8;white-space:nowrap;margin-left:auto;padding-left:4px">\u2606 fill when mastered 3\u00d7</span>';
+      h += '</div>';
+      sk.crit.forEach((c, ci) => {
+        const bgClass = ci % 2 === 0 ? 'c-dark1' : 'c-dark2';
+        h += `<div class="${bgClass}" style="display:flex;align-items:center;padding:0 6px;min-height:11px;font-size:6pt;color:#262626;border-bottom:${ci < numCrit - 1 ? '0.5px solid #d0d0d8' : 'none'}">${esc(c)}</div>`;
+      });
       h += '</td>';
 
-      studs.forEach(name => {
+      // Student cells — all blank
+      studs.forEach((name, si) => {
         const blank = !name;
-        const numCrit = sk.crit.length;
-        h += '<td class="td-st" style="padding:1.5pt 0">';
-        h += '<div class="cell-row" style="gap:2.5pt;padding:1pt 1pt">';
+        const shade = si % 2 === 1 ? ' col-shade' : '';
 
+        h += `<td class="${shade}" style="border:0.5px solid #d0d0d8;padding:0;vertical-align:top;text-align:center">`;
+        h += '<div style="display:flex;flex-direction:column;height:100%">';
+
+        // Mastery star
+        h += '<div class="t-dark" style="display:flex;align-items:center;justify-content:center;height:15px;min-height:15px;max-height:15px;flex:none;border-bottom:0.5px solid #d0d0d8;overflow:hidden;flex-direction:column;justify-content:center">';
+        h += '<span class="m-not">\u2605</span>';
+        h += '</div>';
+
+        // Criteria rows
         for (let ci = 0; ci < numCrit; ci++) {
-          h += `<span class="c${blank ? ' fd' : ''}" style="width:9pt;height:9pt" data-click="1"></span>`;
-        }
-
-        const starClass = blank ? 's fd' : 's';
-        const remainder = numCrit % 3;
-        if (remainder === 0) {
-          h += `<span class="${starClass} s-center" style="font-size:13pt" data-click="1">\u2605</span>`;
-        } else {
-          h += `<span class="${starClass}" style="font-size:13pt" data-click="1">\u2605</span>`;
+          const bgClass = ci % 2 === 0 ? 'c-dark1' : 'c-dark2';
+          h += `<div class="${bgClass}" style="display:flex;align-items:center;justify-content:center;min-height:11px;flex:1;border-bottom:${ci < numCrit - 1 ? '0.5px solid #d0d0d8' : 'none'}">`;
+          h += '<span class="s-not">\u2605</span>';
+          h += '</div>';
         }
 
         h += '</div></td>';
@@ -1397,8 +1361,9 @@ function buildEvalPage(cls) {
   h += '</tbody></table>';
 
   // Footer
-  h += '<div class="footer" style="padding-top:1.5pt">';
-  h += `<div class="pf">${esc(cls.prettyProgram)} Star Chart \u00b7 ${esc(g.name)} \u00b7 ${esc(cls.date)}</div>`;
+  h += '<div style="margin-top:3px;font-size:6pt;color:#aaa;display:flex;justify-content:space-between;border-top:0.5px solid #d0d0d8;padding-top:2px">';
+  h += `<span>\u2605 <span style="color:${pc}">&bull;</span> = criterion passed &middot; \u2605 <span style="color:#FFD700">&bull;</span> = all criteria mastered 3&times; in a row</span>`;
+  h += `<span>Skills &amp; Stars \u00b7 ${esc(cls.prettyProgram)} \u00b7 ${esc(g.name)}</span>`;
   h += '</div>';
 
   h += '</div>';
@@ -1418,10 +1383,9 @@ function esc(s) {
    ═══════════════════════════════════════════ */
 (function() {
   setTimeout(() => {
-    if (typeof pdfjsLib === 'undefined') {
+    if (typeof XLSX === 'undefined') {
       const errEl = document.getElementById('errorMsg');
-      errEl.innerHTML = '<strong>PDF.js could not load.</strong> You may be running this from a local file.<br><br>' +
-        'Try: <code>python -m http.server 8080</code> in the folder, then open <code>http://localhost:8080/index.html</code>';
+      errEl.innerHTML = '<strong>SheetJS could not load.</strong> Check your internet connection or try:<br><code>python -m http.server 8080</code> then open <code>http://localhost:8080/index.html</code>';
       errEl.classList.add('show');
     }
   }, 3000);
