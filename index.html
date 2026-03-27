@@ -770,9 +770,6 @@ async function parseEvalXLS(file) {
         if (/^CLA-\d+/.test(discipline)) continue;
         if (!event && !skill) continue;
 
-        // Skip "Puts it all together correctly 3 times in a row" criteria — maps to mastery star
-        if (/puts?\s+it\s+all\s+together/i.test(skill)) continue;
-
         // Build class name from discipline
         if (!className && discipline) {
           className = discipline.replace(/^NEW\s+/i, '').trim();
@@ -783,6 +780,23 @@ async function parseEvalXLS(file) {
         const apparatus = level;
         const skillName = event;
         const criterionText = skill;
+
+        // "Puts it all together" = mastery star — capture score but don't add as criteria
+        if (/puts?\s+it\s+all\s+together/i.test(criterionText)) {
+          if (apparatus && eventMap[apparatus] && eventMap[apparatus].skillMap[skillName]) {
+            const group = getGroupForRow(r);
+            const masteryScores = new Array(allStudentNames.length).fill(null);
+            group.groupCols.forEach(col => {
+              const globalIdx = group.colMap[col];
+              if (globalIdx === undefined) return;
+              const val = row[col];
+              if (val === 1 || val === '1') masteryScores[globalIdx] = 1;
+              else if (val === 0 || val === '0' || (typeof val === 'string' && val.trim() === '0')) masteryScores[globalIdx] = 0;
+            });
+            eventMap[apparatus].skillMap[skillName].masteryScores = masteryScores;
+          }
+          continue;
+        }
 
         if (!apparatus) continue;
 
@@ -817,13 +831,14 @@ async function parseEvalXLS(file) {
       const usedKeys = new Set();
 
       apparatusOrder.forEach(appName => {
-        const matchKey = Object.keys(eventMap).find(k => k.toLowerCase() === appName.toLowerCase());
+        const matchKey = Object.keys(eventMap).find(k => k.toLowerCase().includes(appName.toLowerCase()));
         if (matchKey) {
           usedKeys.add(matchKey);
           const evObj = eventMap[matchKey];
           const skills = Object.values(evObj.skillMap).map(sk => ({
             name: sk.name,
-            criteria: sk.criteria
+            criteria: sk.criteria,
+            masteryScores: sk.masteryScores || null
           }));
           if (skills.length > 0) {
             events.push({ name: evObj.name, skills: skills });
@@ -837,7 +852,8 @@ async function parseEvalXLS(file) {
         const evObj = eventMap[key];
         const skills = Object.values(evObj.skillMap).map(sk => ({
           name: sk.name,
-          criteria: sk.criteria
+          criteria: sk.criteria,
+          masteryScores: sk.masteryScores || null
         }));
         if (skills.length > 0) {
           events.push({ name: evObj.name, skills: skills });
@@ -849,21 +865,18 @@ async function parseEvalXLS(file) {
       // Build the xlsScoreMap for the hybrid builder
       const xlsScoreMap = {};
       events.forEach(ev => {
-        const evKey = ev.name.toLowerCase().trim();
+        // Normalize event key: "Jr Vault" → "vault", "GL1 Bars" → "bars"
+        let evKey = ev.name.toLowerCase().trim();
+        ['vault','bars','beam','floor','safety'].forEach(app => {
+          if (evKey.includes(app)) evKey = app;
+        });
         const scoreRows = [];
         ev.skills.forEach(sk => {
           sk.criteria.forEach(cr => {
             scoreRows.push(cr.scores.slice());
           });
-          // Mastery row: 1 if ALL criteria are 1 for this student
-          const starRow = [];
-          for (let si = 0; si < allStudentNames.length; si++) {
-            let allPassed = sk.criteria.length > 0;
-            sk.criteria.forEach(cr => {
-              if (cr.scores[si] !== 1) allPassed = false;
-            });
-            starRow.push(allPassed ? 1 : 0);
-          }
+          // Mastery row: use actual "Puts it all together" score from XLS, not calculated
+          const starRow = sk.masteryScores || new Array(allStudentNames.length).fill(null);
           scoreRows.push(starRow);
         });
         xlsScoreMap[evKey] = scoreRows;
@@ -939,8 +952,10 @@ function updateUI() {
   parsedEvalData.forEach(ed => {
     const b = document.createElement('span');
     b.className = 'badge-sm';
-    const eventNames = ed.events.map(e => e.name).join(', ');
-    b.textContent = `${ed.className} (${ed.students.length} students, ${eventNames})`;
+    const day = ed.tabInfo ? ed.tabInfo.day : '';
+    const time = ed.tabInfo ? ed.tabInfo.time : '';
+    const schedule = (day && time) ? ` · ${day} ${time}` : '';
+    b.textContent = `${ed.className}${schedule} (${ed.students.length} students)`;
     badgesEl.appendChild(b);
   });
 
@@ -1070,8 +1085,11 @@ function buildStarChartPages(evalData, gymCode) {
     // Pad to MAX_STU with empty strings for write-in columns
     while (pageStudents.length < MAX_STU) pageStudents.push('');
 
-    const useSkillData = skillData; // use SKILL_DATA layout if available
-    const eventsToRender = useSkillData ? useSkillData.events : evalData.events;
+    // ALWAYS use XLS data for display when XLS is uploaded — never SKILL_DATA
+    // SKILL_DATA criteria text is abbreviated and may be in wrong order
+    // XLS has the exact iClassPro text paired with correct scores on the same row
+    const useSkillData = false;
+    const eventsToRender = evalData.events;
 
     pages.push(buildOnePage(eventsToRender, pageStudents, startStu, evalData, gymCode, useSkillData, pdfScoreMap));
   }
@@ -1141,14 +1159,22 @@ function buildOnePage(eventsToRender, pageStudents, startStuIdx, evalData, gymCo
 
   // ─── Body: events and skills ───
   eventsToRender.forEach(ev => {
-    // Determine event key and score data
-    const evName = useSkillData ? ev.name : ev.name;
-    const evKey = evName.toLowerCase().trim();
+    // Normalize event name: "Jr Vault" → "VAULT", "GL1 Bars" → "BARS"
+    let evDisplay = ev.name;
+    let evKey = ev.name.toLowerCase().trim();
+    const appNames = ['vault','bars','beam','floor','safety'];
+    for (const app of appNames) {
+      if (evKey.includes(app)) {
+        evDisplay = app.toUpperCase();
+        evKey = app;
+        break;
+      }
+    }
     const evScores = scoreMap[evKey] || [];
     let critIdx = 0;
 
     // Event section band
-    h += `<tr><td colspan="${totalCols}" style="background:${pc};color:#fff;font-size:6.5pt;font-weight:700;letter-spacing:.14em;padding:1px 6px;border:none">${esc(evName)}</td></tr>`;
+    h += `<tr><td colspan="${totalCols}" style="background:${pc};color:#fff;font-size:6.5pt;font-weight:700;letter-spacing:.14em;padding:1px 6px;border:none">${esc(evDisplay)}</td></tr>`;
 
     const skills = useSkillData ? ev.skills : ev.skills;
 
