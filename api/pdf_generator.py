@@ -471,7 +471,11 @@ def generate_pdf(gym_code, class_name, date, day, time,
     c.drawCentredString(W/2, bar_y+31, gym['name'])
 
     # Class info centered
-    class_line = f"{class_name}  ·  {date}  ·  {time}" if date else class_name
+    parts = [class_name]
+    if day:  parts.append(day)
+    if date: parts.append(date)
+    if time: parts.append(time)
+    class_line = '  ·  '.join(parts)
     c.setFillColor(CCP_GRAY)
     c.setFont('Helvetica', 8.5)
     c.drawCentredString(W/2, bar_y+16, class_line)

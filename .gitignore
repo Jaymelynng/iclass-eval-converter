@@ -4,3 +4,5 @@ __pycache__/
 *.pyc
 test_*.pdf
 .claude/
+__pycache__/
+*.pdf
