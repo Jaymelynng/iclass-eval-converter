@@ -668,10 +668,12 @@ def generate_pdf(gym_code, class_name, date, day, time,
         ft_h = FOOTER_H
         SAF_CRIT = prog.get('safety_criteria', ['Follows directions','Stays with the group','Keeps hands to self'])
 
-        c.setFillColor(CCP_BLUE_XLT)
+        SAF_BG = hex_color('#eeeeee')
+        c.setFillColor(SAF_BG)
         c.rect(MARGIN, ft_y, USABLE_W, ft_h, fill=1, stroke=0)
-        c.setStrokeColor(CCP_BLUE); c.setLineWidth(1.2)
-        c.line(MARGIN, ft_y+ft_h, W-MARGIN, ft_y+ft_h)
+        # Bold brand-color border around the entire safety section
+        c.setStrokeColor(CCP_RED); c.setLineWidth(2.5)
+        c.rect(MARGIN, ft_y, USABLE_W, ft_h, fill=0, stroke=1)
 
         SAF_LBL_W = 52
         c.setFillColor(CCP_BLUE)
@@ -727,7 +729,7 @@ def generate_pdf(gym_code, class_name, date, day, time,
 
         for col in range(N_SAF):
             sx = saf_grid_x + col*saf_col_w
-            c.setFillColor(CCP_BLUE_XLT if col%2==0 else WHITE)
+            c.setFillColor(SAF_BG)
             c.rect(sx, ft_y, saf_col_w, ft_h, fill=1, stroke=0)
 
             # Name
