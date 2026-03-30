@@ -624,12 +624,51 @@ function handleFiles(files) {
 
 /* ═══════════════════════════════════════════
    TAB NAME PARSER
-   Parses truncated sheet tab names like "Mon 330 Preschool 34 yrs"
+   Handles two formats:
+     Old: "Mon 330 Preschool 34 yrs"
+     New: "Preschool | Monday | 3:30pm | Ages 3-4"
    ═══════════════════════════════════════════ */
 function parseTabName(tabName) {
   const result = { day:'', time:'', section:'', program:'', age:'' };
+
+  // ── Pipe format: "Preschool | Monday | 3:30pm | Ages 3-4" ──
+  if (tabName.includes('|')) {
+    const segments = tabName.split('|').map(s => s.trim());
+    for (const seg of segments) {
+      // Day: full or abbreviated
+      const dayMatch = seg.match(/^(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday|Mon|Tue|Wed|Thu|Fri|Sat|Sun)$/i);
+      if (dayMatch) {
+        const full = dayMatch[1];
+        result.day = full.charAt(0).toUpperCase() + full.slice(1).toLowerCase();
+        continue;
+      }
+      // Time: "3:30pm", "4:30", "330", "1030am"
+      const timeMatch = seg.match(/^(\d{1,2}):?(\d{2})\s*(am|pm)?$/i);
+      if (timeMatch) {
+        let h = parseInt(timeMatch[1]);
+        const m = timeMatch[2];
+        const ampm = (timeMatch[3] || '').toLowerCase();
+        if (ampm === 'pm' && h < 12) h += 12;
+        if (ampm === 'am' && h === 12) h = 0;
+        result.time = h + ':' + m;
+        continue;
+      }
+      // Age: "Ages 3-4", "Ages 7-12", "3-4 yrs"
+      const ageMatch = seg.match(/(?:ages?\s*)?(\d{1,2})\s*[-–]\s*(\d{1,2})(?:\s*yrs?)?/i);
+      if (ageMatch) {
+        result.age = ageMatch[1] + '-' + ageMatch[2];
+        continue;
+      }
+      // Everything else = program name
+      if (!result.program && seg.length > 0) {
+        result.program = seg;
+      }
+    }
+    return result;
+  }
+
+  // ── Legacy format: "Mon 330 Preschool 34 yrs" ──
   const parts = tabName.trim().split(/\s+/);
-  let rest = [];
 
   // Detect day code
   const dayRe = /^(Mon|Tue|Wed|Thu|Fri|Sat|Sun)$/i;
@@ -654,11 +693,10 @@ function parseTabName(tabName) {
   }
 
   // Detect age range at end: "34" -> "3-4", "712" -> "7-12"
-  // Look for pattern like "34" or "712" followed by optional "yrs"
   if (parts.length >= 1) {
     const lastIdx = parts.length - 1;
     if (/^yrs?$/i.test(parts[lastIdx])) {
-      parts.pop(); // remove "yrs"
+      parts.pop();
     }
     if (parts.length >= 1) {
       const ageStr = parts[parts.length - 1];
