@@ -366,6 +366,7 @@ function openGymModal(code) {
 
 function closeModal() {
   modalOverlay.classList.remove('open');
+  modalOverlay.style.display = '';  // clear any inline display override
   // Reset state so next gym starts fresh
   document.getElementById('allInput').value = '';
   document.getElementById('dzAll').classList.remove('loaded');
@@ -1094,8 +1095,9 @@ async function generatePages(mode) {
     alert('PDF generation failed: ' + e.message + '\n\nMake sure the Python server is running.');
   } finally {
     document.getElementById('loadingMsg')?.remove();
+    // Go back to landing page after download
+    closeModal();
     document.querySelector('.landing').style.display = '';
-    document.getElementById('modalOverlay').style.display = 'flex';
   }
 }
 
@@ -1103,9 +1105,9 @@ function resetForNewUpload() {
   // Clear preview
   document.getElementById('previewArea').innerHTML = '';
 
-  // Show landing and modal
+  // Back to landing
+  closeModal();
   document.querySelector('.landing').style.display = '';
-  document.getElementById('modalOverlay').style.display = 'flex';
 
   // Clear file input and parsed data
   document.getElementById('allInput').value = '';
