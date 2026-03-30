@@ -243,8 +243,35 @@ span.s.fd:hover{color:#e8e8e8}
       </div>
     </div>
 
+    <!-- BLANK GRIDS — always visible, no upload needed -->
     <div class="modal-section">
-      <div class="modal-section-label">UPLOAD FILE</div>
+      <div class="modal-section-label">PRINT BLANK GRIDS</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
+        <button class="print-btn" onclick="generateBlank('Preschool')" style="text-align:center;padding:10px 8px">
+          <span style="display:block;font-size:11px;font-weight:700">Preschool</span>
+        </button>
+        <button class="print-btn" onclick="generateBlank('Junior')" style="text-align:center;padding:10px 8px">
+          <span style="display:block;font-size:11px;font-weight:700">Junior</span>
+        </button>
+        <button class="print-btn" onclick="generateBlank('Advanced Junior')" style="text-align:center;padding:10px 8px">
+          <span style="display:block;font-size:11px;font-weight:700">Adv Junior</span>
+        </button>
+        <button class="print-btn" onclick="generateBlank('Level 1')" style="text-align:center;padding:10px 8px">
+          <span style="display:block;font-size:11px;font-weight:700">Level 1</span>
+        </button>
+        <button class="print-btn" onclick="generateBlank('Level 2')" style="text-align:center;padding:10px 8px">
+          <span style="display:block;font-size:11px;font-weight:700">Level 2</span>
+        </button>
+        <button class="print-btn" onclick="generateBlank('Level 3')" style="text-align:center;padding:10px 8px">
+          <span style="display:block;font-size:11px;font-weight:700">Level 3</span>
+        </button>
+      </div>
+      <div style="font-size:10px;color:#666;margin-top:6px;text-align:center">Empty score sheets with built-in skill data &middot; no upload needed</div>
+    </div>
+
+    <!-- EVAL GRIDS — requires XLS upload -->
+    <div class="modal-section" style="border-top:1px solid #333;padding-top:16px">
+      <div class="modal-section-label">UPLOAD EVAL SCORES</div>
       <div class="drop-zone" id="dzAll" style="min-width:100%">
         <div class="dz-icon">&#128203;</div>
         <div class="dz-title">Drop Skill Evaluation XLS here</div>
@@ -260,29 +287,10 @@ span.s.fd:hover{color:#e8e8e8}
     </div>
 
     <div class="modal-section" id="printSection" style="display:none">
-      <div class="modal-section-label">CHOOSE PRINT FORMAT</div>
-      <div class="print-options">
-        <button class="print-btn" onclick="generatePages('eval')">
-          <span class="pb-icon">&#128203;</span>
-          Eval Grids
-          <span class="pb-sub">Evaluation grids from XLS data &middot; scores pre-filled</span>
-        </button>
-        <button class="print-btn" onclick="generatePages('blank')">
-          <span class="pb-icon">&#128196;</span>
-          Blank Grids
-          <span class="pb-sub">Empty eval grids using built-in skill data</span>
-        </button>
-      </div>
-      <div id="downloadPdfWrap" style="display:none;margin-top:10px">
-        <button id="downloadPdfBtn" onclick="smartPrint()" style="
-          width:100%;padding:14px 12px;border:none;border-radius:8px;
-          font-size:14px;font-weight:700;color:#fff;cursor:pointer;
-          background:#2e7d32;transition:filter .15s;text-align:center;
-        ">&#128196; Download PDF (opens print dialog &mdash; choose &ldquo;Save as PDF&rdquo;)</button>
-      </div>
-      <div class="print-instructions">
-        &#9888;&#65039; Print Settings: <strong>Landscape</strong> &middot; <strong>Scale 100%</strong> &middot; <strong>Color</strong>
-      </div>
+      <button class="print-btn" onclick="generatePages('eval')" style="width:100%;text-align:center;padding:14px 12px">
+        <span style="font-size:14px;font-weight:700">Download Eval Grids</span>
+        <span class="pb-sub" style="display:block;margin-top:4px">Scores pre-filled from uploaded XLS</span>
+      </button>
     </div>
 
     <div style="margin-top:16px;padding-top:16px;border-top:1px solid #333;text-align:center">
@@ -1026,7 +1034,60 @@ function updateUI() {
 }
 
 /* ═══════════════════════════════════════════
-   PAGE GENERATION
+   BLANK GRID GENERATION — no XLS needed
+   ═══════════════════════════════════════════ */
+async function generateBlank(program) {
+  if (!selectedGym) { alert('Select a gym first.'); return; }
+
+  const loadingDiv = document.createElement('div');
+  loadingDiv.id = 'loadingMsg';
+  loadingDiv.style.cssText = 'position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#1a1a1a;z-index:9999;flex-direction:column;gap:16px;';
+  loadingDiv.innerHTML = '<div style="font-size:40px">*</div><div style="font-size:18px;font-weight:700;color:#fff">Generating Blank Grid...</div>';
+  document.body.appendChild(loadingDiv);
+
+  try {
+    const payload = {
+      gymCode: selectedGym,
+      classes: [{
+        className: program,
+        date: '',
+        day: '',
+        time: '',
+        students: ['', '', '', '', '', ''],
+        program: program,
+        scoreMap: {},
+      }],
+      mode: 'blank',
+    };
+
+    const resp = await fetch('/generate-pdf', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+
+    if (!resp.ok) {
+      const err = await resp.json();
+      throw new Error(err.error || 'Server error');
+    }
+
+    const blob = await resp.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${selectedGym}_${program.replace(/ /g,'_')}_Blank.pdf`;
+    a.click();
+    URL.revokeObjectURL(url);
+
+  } catch(e) {
+    alert('PDF generation failed: ' + e.message);
+  } finally {
+    document.getElementById('loadingMsg')?.remove();
+  }
+}
+
+/* ═══════════════════════════════════════════
+   EVAL PAGE GENERATION — from XLS data
    ═══════════════════════════════════════════ */
 async function generatePages(mode) {
   if (!selectedGym) { alert('Select a gym first.'); return; }
