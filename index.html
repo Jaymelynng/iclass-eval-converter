@@ -669,84 +669,64 @@ function handleFiles(files) {
 function parseTabName(tabName) {
   const result = { day:'', time:'', section:'', program:'', age:'' };
 
-  // ── Pipe format: "Preschool | Monday | 3:30pm | Ages 3-4" ──
-  if (tabName.includes('|')) {
-    const segments = tabName.split('|').map(s => s.trim());
-    for (const seg of segments) {
-      // Day: full or abbreviated
-      const dayMatch = seg.match(/^(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday|Mon|Tue|Wed|Thu|Fri|Sat|Sun)$/i);
-      if (dayMatch) {
-        const full = dayMatch[1];
-        result.day = full.charAt(0).toUpperCase() + full.slice(1).toLowerCase();
-        continue;
-      }
-      // Time: "3:30pm", "4:30", "330", "1030am"
-      const timeMatch = seg.match(/^(\d{1,2}):?(\d{2})\s*(am|pm)?$/i);
-      if (timeMatch) {
-        const h = timeMatch[1];
-        const m = timeMatch[2];
-        const ampm = (timeMatch[3] || '').toLowerCase();
-        result.time = ampm ? `${h}:${m}${ampm}` : `${h}:${m}`;
-        continue;
-      }
-      // Age: "Ages 3-4", "Ages 7-12", "3-4 yrs"
-      const ageMatch = seg.match(/(?:ages?\s*)?(\d{1,2})\s*[-–]\s*(\d{1,2})(?:\s*yrs?)?/i);
-      if (ageMatch) {
-        result.age = ageMatch[1] + '-' + ageMatch[2];
-        continue;
-      }
-      // Everything else = program name
-      if (!result.program && seg.length > 0) {
-        result.program = seg;
-      }
+  // Split on pipe OR multiple spaces — handles both formats:
+  //   "Preschool  Monday  330pm  Ages 3-4"
+  //   "Preschool | Monday | 3:30pm | Ages 3-4"
+  //   "Mon 330 Preschool 34 yrs"
+  const sep = tabName.includes('|') ? /\s*\|\s*/ : /\s{2,}|\s+(?=[A-Z])/;
+  const segments = tabName.split(sep).map(s => s.trim()).filter(s => s.length > 0);
+
+  const dayRe = /^(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday|Mon|Tue|Wed|Thu|Fri|Sat|Sun)$/i;
+  // Time: "330pm", "1030am", "330", "3:30pm", "4:30"
+  const timeRe = /^(\d{1,2}):?(\d{2})(am|pm)?$/i;
+
+  const programParts = [];
+
+  for (const seg of segments) {
+    // Skip "Ages" label alone
+    if (/^ages?$/i.test(seg)) continue;
+
+    // Day
+    if (dayRe.test(seg)) {
+      result.day = seg.charAt(0).toUpperCase() + seg.slice(1).toLowerCase();
+      continue;
     }
-    return result;
+
+    // Time with compact format: "330pm", "1030am", "330", "1030"
+    const compactTime = seg.match(/^(\d{3,4})(am|pm)?$/i);
+    if (compactTime) {
+      const digits = compactTime[1];
+      const ampm  = (compactTime[2] || '').toLowerCase();
+      let h, m;
+      if (digits.length === 3) { h = digits[0];       m = digits.slice(1); }
+      else                      { h = digits.slice(0,2); m = digits.slice(2); }
+      result.time = ampm ? `${parseInt(h)}:${m}${ampm}` : `${parseInt(h)}:${m}`;
+      continue;
+    }
+
+    // Time with colon: "3:30pm", "4:30"
+    const colonTime = seg.match(timeRe);
+    if (colonTime) {
+      const h    = colonTime[1];
+      const m    = colonTime[2];
+      const ampm = (colonTime[3] || '').toLowerCase();
+      result.time = ampm ? `${parseInt(h)}:${m}${ampm}` : `${parseInt(h)}:${m}`;
+      continue;
+    }
+
+    // Age range: "Ages 3-4", "3-4 yrs", "34" (compact)
+    const ageMatch = seg.match(/(?:ages?\s*)?(\d{1,2})\s*[-–]\s*(\d{1,2})(?:\s*yrs?)?/i)
+                  || seg.match(/^(\d)(\d)$/);
+    if (ageMatch && parseInt(ageMatch[1]) < parseInt(ageMatch[2])) {
+      result.age = ageMatch[1] + '-' + ageMatch[2];
+      continue;
+    }
+
+    // Everything else = program name token
+    programParts.push(seg);
   }
 
-  // ── Legacy format: "Mon 330 Preschool 34 yrs" ──
-  const parts = tabName.trim().split(/\s+/);
-
-  // Detect day code
-  const dayRe = /^(Mon|Tue|Wed|Thu|Fri|Sat|Sun)$/i;
-  if (parts.length > 0 && dayRe.test(parts[0])) {
-    result.day = parts[0].charAt(0).toUpperCase() + parts[0].slice(1).toLowerCase();
-    parts.shift();
-  }
-
-  // Detect time: 3-4 digit number, optionally followed by section letter (A/B/C)
-  if (parts.length > 0) {
-    const timeMatch = parts[0].match(/^(\d{3,4})([A-Za-z])?$/);
-    if (timeMatch) {
-      const digits = timeMatch[1];
-      if (digits.length === 3) {
-        result.time = digits[0] + ':' + digits.slice(1);
-      } else {
-        result.time = digits.slice(0,2) + ':' + digits.slice(2);
-      }
-      if (timeMatch[2]) result.section = timeMatch[2].toUpperCase();
-      parts.shift();
-    }
-  }
-
-  // Detect age range at end: "34" -> "3-4", "712" -> "7-12"
-  if (parts.length >= 1) {
-    const lastIdx = parts.length - 1;
-    if (/^yrs?$/i.test(parts[lastIdx])) {
-      parts.pop();
-    }
-    if (parts.length >= 1) {
-      const ageStr = parts[parts.length - 1];
-      const ageMatch = ageStr.match(/^(\d{1,2})(\d{1,2})$/);
-      if (ageMatch && parseInt(ageMatch[1]) < parseInt(ageMatch[2])) {
-        result.age = ageMatch[1] + '-' + ageMatch[2];
-        parts.pop();
-      }
-    }
-  }
-
-  // Remaining = program name
-  result.program = parts.join(' ');
-
+  result.program = programParts.join(' ').trim();
   return result;
 }
 
