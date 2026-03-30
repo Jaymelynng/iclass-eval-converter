@@ -36,7 +36,7 @@ GYMS = {
         'name':   'CAPITAL GYMNASTICS — Round Rock',
         'logo':   'logos/CCP_logo_transparent.png',
         'blue':   '#ff1493',
-        'red':    '#c0c0c0',
+        'red':    '#2a2a2a',
         'gray':   '#3c3939',
     },
     'EST': {
