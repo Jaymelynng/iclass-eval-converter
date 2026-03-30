@@ -984,17 +984,14 @@ async function generatePages(mode) {
   document.body.appendChild(loadingDiv);
 
   try {
-    // Send each class to the backend
-    for (const evalData of parsedEvalData) {
-      // Detect program
+    // Bundle ALL classes into one request → one multi-page PDF
+    const classes = parsedEvalData.map(evalData => {
       let program = 'Unknown';
       const upper = evalData.className.toUpperCase();
       for (const [key, val] of Object.entries(PROGRAM_MAP)) {
         if (upper.includes(key)) { program = val; break; }
       }
-
-      const payload = {
-        gymCode:   selectedGym,
+      return {
         className: evalData.className,
         date:      evalData.reportDate || '',
         day:       evalData.tabInfo ? evalData.tabInfo.day : '',
@@ -1002,29 +999,35 @@ async function generatePages(mode) {
         students:  evalData.students,
         program:   program,
         scoreMap:  mode === 'eval' ? evalData._xlsScoreMap : {},
-        mode:      mode,
       };
+    });
 
-      const resp = await fetch('/generate-pdf', {
-        method:  'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify(payload),
-      });
+    const payload = {
+      gymCode: selectedGym,
+      classes: classes,
+      mode:    mode,
+    };
 
-      if (!resp.ok) {
-        const err = await resp.json();
-        throw new Error(err.error || 'Server error');
-      }
+    const resp = await fetch('/generate-pdf', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify(payload),
+    });
 
-      // Download the PDF
-      const blob = await resp.blob();
-      const url  = URL.createObjectURL(blob);
-      const a    = document.createElement('a');
-      a.href     = url;
-      a.download = `${selectedGym}_${program.replace(/ /g,'_')}_${evalData.reportDate || 'eval'}.pdf`;
-      a.click();
-      URL.revokeObjectURL(url);
+    if (!resp.ok) {
+      const err = await resp.json();
+      throw new Error(err.error || 'Server error');
     }
+
+    // Download single multi-page PDF
+    const blob = await resp.blob();
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href     = url;
+    const firstDate = classes[0].date || 'eval';
+    a.download = `${selectedGym}_Evals_${firstDate.replace(/\//g,'')}.pdf`;
+    a.click();
+    URL.revokeObjectURL(url);
 
   } catch(e) {
     alert('PDF generation failed: ' + e.message + '\n\nMake sure the Python server is running.');

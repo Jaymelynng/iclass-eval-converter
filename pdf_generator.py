@@ -360,9 +360,9 @@ def build_score_lookup(score_map, students, skills):
 # MAIN GENERATOR
 # ════════════════════════════════════════════════════════════════════
 def generate_pdf(gym_code, class_name, date, day, time,
-                 students, program, score_map, mode='eval'):
+                 students, program, score_map, mode='eval', _canvas=None):
     """
-    Returns PDF as bytes.
+    Returns PDF as bytes (single-page), or draws onto _canvas if provided (multi-page).
     mode: 'eval' = pre-fill scores | 'blank' = all empty
     """
 
@@ -438,8 +438,13 @@ def generate_pdf(gym_code, class_name, date, day, time,
     def row_y(row_idx): return DATA_TOP - (row_idx+1)*ROW_H
 
     # ── Draw ──────────────────────────────────────────────────────────
-    buf = io.BytesIO()
-    c   = canvas.Canvas(buf, pagesize=landscape(letter))
+    if _canvas is not None:
+        # Multi-page mode: use provided canvas
+        c   = _canvas
+        buf = None
+    else:
+        buf = io.BytesIO()
+        c   = canvas.Canvas(buf, pagesize=landscape(letter))
 
     # White base
     c.setFillColor(WHITE)
@@ -766,6 +771,42 @@ def generate_pdf(gym_code, class_name, date, day, time,
     c.setFillColor(CCP_RED)
     c.rect(MARGIN, H-MARGIN-3, USABLE_W, 3, fill=1, stroke=0)
     c.rect(MARGIN, MARGIN, USABLE_W, 3, fill=1, stroke=0)
+
+    if buf is not None:
+        # Single-page mode: finalize and return bytes
+        c.save()
+        return buf.getvalue()
+    else:
+        # Multi-page mode: page drawn, caller owns the canvas
+        return None
+
+
+# ════════════════════════════════════════════════════════════════════
+# MULTI-CLASS GENERATOR — one PDF, one page per class
+# ════════════════════════════════════════════════════════════════════
+def generate_multi_pdf(gym_code, classes, mode='eval'):
+    """
+    classes: list of dicts with keys: className, date, day, time, students, program, scoreMap
+    Returns one PDF with one page per class.
+    """
+    buf = io.BytesIO()
+    c   = canvas.Canvas(buf, pagesize=landscape(letter))
+
+    for i, cls in enumerate(classes):
+        if i > 0:
+            c.showPage()  # new page for each class after the first
+        generate_pdf(
+            gym_code   = gym_code,
+            class_name = cls.get('className', 'Class'),
+            date       = cls.get('date', ''),
+            day        = cls.get('day', ''),
+            time       = cls.get('time', ''),
+            students   = cls.get('students', []),
+            program    = cls.get('program', ''),
+            score_map  = cls.get('scoreMap', {}),
+            mode       = mode,
+            _canvas    = c,
+        )
 
     c.save()
     return buf.getvalue()

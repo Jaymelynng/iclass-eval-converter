@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Skills &amp; Stars — Preschool · HGA</title>
+<style>
+@page { size: 11in 8.5in landscape; margin: 0.18in 0.22in; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: Arial, Helvetica, sans-serif; color: #262626; background: white; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+.page-header { display:flex; justify-content:space-between; align-items:flex-end; padding-bottom:2px; border-bottom:2px solid #c91724; margin-bottom:2px; }
+.gym-name { font-size:9.5pt; font-weight:700; color:#262626; }
+.class-name { font-size:7pt; color:#c91724; font-weight:700; letter-spacing:.05em; margin-top:2px; }
+.meta { font-size:7pt; color:#444; text-align:right; line-height:2; }
+.meta-line { display:flex; align-items:center; justify-content:flex-end; gap:4px; }
+.meta-underline { display:inline-block; width:90px; border-bottom:0.75px solid #999; }
+.legend-bar { display:flex; align-items:center; gap:14px; margin-bottom:2px; padding:1px 8px; background:#262626; border-radius:2px; font-size:6.5pt; color:#d0d0d8; }
+.legend-bar strong { color:#fff; margin-right:2px; }
+.legend-item { display:flex; align-items:center; gap:4px; white-space:nowrap; }
+.legend-divider { width:0.5px; height:12px; background:#555; }
+.s-earned { font-size:9pt; color:#c91724; line-height:1; }
+.s-not    { font-size:9pt; color:transparent; line-height:1; -webkit-text-stroke:1.2px #bbb; }
+.m-earned { font-size:13pt; color:#FFD700; line-height:1; }
+.m-not    { font-size:13pt; color:transparent; line-height:1; -webkit-text-stroke:1.5px #bbb; }
+.m-label  { font-size:4.5pt; color:#d0d0d8; font-weight:700; letter-spacing:.02em; line-height:1; margin-top:1px; }
+tr.sec-dark td { background:#c91724; color:#fff; font-size:6.5pt; font-weight:700; letter-spacing:.14em; padding:1px 6px; border:none; }
+tr.sec-red td  { background:#c91724; color:#fff; font-size:6.5pt; font-weight:700; letter-spacing:.14em; padding:1px 6px; border:none; }
+.t-dark { background:#333333 !important; border-bottom:0.5px solid #222 !important; }
+.t-red  { background:#333333 !important; border-bottom:0.5px solid #222 !important; }
+.skill-title-name { font-weight:700; font-size:6.5pt; color:#ffffff; }
+.skill-title-hint { font-size:5.5pt; font-weight:700; color:#d0d0d8; white-space:nowrap; margin-left:6px; }
+.c-dark1, .c-red1 { background:#ffffff; }
+.c-dark2, .c-red2 { background:#f0f0f0; }
+.n-dark, .n-red { color:#c91724; font-weight:700; margin-right:3px; flex-shrink:0; }
+table { width:100%; border-collapse:collapse; table-layout:fixed; }
+col.skill-col { width:30%; }
+col.stu { width:calc(70% / 6); }
+thead th { border:0.5px solid #d0d0d8; padding:2px 3px; text-align:center; vertical-align:bottom; font-size:6.5pt; font-weight:700; height:18px; color:#262626; }
+thead th.skill-header { text-align:left; font-weight:400; color:#888; border:none; }
+.name-line { display:block; border-bottom:1px solid #262626; width:90%; margin:0 auto; height:14px; }
+td.skill-cell { border:0.5px solid #d0d0d8; padding:0; vertical-align:top; }
+.skill-title-row { display:flex; align-items:center; padding:2px 6px; height:22px; min-height:22px; max-height:22px; border-bottom:0.5px solid #d0d0d8; overflow:hidden; }
+.criteria-line { display:flex; align-items:center; padding:0 6px; min-height:13px; font-size:6pt; color:#262626; border-bottom:0.5px solid #d0d0d8; }
+.criteria-line:last-child { border-bottom:none; }
+td.stu-cell { border:0.5px solid #d0d0d8; padding:0; vertical-align:top; text-align:center; }
+.stu-cell-inner { display:flex; flex-direction:column; height:100%; }
+.title-star-row { display:flex; align-items:center; justify-content:center; height:22px; min-height:22px; max-height:22px; flex:none; border-bottom:0.5px solid #d0d0d8; flex-direction:column; justify-content:center; overflow:hidden; }
+.box-row { display:flex; align-items:center; justify-content:center; min-height:13px; flex:1; border-bottom:0.5px solid #d0d0d8; }
+.box-row:last-child { border-bottom:none; }
+td.stu-cell.col-shade { filter:brightness(0.965); }
+.footer { margin-top:3px; font-size:6pt; color:#aaa; display:flex; justify-content:space-between; border-top:0.5px solid #d0d0d8; padding-top:2px; }
+</style>
+</head>
+<body>
+<!-- FINAL LAYOUT TEMPLATE - Jayme's design 03/25/2026 -->
+<!-- This is the approved layout for the iClass Eval Converter grid renderer -->
+<!-- Key features: -->
+<!-- - Stars instead of checkboxes (s-earned/s-not for criteria, m-earned/m-not for mastery) -->
+<!-- - Criteria rows align with student star rows -->
+<!-- - Mastery star + "Mastered 3x" label in dark title bar -->
+<!-- - Alternating row colors (c-dark1/c-dark2 or c-red1/c-red2) -->
+<!-- - Column shading on alternating student columns (col-shade) -->
+<!-- - 6 student columns (30% skill + 70%/6 per student) -->
+<!-- - Event section bands in gym primary color -->
+<!-- - Dark (#333) skill title bars -->
+<!-- - Legend bar with key explanation -->
+<!-- - Footer with minimal branding -->
+</body>
+</html>

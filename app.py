@@ -6,7 +6,7 @@ Then open http://localhost:5050 in your browser
 
 from flask import Flask, request, jsonify, send_file, send_from_directory
 import json, io, traceback
-from pdf_generator import generate_pdf
+from pdf_generator import generate_pdf, generate_multi_pdf
 
 app = Flask(__name__, static_folder='.')
 
@@ -27,40 +27,41 @@ def generate():
         if not data:
             return jsonify({'error': 'No data received'}), 400
 
-        # Required fields
-        gym_code    = data.get('gymCode', 'CCP')
-        class_name  = data.get('className', 'Class')
-        date        = data.get('date', '')
-        day         = data.get('day', '')
-        time        = data.get('time', '')
-        students    = data.get('students', [])   # list of name strings
-        program     = data.get('program', '')    # "Preschool", "Junior", etc.
-        score_map   = data.get('scoreMap', {})   # see pdf_generator.py for format
-        mode        = data.get('mode', 'eval')   # "eval" or "blank"
+        gym_code = data.get('gymCode', 'CCP')
+        mode     = data.get('mode', 'eval')
+        classes  = data.get('classes', [])
 
-        # Validate
-        if not students:
-            return jsonify({'error': 'No students found in data'}), 400
-        if not program:
-            return jsonify({'error': 'Program not identified'}), 400
+        # Multi-class mode (new): array of classes → one multi-page PDF
+        if classes:
+            pdf_bytes = generate_multi_pdf(gym_code, classes, mode)
+            first_date = classes[0].get('date', '').replace('/', '')
+            filename = f"{gym_code}_Evals_{first_date}.pdf"
 
-        # Generate PDF bytes
-        pdf_bytes = generate_pdf(
-            gym_code   = gym_code,
-            class_name = class_name,
-            date       = date,
-            day        = day,
-            time       = time,
-            students   = students,
-            program    = program,
-            score_map  = score_map,
-            mode       = mode,
-        )
+        else:
+            # Legacy single-class mode (backward compat)
+            class_name = data.get('className', 'Class')
+            date       = data.get('date', '')
+            day        = data.get('day', '')
+            time       = data.get('time', '')
+            students   = data.get('students', [])
+            program    = data.get('program', '')
+            score_map  = data.get('scoreMap', {})
 
-        # Return PDF as download
+            if not students:
+                return jsonify({'error': 'No students found in data'}), 400
+            if not program:
+                return jsonify({'error': 'Program not identified'}), 400
+
+            pdf_bytes = generate_pdf(
+                gym_code=gym_code, class_name=class_name,
+                date=date, day=day, time=time,
+                students=students, program=program,
+                score_map=score_map, mode=mode,
+            )
+            filename = f"{gym_code}_{program.replace(' ','_')}_{date.replace('/','')}.pdf"
+
         buf = io.BytesIO(pdf_bytes)
         buf.seek(0)
-        filename = f"{gym_code}_{program.replace(' ','_')}_{date.replace('/','')}.pdf"
         return send_file(buf, mimetype='application/pdf',
                          as_attachment=True, download_name=filename)
 

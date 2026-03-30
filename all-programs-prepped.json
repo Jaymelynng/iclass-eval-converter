@@ -1,0 +1,790 @@
+{
+  "Preschool": [
+    {
+      "evt": "VAULT",
+      "ec": "v",
+      "name": "Run + Hurdle to Two-Foot Jump",
+      "crit": [
+        "Runs into the hurdle without stopping or stutter-stepping.",
+        "Hurdles off of one foot to land on both feet",
+        "Arms by ears in jump"
+      ]
+    },
+    {
+      "evt": "BARS",
+      "ec": "b",
+      "name": "Front Support Forward Roll (with spot)",
+      "crit": [
+        "Unassisted front support for 3 sec",
+        "Looks at belly while rolling",
+        "Hands stay on bar until roll is complete"
+      ]
+    },
+    {
+      "evt": "BARS",
+      "ec": "b",
+      "name": "Tuck Hang",
+      "crit": [
+        "Holds for 3 sec",
+        "Knees above belly button",
+        "Arms by  ears"
+      ]
+    },
+    {
+      "evt": "BEAM",
+      "ec": "e",
+      "name": "Walk Across Low Beam (Unassisted)",
+      "crit": [
+        "Chest up with arms out to the side",
+        "Steps one foot in front of the other (heel to toe)",
+        "Walks across the beam without wobbles"
+      ]
+    },
+    {
+      "evt": "BEAM",
+      "ec": "e",
+      "name": "Bear Crawl on Line",
+      "crit": [
+        "Hands on the line",
+        "Feet on the line",
+        "Straight legs"
+      ]
+    },
+    {
+      "evt": "BEAM",
+      "ec": "e",
+      "name": "Backward Walk with Coach",
+      "crit": [
+        "Chest up with arms out to the side",
+        "Steps one foot behind the other (heel to toe)",
+        "Keeps eyes forward while walking backward"
+      ]
+    },
+    {
+      "evt": "FLOOR",
+      "ec": "f",
+      "name": "Monkey Jump Over Panel Mat",
+      "crit": [
+        "Turns hands towards \"favorite foot\"",
+        "Jumps over the panel mat without touching it",
+        "Starts and finshes with arms up"
+      ]
+    },
+    {
+      "evt": "FLOOR",
+      "ec": "f",
+      "name": "Backward Handstand Walk Up (5 sec hold)",
+      "crit": [
+        "Walks feet up the wall until hips are above shoulders.",
+        "Straight arms covering ears",
+        "Straight back"
+      ]
+    },
+    {
+      "evt": "FLOOR",
+      "ec": "f",
+      "name": "Forward Roll Down Wedge",
+      "crit": [
+        "Starts in a pencil shape",
+        "Eyes on belly",
+        "Stands up without using hands"
+      ]
+    },
+    {
+      "evt": "FLOOR",
+      "ec": "f",
+      "name": "Tabletop Hold",
+      "crit": [
+        "Holds for 5 sec",
+        "Back flat, no sagging hips",
+        "Fingers facing feet"
+      ]
+    },
+    {
+      "evt": "SAFETY",
+      "ec": "s",
+      "name": "Safety",
+      "crit": [
+        "Follows directions",
+        "Stays with the group",
+        "Keeps hands to self"
+      ]
+    }
+  ],
+  "Junior": [
+    {
+      "evt": "VAULT",
+      "ec": "v",
+      "name": "Run + Hurdle + Straight Jump to Panel Mat",
+      "crit": [
+        "Run accelerates into the hurdle with no stutter-steps",
+        "Hurdles off one foot and hits the board with two feet",
+        "Arms down on the springboard, up in the air"
+      ]
+    },
+    {
+      "evt": "BARS",
+      "ec": "b",
+      "name": "Pullover (with Mat)",
+      "crit": [
+        "Keeps chin at the bar while walking feet up the mat until feet are above the bar",
+        "Shifts hands with fingers forward to finish in front support",
+        "Holds front support — pushing down on the bar, belly off the bar — for 3 seconds."
+      ]
+    },
+    {
+      "evt": "BARS",
+      "ec": "b",
+      "name": "Forward Roll",
+      "crit": [
+        "From front support, tips forward and completes the full rotation without letting go of the bar",
+        "Feet and knees together",
+        "Lands on feet with control — no dropping or crashing down"
+      ]
+    },
+    {
+      "evt": "BARS",
+      "ec": "b",
+      "name": "Front Support (5 sec hold)",
+      "crit": [
+        "Straight arms",
+        "Belly in and back rounded",
+        "Straight legs and pointed toes in front of the bar"
+      ]
+    },
+    {
+      "evt": "BEAM",
+      "ec": "e",
+      "name": "Walk Across Medium Beam (Unassisted)",
+      "crit": [
+        "Chest up with arms out to the side",
+        "Steps one foot in front of the other (heel to toe)",
+        "Walks across the beam without wobbles"
+      ]
+    },
+    {
+      "evt": "BEAM",
+      "ec": "e",
+      "name": "Lever (Floor)",
+      "crit": [
+        "Starts and finishes in a lunge without wobbles",
+        "Back leg stays straight",
+        "Arms by ears"
+      ]
+    },
+    {
+      "evt": "BEAM",
+      "ec": "e",
+      "name": "Backward Walk on Low Beam",
+      "crit": [
+        "Chest up with arms out to the side",
+        "Steps one foot behind the other (heel to toe)",
+        "Keeps eyes forward while walking backward"
+      ]
+    },
+    {
+      "evt": "FLOOR",
+      "ec": "f",
+      "name": "Cartwheel to Lunge",
+      "crit": [
+        "Starts with favorite foot in front and finishes with opposite foot in front",
+        "Straight legs",
+        "Legs pass through vertical"
+      ]
+    },
+    {
+      "evt": "FLOOR",
+      "ec": "f",
+      "name": "Lunge to Handstand (Mat Supported)",
+      "crit": [
+        "Starts and finishes in a lunge",
+        "Straight legs and feet together at vertical",
+        "Straight line from hands to toes"
+      ]
+    },
+    {
+      "evt": "FLOOR",
+      "ec": "f",
+      "name": "Forward Roll",
+      "crit": [
+        "Continuous movement in the roll",
+        "Feet and knees together",
+        "Stands up without using hands"
+      ]
+    },
+    {
+      "evt": "FLOOR",
+      "ec": "f",
+      "name": "Bridge (Feet Elevated)",
+      "crit": [
+        "Pushes up without moving hands or feet",
+        "Straight arms by ears",
+        "Holds for 3 sec"
+      ]
+    },
+    {
+      "evt": "SAFETY",
+      "ec": "s",
+      "name": "Safety",
+      "crit": [
+        "Follows directions",
+        "Stays with the group",
+        "Keeps hands to self"
+      ]
+    }
+  ],
+  "Advanced Junior": [
+    {
+      "evt": "VAULT",
+      "ec": "v",
+      "name": "Straight Jump to Resi",
+      "crit": [
+        "Run accelerates into the hurdle",
+        "Arms down on the board, up in the air",
+        "Straight body and legs in the air"
+      ]
+    },
+    {
+      "evt": "VAULT",
+      "ec": "v",
+      "name": "Handstand Flatback",
+      "crit": [
+        "Feet come together at vertical handstand",
+        "Straight line from hands to toes at vertical",
+        "Lands flat on the mat as one piece"
+      ]
+    },
+    {
+      "evt": "BARS",
+      "ec": "b",
+      "name": "Kick Pullover",
+      "crit": [
+        "Chin stays at the bar until toes come over",
+        "Shifts hands with fingers forward to finish in front support",
+        "Straight legs throughout the skill"
+      ]
+    },
+    {
+      "evt": "BARS",
+      "ec": "b",
+      "name": "Cast",
+      "crit": [
+        "Straight arms throughout the skill",
+        "Legs straight and together",
+        "Demonstrates straight line from shoulders to toes"
+      ]
+    },
+    {
+      "evt": "BARS",
+      "ec": "b",
+      "name": "Front Support Hold → Forward Roll Down",
+      "crit": [
+        "Holds front support with straight arms",
+        "Chin to chest",
+        "Legs straight and together, lowers slowly to a hang"
+      ]
+    },
+    {
+      "evt": "BEAM",
+      "ec": "e",
+      "name": "Beam Mount",
+      "crit": [
+        "Jumps to front support with straight arms",
+        "Straight leg swings over without touching the beam",
+        "Stands up with arms by ears"
+      ]
+    },
+    {
+      "evt": "BEAM",
+      "ec": "e",
+      "name": "Lever",
+      "crit": [
+        "Arms by ears throughout",
+        "Straight line from fingers to back foot throughout",
+        "Back leg stays straight"
+      ]
+    },
+    {
+      "evt": "BEAM",
+      "ec": "e",
+      "name": "Relevé Walk",
+      "crit": [
+        "Heels stay off the beam the entire walk",
+        "Walks with straight legs",
+        "Chest up with arms out to the side"
+      ]
+    },
+    {
+      "evt": "BEAM",
+      "ec": "e",
+      "name": "Straight Jump",
+      "crit": [
+        "Arms swing up as feet leave the beam and down to sides on the landing",
+        "Toes pointed in the air",
+        "Lands in the same spot it started"
+      ]
+    },
+    {
+      "evt": "BEAM",
+      "ec": "e",
+      "name": "Straight Jump Dismount",
+      "crit": [
+        "Arms swing up as feet leave the beam",
+        "Straight line from fingers to toes in the air",
+        "Sticks landing with hands in front, knees bent (safe landing position)"
+      ]
+    },
+    {
+      "evt": "FLOOR",
+      "ec": "f",
+      "name": "Handstand",
+      "crit": [
+        "Feet come together at vertical",
+        "Straight line from hands to toes",
+        "Straight legs in the air/arms stay by ears"
+      ]
+    },
+    {
+      "evt": "FLOOR",
+      "ec": "f",
+      "name": "Cartwheel",
+      "crit": [
+        "Legs pass through vertical",
+        "Second hand turned in",
+        "Arms stay by ears",
+        "Legs straight throughout",
+        "Finishes in a lunge with opposite leg in front."
+      ]
+    },
+    {
+      "evt": "FLOOR",
+      "ec": "f",
+      "name": "Backward Roll",
+      "crit": [
+        "Rolls with fingers pointing to shoulders",
+        "Continuous movement in the roll",
+        "Feet and knees together throughout"
+      ]
+    },
+    {
+      "evt": "FLOOR",
+      "ec": "f",
+      "name": "Bridge (5 sec hold)",
+      "crit": [
+        "Straight arms in the bridge",
+        "Head between the arms",
+        "Feet flat and together"
+      ]
+    }
+  ],
+  "Girls Level 1": [
+    {
+      "evt": "VAULT",
+      "ec": "v",
+      "name": "Straight Jump to Resi",
+      "crit": [
+        "Run accelerates into the hurdle",
+        "Arms down on the board, up in the air",
+        "Straight body and legs in the air"
+      ]
+    },
+    {
+      "evt": "VAULT",
+      "ec": "v",
+      "name": "Handstand Flatback",
+      "crit": [
+        "Feet come together at vertical handstand",
+        "Straight line from hands to toes at vertical",
+        "Lands flat on the mat as one piece"
+      ]
+    },
+    {
+      "evt": "BARS",
+      "ec": "b",
+      "name": "Kick Pullover",
+      "crit": [
+        "Chin stays at the bar until toes come over",
+        "Shifts hands with fingers forward to finish in front support",
+        "Straight legs throughout the skill"
+      ]
+    },
+    {
+      "evt": "BARS",
+      "ec": "b",
+      "name": "Cast",
+      "crit": [
+        "Straight arms throughout the skill",
+        "Legs straight and together",
+        "Demonstrates straight line from shoulders to toes"
+      ]
+    },
+    {
+      "evt": "BARS",
+      "ec": "b",
+      "name": "Front Support Hold → Forward Roll Down",
+      "crit": [
+        "Holds front support with straight arms",
+        "Chin to chest",
+        "Legs straight and together, lowers slowly to a hang"
+      ]
+    },
+    {
+      "evt": "BEAM",
+      "ec": "e",
+      "name": "Beam Mount",
+      "crit": [
+        "Jumps to front support with straight arms",
+        "Straight leg swings over without touching the beam",
+        "Stands up with arms by ears"
+      ]
+    },
+    {
+      "evt": "BEAM",
+      "ec": "e",
+      "name": "Lever",
+      "crit": [
+        "Arms by ears throughout",
+        "Straight line from fingers to back foot throughout",
+        "Back leg stays straight"
+      ]
+    },
+    {
+      "evt": "BEAM",
+      "ec": "e",
+      "name": "Relevé Walk",
+      "crit": [
+        "Heels stay off the beam the entire walk",
+        "Walks with straight legs",
+        "Chest up with arms out to the side"
+      ]
+    },
+    {
+      "evt": "BEAM",
+      "ec": "e",
+      "name": "Straight Jump",
+      "crit": [
+        "Arms swing up as feet leave the beam and down to sides on the landing",
+        "Toes pointed in the air",
+        "Lands in the same spot it started"
+      ]
+    },
+    {
+      "evt": "BEAM",
+      "ec": "e",
+      "name": "Straight Jump Dismount",
+      "crit": [
+        "Arms swing up as feet leave the beam",
+        "Straight line from fingers to toes in the air",
+        "Sticks landing with hands in front, knees bent (safe landing position)"
+      ]
+    },
+    {
+      "evt": "FLOOR",
+      "ec": "f",
+      "name": "Handstand",
+      "crit": [
+        "Feet come together at vertical",
+        "Straight line from hands to toes",
+        "Straight legs in the air/arms stay by ears"
+      ]
+    },
+    {
+      "evt": "FLOOR",
+      "ec": "f",
+      "name": "Cartwheel",
+      "crit": [
+        "Legs pass through vertical",
+        "Second hand turned in",
+        "Arms stay by ears",
+        "Legs straight throughout",
+        "Finishes in a lunge with opposite leg in front."
+      ]
+    },
+    {
+      "evt": "FLOOR",
+      "ec": "f",
+      "name": "Backward Roll",
+      "crit": [
+        "Rolls with fingers pointing to shoulders",
+        "Continuous movement in the roll",
+        "Feet and knees together throughout"
+      ]
+    },
+    {
+      "evt": "FLOOR",
+      "ec": "f",
+      "name": "Bridge (5 sec hold)",
+      "crit": [
+        "Straight arms in the bridge",
+        "Head between the arms",
+        "Feet flat and together"
+      ]
+    }
+  ],
+  "Girls Level 2": [
+    {
+      "evt": "VAULT",
+      "ec": "v",
+      "name": "Handstand Flatback on Resi",
+      "crit": [
+        "Arms down on the board, up in the air",
+        "Straight line from hands to toes at handstand",
+        "Lands flat as one piece"
+      ]
+    },
+    {
+      "evt": "BARS",
+      "ec": "b",
+      "name": "Chin-Up Pullover",
+      "crit": [
+        "Pulls chin to the bar (bar min forehead height)",
+        "Feet leave the floor at the same time",
+        "Legs straight and together throughout"
+      ]
+    },
+    {
+      "evt": "BARS",
+      "ec": "b",
+      "name": "Cast Back Hip Circle",
+      "crit": [
+        "Straight arms as shoulders lean backwards",
+        "Bar stays against the thighs the entire circle",
+        "Eyes on toes throughout the skill"
+      ]
+    },
+    {
+      "evt": "BARS",
+      "ec": "b",
+      "name": "Cast Off Dismount",
+      "crit": [
+        "Straight arms throughout the cast",
+        "Shoulders over the bar in cast before pushing away",
+        "Cast 45 below horizontal"
+      ]
+    },
+    {
+      "evt": "BARS",
+      "ec": "b",
+      "name": "Roll Down to Chin Hang",
+      "crit": [
+        "Chin finishes above the bar",
+        "Holds tucked chin hang for 5 sec",
+        "Feet and knees together throughout"
+      ]
+    },
+    {
+      "evt": "BEAM",
+      "ec": "e",
+      "name": "Pivot Turn",
+      "crit": [
+        "Stays in relevé lock the entire turn",
+        "Arms stay overhead the entire turn",
+        "Straight legs"
+      ]
+    },
+    {
+      "evt": "BEAM",
+      "ec": "e",
+      "name": "Vertical Handstand",
+      "crit": [
+        "Feet come together at vertical",
+        "Straight line from hands to toes",
+        "Arms stay by ears"
+      ]
+    },
+    {
+      "evt": "BEAM",
+      "ec": "e",
+      "name": "Side Handstand Dismount",
+      "crit": [
+        "Holds handstand for 1 sec before falling",
+        "Maintains straight line from shoulder to toes during dismount",
+        "Shoulders over the beam from handstand to fall"
+      ]
+    },
+    {
+      "evt": "FLOOR",
+      "ec": "f",
+      "name": "Bridge Kickover",
+      "crit": [
+        "Straight arms by ears",
+        "Legs stay straight through the split",
+        "One step from bridge hold to kickover"
+      ]
+    },
+    {
+      "evt": "FLOOR",
+      "ec": "f",
+      "name": "Round-Off Rebound",
+      "crit": [
+        "Legs together and straight during the snap-down",
+        "Hands come off the floor before feet hit",
+        "Rebounds up and backward immediately after landing."
+      ]
+    },
+    {
+      "evt": "FLOOR",
+      "ec": "f",
+      "name": "Straight Arm Backward Roll",
+      "crit": [
+        "Pushes on pinkies at beginning of roll",
+        "Arms stay straight during the roll",
+        "Finishes in a strong push-up position"
+      ]
+    },
+    {
+      "evt": "FLOOR",
+      "ec": "f",
+      "name": "Half Turn",
+      "crit": [
+        "Arms stay in crown the entire turn",
+        "Stays in relevé the entire turn",
+        "Toe stays at the knee the entire turn"
+      ]
+    },
+    {
+      "evt": "FLOOR",
+      "ec": "f",
+      "name": "Step Leap",
+      "crit": [
+        "Shows correct preparation for the leap with chest up, arms at sides",
+        "Straight legs in the air",
+        "Lands in arabesque with front leg bent (1 sec hold)"
+      ]
+    }
+  ],
+  "Girls Level 3": [
+    {
+      "evt": "VAULT",
+      "ec": "v",
+      "name": "Front Handspring",
+      "crit": [
+        "Hands touch mat/table before body is vertical",
+        "Straight body when hands touch mat/table",
+        "Straight body after hands leave the mat/table"
+      ]
+    },
+    {
+      "evt": "BARS",
+      "ec": "b",
+      "name": "Glide Swing",
+      "crit": [
+        "Jumps to the bar with straight arms",
+        "Hips extended at the front of the swing",
+        "Returns in the same spot as the start"
+      ]
+    },
+    {
+      "evt": "BARS",
+      "ec": "b",
+      "name": "Pullover Cast Back Hip Circle",
+      "crit": [
+        "Cast to 45 degrees below horizontal",
+        "Straight arms in back hip circle",
+        "Legs straight and together throughout"
+      ]
+    },
+    {
+      "evt": "BARS",
+      "ec": "b",
+      "name": "Sole Circle Dismount",
+      "crit": [
+        "Straight legs throughout",
+        "Feet rise as they come off of the bar",
+        "Body extended before landing"
+      ]
+    },
+    {
+      "evt": "BEAM",
+      "ec": "e",
+      "name": "Side Handstand 1/4 Turn Dismount",
+      "crit": [
+        "Holds side HS for 1 sec before turning",
+        "Keeps body straight during the descent",
+        "Straight legs throughout"
+      ]
+    },
+    {
+      "evt": "BEAM",
+      "ec": "e",
+      "name": "Half Turn",
+      "crit": [
+        "Stays in relevé the entire turn",
+        "Arms freeze in crown during the turn",
+        "Toe stays at the knee the entire turn",
+        "Finishes the turn before stepping forward"
+      ]
+    },
+    {
+      "evt": "BEAM",
+      "ec": "e",
+      "name": "Split Jump",
+      "crit": [
+        "Straight legs",
+        "Minimum 90 degree split",
+        "Lands in the same spot it started"
+      ]
+    },
+    {
+      "evt": "BEAM",
+      "ec": "e",
+      "name": "Cartwheel",
+      "crit": [
+        "Second hand turned in",
+        "Head stays between arms",
+        "Kicks through vertical with straight legs"
+      ]
+    },
+    {
+      "evt": "FLOOR",
+      "ec": "f",
+      "name": "Back Handspring",
+      "crit": [
+        "Skill travels backwards",
+        "Hands hit with open shoulders and hips",
+        "Thumbs facing each other",
+        "Legs together and straight throughout"
+      ]
+    },
+    {
+      "evt": "FLOOR",
+      "ec": "f",
+      "name": "Front Handspring",
+      "crit": [
+        "Straight arms by ears throughout",
+        "Lands in a tight arch",
+        "Rebounds forward with straight legs"
+      ]
+    },
+    {
+      "evt": "FLOOR",
+      "ec": "f",
+      "name": "Chassé Split Leap",
+      "crit": [
+        "Toes pointed in chassé",
+        "Minimum 120 degree split",
+        "Straight legs in the split"
+      ]
+    },
+    {
+      "evt": "FLOOR",
+      "ec": "f",
+      "name": "Full Turn",
+      "crit": [
+        "Arms stay in crown the entire turn",
+        "Stays in relevé the entire turn",
+        "Toe stays at the knee the entire turn"
+      ]
+    },
+    {
+      "evt": "FLOOR",
+      "ec": "f",
+      "name": "Back Walkover",
+      "crit": [
+        "Front leg lifts as hands reach back",
+        "Straight legs throughout",
+        "Arms stay by ears"
+      ]
+    }
+  ]
+}

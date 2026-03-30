@@ -4,7 +4,7 @@ POST /generate-pdf with JSON body → returns PDF bytes.
 """
 from http.server import BaseHTTPRequestHandler
 import json, io, traceback
-from pdf_generator import generate_pdf
+from pdf_generator import generate_pdf, generate_multi_pdf
 
 
 class handler(BaseHTTPRequestHandler):
@@ -18,36 +18,40 @@ class handler(BaseHTTPRequestHandler):
                 self._error(400, 'No data received')
                 return
 
-            gym_code   = data.get('gymCode', 'CCP')
-            class_name = data.get('className', 'Class')
-            date       = data.get('date', '')
-            day        = data.get('day', '')
-            time       = data.get('time', '')
-            students   = data.get('students', [])
-            program    = data.get('program', '')
-            score_map  = data.get('scoreMap', {})
-            mode       = data.get('mode', 'eval')
+            gym_code = data.get('gymCode', 'CCP')
+            mode     = data.get('mode', 'eval')
+            classes  = data.get('classes', [])
 
-            if not students:
-                self._error(400, 'No students found in data')
-                return
-            if not program:
-                self._error(400, 'Program not identified')
-                return
+            if classes:
+                # Multi-class: one page per class
+                pdf_bytes = generate_multi_pdf(gym_code, classes, mode)
+                first_date = classes[0].get('date', '').replace('/', '')
+                filename = f"{gym_code}_Evals_{first_date}.pdf"
+            else:
+                # Legacy single-class
+                class_name = data.get('className', 'Class')
+                date       = data.get('date', '')
+                day        = data.get('day', '')
+                time       = data.get('time', '')
+                students   = data.get('students', [])
+                program    = data.get('program', '')
+                score_map  = data.get('scoreMap', {})
 
-            pdf_bytes = generate_pdf(
-                gym_code=gym_code,
-                class_name=class_name,
-                date=date,
-                day=day,
-                time=time,
-                students=students,
-                program=program,
-                score_map=score_map,
-                mode=mode,
-            )
+                if not students:
+                    self._error(400, 'No students found')
+                    return
+                if not program:
+                    self._error(400, 'Program not identified')
+                    return
 
-            filename = f"{gym_code}_{program.replace(' ','_')}_{date.replace('/','')}.pdf"
+                pdf_bytes = generate_pdf(
+                    gym_code=gym_code, class_name=class_name,
+                    date=date, day=day, time=time,
+                    students=students, program=program,
+                    score_map=score_map, mode=mode,
+                )
+                filename = f"{gym_code}_{program.replace(' ','_')}_{date.replace('/','')}.pdf"
+
             self.send_response(200)
             self.send_header('Content-Type', 'application/pdf')
             self.send_header('Content-Disposition', f'attachment; filename="{filename}"')

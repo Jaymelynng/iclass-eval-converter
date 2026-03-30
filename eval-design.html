@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>HGA — Level 1 Star Chart Evaluation</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+@page{size:11in 8.5in;margin:0}
+@media print{
+  html,body{width:11in;height:8.5in;padding:0;background:#fff}
+  .no-print{display:none!important}
+  .page{box-shadow:none!important;margin:0!important}
+  *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+}
+body{
+  font-family:'Arial Narrow',Arial,sans-serif;
+  background:#1a1a1a;
+  display:flex;flex-direction:column;align-items:center;
+  padding:20px;min-height:100vh;
+}
+.no-print{
+  color:#fff;font-size:12px;font-family:system-ui,sans-serif;
+  margin-bottom:14px;background:rgba(201,23,36,.7);
+  padding:8px 18px;border-radius:6px;text-align:center;
+}
+.page{
+  width:11in;height:8.5in;max-height:8.5in;background:#fff;
+  padding:.16in .20in;
+  display:flex;flex-direction:column;gap:2pt;
+  box-shadow:0 4px 20px rgba(0,0,0,.5);
+  flex-shrink:0;overflow:hidden;
+  page-break-after:always;
+  margin:30px auto;
+}
+
+:root{
+  --red:   #c91724;
+  --dark:  #262626;
+  --gray:  #d0d0d8;
+  --white: #ffffff;
+  --bg-v:  #fdf2f3;
+  --bg-b:  #f4f4f6;
+  --bg-e:  #fbe8ea;
+  --bg-f:  #ebebee;
+  --ev-v:  #c91724;
+  --ev-b:  #262626;
+  --ev-e:  #8a1018;
+  --ev-f:  #5a5a62;
+  --bd:    #d0d0d8;
+  --row:   #e4e4e8;
+}
+
+/* ── HEADER ── */
+.hdr{display:flex;align-items:center;gap:10pt;border-bottom:3pt solid var(--red);padding-bottom:3pt;flex-shrink:0}
+.badge{background:var(--red);color:#fff;font-size:19pt;font-weight:900;letter-spacing:2.5pt;padding:2.5pt 9pt;border-radius:3pt;line-height:1;flex-shrink:0}
+.hm{flex:1;text-align:center}
+.gn{font-size:13pt;font-weight:800;color:var(--dark)}
+.et{font-size:6.5pt;font-weight:700;color:var(--red);letter-spacing:2.8pt;text-transform:uppercase;margin-top:1pt}
+.hr{display:flex;flex-direction:column;gap:3pt}
+.fr{display:flex;gap:3pt;align-items:baseline;font-size:7.5pt}
+.fl{font-weight:700;color:var(--dark);white-space:nowrap}
+.fv{flex:1;border-bottom:.75pt solid var(--dark);padding-bottom:.3pt;color:var(--dark);min-width:1.1in}
+
+/* ── CLASS BAR ── */
+.cbar{background:var(--dark);color:#fff;font-size:7.5pt;font-weight:600;padding:2pt 8pt;border-radius:2pt;display:flex;justify-content:center;gap:8pt;align-items:center;flex-shrink:0}
+.sep{color:var(--red);font-weight:900}
+
+/* ── LEGEND ── */
+.leg{background:#f7f7f9;border:.5pt solid var(--gray);border-radius:2pt;padding:2pt 8pt;display:flex;align-items:center;gap:14pt;flex-shrink:0;font-size:6.5pt;color:var(--dark)}
+.li{display:flex;align-items:center;gap:4pt}
+.lc{width:7.5pt;height:7.5pt;border:1.1pt solid var(--dark);border-radius:50%;display:inline-block;flex-shrink:0}
+.lref{margin-left:auto;color:#9a9aaa;font-style:italic;font-size:5.5pt;border-left:.5pt solid var(--gray);padding-left:8pt;white-space:nowrap}
+
+/* ── TABLE ── */
+.tbl{flex:1;border-collapse:collapse;table-layout:fixed;width:100%}
+.col-hdr{height:auto}
+
+/* Header cells */
+.ch-skill{background:#f0f0f3;border:.5pt solid var(--bd);vertical-align:bottom;padding:2pt 5pt;font-size:7pt;font-weight:700;color:var(--dark);text-transform:uppercase;letter-spacing:.5pt}
+.ch-crit{background:#f0f0f3;border:.5pt solid var(--bd);vertical-align:bottom;padding:2pt 4pt;font-size:6pt;font-weight:700;color:#bbb;text-transform:uppercase;letter-spacing:.3pt;text-align:center}
+.ch-stu{background:#fff;border:.5pt solid var(--bd);vertical-align:bottom;text-align:center;padding-bottom:2pt}
+.ch-stu.bk{background:#f5f5f8}
+.sn{font-size:7pt;font-weight:600;color:var(--dark);display:block;text-align:center;line-height:1.3;padding:3pt 1pt}
+.sn .first{display:block;font-weight:800;font-size:8pt;color:#111}
+.sn .last{display:block;font-weight:600;font-size:6pt;color:#555}
+.sn.new{color:#b8b8c4;font-style:italic;font-weight:400}
+.ch-nt{background:#fff;border:.5pt solid var(--bd);border-left:2pt solid var(--gray);vertical-align:bottom;text-align:center;padding-bottom:2pt}
+
+/* ── EVENT DIVIDERS ── */
+tr.evd td{height:9pt;padding:0 6pt;font-size:5.5pt;font-weight:800;letter-spacing:3pt;color:#fff;text-transform:uppercase;border:none;vertical-align:middle}
+tr.evd.v td{background:var(--ev-v)}
+tr.evd.b td{background:var(--ev-b)}
+tr.evd.e td{background:var(--ev-e)}
+tr.evd.f td{background:var(--ev-f)}
+
+/* ── SKILL ROWS ── */
+tr.sk{height:auto}
+
+.td-sk{
+  font-size:7pt;font-weight:700;color:var(--dark);
+  padding:2pt 4pt;
+  border-right:.5pt solid var(--bd);border-bottom:.5pt solid var(--row);
+  vertical-align:middle;line-height:1.3;
+  text-align:center;
+}
+
+.td-c{
+  font-size:6.5pt;color:var(--dark);
+  padding:2pt 4pt;
+  border-right:.5pt solid var(--bd);border-bottom:.5pt solid var(--row);
+  vertical-align:middle;line-height:1.3;
+}
+.td-c .cnum{
+  color:var(--red);font-weight:800;font-size:6.5pt;
+  white-space:nowrap;
+}
+.td-c.empty{background:transparent!important}
+
+tr.sk.v .td-sk,tr.sk.v .td-c{background:var(--bg-v)}
+tr.sk.b .td-sk,tr.sk.b .td-c{background:var(--bg-b)}
+tr.sk.e .td-sk,tr.sk.e .td-c{background:var(--bg-e)}
+tr.sk.f .td-sk,tr.sk.f .td-c{background:var(--bg-f)}
+
+/* ── STUDENT CELLS ── */
+.td-st{
+  border-right:.5pt solid var(--bd);
+  border-bottom:.5pt solid var(--row);
+  text-align:center;vertical-align:middle;
+  padding:2.5pt 0;
+}
+tr.sk:nth-child(odd) .td-st{background:#f7f7fa}
+tr.sk:nth-child(even) .td-st{background:#fff}
+
+.cell-row{display:grid;grid-template-columns:repeat(3,auto);gap:2.5pt;justify-content:center;justify-items:center;align-items:center;padding:2pt 1pt}
+.cell-row .s-center{grid-column:1/4;justify-self:center}
+
+.c{
+  width:9pt;height:9pt;
+  border:1.3pt solid #999;border-radius:1.5pt;
+  display:block;cursor:pointer;flex-shrink:0;
+  transition:background .12s,border-color .12s;
+}
+.c:hover{border-color:var(--red);background:#fde8ea}
+.c.on{background:var(--red);border-color:var(--red)}
+.c.fd{border-color:#ccc;cursor:default;background:#f6f6f6}
+.c.fd:hover{background:#f6f6f6;border-color:#ccc}
+
+.s{
+  font-size:13pt;color:#d0d0d8;
+  cursor:pointer;line-height:1;user-select:none;
+  transition:color .12s;display:block;flex-shrink:0;
+  font-weight:900;
+}
+.s:hover{color:#DAA520}
+.s.on{color:#DAA520;text-shadow:0 1pt 3pt rgba(218,165,32,.5)}
+.s.fd{color:#e8e8e8;cursor:default}
+.s.fd:hover{color:#e8e8e8}
+
+/* ── NOTES ── */
+.td-nt{border-bottom:.5pt solid var(--row);border-left:2pt solid var(--gray);background:#fff;vertical-align:top;padding:1.5pt}
+
+/* ── FOOTER ── */
+.footer{border-top:1.5pt solid var(--red);padding-top:2.5pt;display:flex;gap:14pt;align-items:flex-end;flex-shrink:0}
+.cfn{flex:1}
+.cnl{font-size:6.5pt;font-weight:700;color:var(--red);text-transform:uppercase;letter-spacing:.6pt;display:block;margin-bottom:2pt}
+.nl{display:block;border-bottom:.5pt solid var(--gray);height:9pt;margin-bottom:2pt}
+.pf{font-size:5.5pt;color:#aaaab2;white-space:nowrap;text-align:right;padding-bottom:1pt}
+</style>
+</head>
+<body>
+<p class="no-print">
+  🖨️ <strong>Print:</strong> Landscape · Letter · Color · Scale 100% · No margins &nbsp;&nbsp;|&nbsp;&nbsp; 💡 Click to mark digitally
+</p>
+<div class="page">
+
+  <div class="hdr">
+    <div class="badge">HGA</div>
+    <div class="hm">
+      <div class="gn">Houston Gymnastics Academy</div>
+      <div class="et">Level 1 Star Chart Evaluation</div>
+    </div>
+    <div class="hr">
+      <div class="fr"><span class="fl">Date:</span><span class="fv">03/23/2026</span></div>
+      <div class="fr"><span class="fl">Coach:</span><span class="fv">Agbai, Tiffany</span></div>
+    </div>
+  </div>
+
+  <div class="cbar">
+    <span>Girl's Level 1</span><span class="sep">·</span>
+    <span>Ages 7–12</span><span class="sep">·</span>
+    <span>Monday</span><span class="sep">·</span>
+    <span>4:00 pm</span><span class="sep">·</span>
+    <span>Houston Gymnastics Academy</span>
+  </div>
+
+  <div class="leg">
+    <div class="li"><span class="lc"></span><span>○ = mark each star criterion when observed (any order)</span></div>
+    <div class="li"><span style="font-size:12pt;color:var(--red);line-height:1">★</span><span>= completed ALL criteria together — fill 3× in a row to master</span></div>
+    <div class="lref">Full criteria: Level 1 Reference Sheet (binder or back of page)</div>
+  </div>
+
+  <table class="tbl" id="etbl">
+    <colgroup id="cg">
+      <col style="width:7%">
+      <col style="width:28.5%">
+    </colgroup>
+    <thead>
+      <tr class="col-hdr" id="hrow">
+        <th class="ch-skill">Skill</th>
+        <th class="ch-crit">Star Criteria</th>
+      </tr>
+    </thead>
+    <tbody id="tb"></tbody>
+  </table>
+
+  <div class="footer">
+    <div class="pf" style="flex:1">Level 1 Star Chart &nbsp;·&nbsp; Houston Gymnastics Academy &nbsp;·&nbsp; 03/23/2026</div>
+  </div>
+
+</div>
+
+<script>
+let students = [
+  'Ball, Daisy Mae','Borreca, Lottie','Brooks, Ariana','Brooks, Mariah',
+  'Chong, Madeline','Crockett, Isabella','Kao, Lillian','Pardo, Elanora',
+  'Ross, Penny'
+];
+// Pad to 8 minimum — extra slots are blank (writeable)
+while (students.length < 8) students.push('');
+
+
+// Mock scores: scores[studentIndex][skillIndex] = array of booleans
+// true = earned, false = not yet. Length = circles + 1 (criteria + final)
+// null = no data yet (blank)
+// Skills order: V1,V2, B1,B2,B3, BM1,BM2,BM3,BM4,BM5, F1,F2(cartwheel),F3,F4
+const scores = {
+  0: { // Ball, Daisy Mae — strong student, most stars earned
+    0:[true,true,true,true], 1:[true,true,false,false],
+    2:[true,true,true,true], 3:[true,true,true,true], 4:[true,true,false,false],
+    5:[true,true,true,true], 6:[true,true,false,false], 7:[true,true,true,false],
+    8:[true,true,true,true], 9:[true,true,false,false],
+    10:[true,true,true,true], 11:[true,true,true,false,false,false], 12:[true,true,true,true], 13:[true,true,true,true]
+  },
+  1: { // Borreca, Lottie — mid progress
+    0:[true,true,false,false], 1:[true,false,false,false],
+    2:[true,true,false,false], 3:[true,true,true,false], 4:[true,false,false,false],
+    5:[true,true,false,false], 6:[true,false,false,false], 7:[true,true,false,false],
+    8:[true,false,false,false], 9:[true,false,false,false],
+    10:[true,true,false,false], 11:[true,true,false,false,false,false], 12:[true,false,false,false], 13:[true,true,false,false]
+  },
+  2: { // Brooks, Ariana — just started
+    0:[true,false,false,false], 1:[false,false,false,false],
+    2:[true,false,false,false], 3:[true,false,false,false], 4:[false,false,false,false],
+    5:[true,false,false,false], 6:[false,false,false,false], 7:[true,false,false,false],
+    8:[false,false,false,false], 9:[false,false,false,false],
+    10:[true,false,false,false], 11:[true,false,false,false,false,false], 12:[false,false,false,false], 13:[true,false,false,false]
+  },
+  // 3-8: no scores yet (blank/new month)
+};
+
+const events = [
+  { name:'VAULT', cls:'v', skills:[
+    { name:'Straight Jump<br>to Resi',     circles:3, crit:['Accelerates into hurdle','Arms down/up','Straight body & legs']},
+    { name:'Handstand<br>Flatback',     circles:3, crit:['Feet together at vertical','Str line hands to toes','Lands flat as one piece']},
+  ]},
+  { name:'BARS', cls:'b', skills:[
+    { name:'Kick Pullover',             circles:3, crit:['Chin at bar til toes over','Shifts hands fingers fwd','Straight legs throughout']},
+    { name:'Cast',                      circles:3, crit:['Straight arms throughout','Legs straight & together','Str line shldrs to toes']},
+    { name:'Fr Support \u2192<br>Fwd Roll Dn', circles:3, crit:['Front support str arms','Chin to chest','Legs together, lowers slowly']},
+  ]},
+  { name:'BEAM', cls:'e', skills:[
+    { name:'Beam Mount',                circles:3, crit:['Jump to front support','Leg swings over, no touch','Stands up, arms by ears']},
+    { name:'Lever',                     circles:3, crit:['Arms by ears throughout','Str line fingers to foot','Back leg stays straight']},
+    { name:'Relev\u00e9 Walk',          circles:3, crit:['Heels off beam entire walk','Straight legs throughout','Chest up, arms out']},
+    { name:'Straight Jump',             circles:3, crit:['Arms swing up/down','Toes pointed in air','Lands in same spot']},
+    { name:'Str Jump<br>Dismount',      circles:3, crit:['Arms up off beam','Str line fingers to toes','Sticks safe landing']},
+  ]},
+  { name:'FLOOR', cls:'f', skills:[
+    { name:'Handstand',                 circles:3, crit:['Feet together at vertical','Str line hands to toes','Str legs, arms by ears']},
+    { name:'Cartwheel',                 circles:5, crit:['Legs through vertical','2nd hand turned in','Arms by ears','Legs straight throughout','Opp leg lunge finish']},
+    { name:'Backward Roll',             circles:3, crit:['Fingers to shoulders','Continuous movement','Feet & knees together']},
+    { name:'Bridge<br>(5 sec hold)',    circles:3, crit:['Straight arms in bridge','Head between arms','Feet flat & together']},
+  ]},
+];
+
+/* Build colgroup + student columns */
+const cgEl = document.getElementById('cg');
+const hrow = document.getElementById('hrow');
+
+students.forEach(name => {
+  const col = document.createElement('col');
+  col.style.width = '6.5%';
+  cgEl.appendChild(col);
+
+  const th = document.createElement('th');
+  th.className = 'ch-stu' + (!name ? ' bk' : '');
+  const sp = document.createElement('span');
+  sp.className = 'sn' + (!name ? ' new' : '');
+  if (name) {
+    const parts = name.split(', ');
+    const last = parts[0] || '';
+    const first = parts[1] || '';
+    sp.innerHTML = '<span class="first">' + first + '</span><span class="last">' + last + '</span>';
+  }
+  th.appendChild(sp);
+  hrow.appendChild(th);
+});
+
+
+/* Build tbody */
+const tb = document.getElementById('tb');
+const totalCols = 2 + students.length; // skill + criteria + students
+
+let skillIdx = 0;
+events.forEach(ev => {
+  // Event divider
+  const divR = document.createElement('tr');
+  divR.className = `evd ${ev.cls}`;
+  const divTd = document.createElement('td');
+  divTd.colSpan = totalCols;
+  divTd.textContent = ev.name;
+  divR.appendChild(divTd);
+  tb.appendChild(divR);
+
+  ev.skills.forEach(sk => {
+    const tr = document.createElement('tr');
+    tr.className = `sk ${ev.cls}`;
+
+    const tsk = document.createElement('td');
+    tsk.className = 'td-sk';
+    tsk.innerHTML = sk.name;
+    tr.appendChild(tsk);
+
+    const tcr = document.createElement('td');
+    tcr.className = 'td-c';
+    tcr.style.textAlign = 'center';
+    let critParts = sk.crit.map((c, i) =>
+      `<span class="cnum">\u2605${i+1}</span> ${c}`
+    );
+    // Break into lines of 3 so longer skills (4-5 criteria) wrap cleanly
+    let lines = [];
+    for (let i = 0; i < critParts.length; i += 3) {
+      lines.push(critParts.slice(i, i + 3).join(' \u00a0\u00b7\u00a0 '));
+    }
+    tcr.innerHTML = lines.join('<br>');
+    tr.appendChild(tcr);
+
+    students.forEach((name, stuIdx) => {
+      const blank = !name;
+      const td = document.createElement('td');
+      td.className = 'td-st';
+      const row = document.createElement('div');
+      row.className = 'cell-row';
+      const stuScores = scores[stuIdx] && scores[stuIdx][skillIdx] ? scores[stuIdx][skillIdx] : null;
+      for (let i = 0; i < sk.circles; i++) {
+        const c = document.createElement('span');
+        const earned = stuScores && stuScores[i];
+        c.className = blank ? 'c fd' : (earned ? 'c on' : 'c');
+        c.setAttribute('data-click','1');
+        row.appendChild(c);
+      }
+      const s = document.createElement('span');
+      const finalEarned = stuScores && stuScores[sk.circles];
+      s.className = blank ? 's fd' : (finalEarned ? 's on' : 's');
+      if (sk.circles % 3 === 0) s.classList.add('s-center');
+      s.textContent = '\u2605';
+      s.setAttribute('data-click','1');
+      row.appendChild(s);
+      td.appendChild(row);
+      tr.appendChild(td);
+    });
+
+    tb.appendChild(tr);
+    skillIdx++;
+  });
+});
+
+// ── BUILD NOTES BACK PAGE ──
+function buildNotesPage() {
+  const studs = students.filter(s => s); // only named students
+  const totalCols = 1 + studs.length;
+
+  let h = '<div class="page">';
+  // Slim header
+  h += '<div class="hdr">';
+  h += '<div class="badge">HGA</div>';
+  h += '<div class="hm"><div class="gn">Houston Gymnastics Academy</div>';
+  h += '<div class="et">Level 1 \u2014 Coach Notes</div></div>';
+  h += '<div class="hr"><div class="fr"><span class="fl">Date:</span><span class="fv">03/23/2026</span></div>';
+  h += '<div class="fr"><span class="fl">Coach:</span><span class="fv">Agbai, Tiffany</span></div></div></div>';
+
+  h += '<div class="cbar"><span>Girl\'s Level 1</span><span class="sep">\u00b7</span>';
+  h += '<span>Ages 7\u201312</span><span class="sep">\u00b7</span>';
+  h += '<span>Monday</span><span class="sep">\u00b7</span><span>4:00 pm</span></div>';
+
+  h += '<table class="tbl"><colgroup><col style="width:12%">';
+  studs.forEach(() => { h += '<col>'; });
+  h += '</colgroup><thead><tr class="col-hdr">';
+  h += '<th class="ch-skill">Skill</th>';
+  studs.forEach(name => {
+    const parts = name.split(', ');
+    h += '<th class="ch-stu"><span class="sn"><span class="first">' + (parts[1]||'') + '</span><span class="last">' + (parts[0]||'') + '</span></span></th>';
+  });
+  h += '</tr></thead><tbody>';
+
+  let prevEvt = null;
+  events.forEach(ev => {
+    if (ev.name !== prevEvt) {
+      h += '<tr class="evd ' + ev.cls + '"><td colspan="' + totalCols + '">' + ev.name + '</td></tr>';
+      prevEvt = ev.name;
+    }
+    ev.skills.forEach(sk => {
+      h += '<tr class="sk ' + ev.cls + '">';
+      h += '<td class="td-sk">' + sk.name + '</td>';
+      studs.forEach(() => {
+        h += '<td class="td-nt" style="height:24pt;border:.5pt solid var(--bd);border-bottom:.5pt solid var(--row)"></td>';
+      });
+      h += '</tr>';
+    });
+  });
+
+  h += '</tbody></table>';
+  h += '<div class="footer"><div class="pf" style="flex:1">Coach Notes \u00b7 Level 1 \u00b7 Houston Gymnastics Academy \u00b7 03/23/2026</div></div>';
+  h += '</div>';
+  return h;
+}
+
+document.body.insertAdjacentHTML('beforeend', buildNotesPage());
+</script>
+</body>
+</html>
