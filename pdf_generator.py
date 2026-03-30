@@ -35,8 +35,8 @@ GYMS = {
     'CRR': {
         'name':   'CAPITAL GYMNASTICS — Round Rock',
         'logo':   'logos/crr_logo.png',
-        'blue':   '#ff1493',
-        'red':    '#2a2a2a',
+        'blue':   '#2a2a2a',
+        'red':    '#ff1493',
         'gray':   '#3c3939',
     },
     'EST': {
