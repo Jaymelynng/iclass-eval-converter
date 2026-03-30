@@ -265,8 +265,9 @@ def _build_event_colors(blue_hex, red_hex):
     dark_red   = _darken(red_hex, 0.20)
     med_blue   = _lighten(blue_hex, 0.30)
     med_red    = _lighten(red_hex, 0.30)
-    light_blue = _lighten(blue_hex, 0.90)
-    light_red  = _lighten(red_hex, 0.90)
+    # Column stripes use neutral light grey — keeps grid clean and readable
+    # regardless of how vivid the brand color is (e.g. hot pink)
+    STRIPE = '#f0f0f0'
 
     ev_dark = {
         'VAULT':  hex_color(dark_red),
@@ -283,11 +284,11 @@ def _build_event_colors(blue_hex, red_hex):
         'SAFETY': hex_color(med_blue),
     }
     ev_light = {
-        'VAULT':  hex_color(light_red),
-        'BARS':   hex_color(light_blue),
-        'BEAM':   hex_color(light_blue),
-        'FLOOR':  hex_color(light_red),
-        'SAFETY': hex_color(light_blue),
+        'VAULT':  hex_color(STRIPE),
+        'BARS':   hex_color(STRIPE),
+        'BEAM':   hex_color(STRIPE),
+        'FLOOR':  hex_color(STRIPE),
+        'SAFETY': hex_color(STRIPE),
     }
     return ev_dark, ev_med, ev_light
 
@@ -459,9 +460,12 @@ def generate_pdf(gym_code, class_name, date, day, time,
     c.setFillColor(CCP_GRAY)
     c.rect(MARGIN, bar_y, USABLE_W, 2, fill=1, stroke=0)
 
-    # Logo
+    # Logo — check both api-relative and public/ paths for Vercel compatibility
     import os
-    logo_path = os.path.join(os.path.dirname(__file__), gym['logo'])
+    _here = os.path.dirname(os.path.abspath(__file__))
+    logo_path = os.path.join(_here, gym['logo'])
+    if not os.path.exists(logo_path):
+        logo_path = os.path.join(_here, '..', 'public', gym['logo'])
     if os.path.exists(logo_path):
         c.drawImage(logo_path, MARGIN+4, bar_y+4, width=40, height=40, mask='auto')
 
@@ -470,13 +474,13 @@ def generate_pdf(gym_code, class_name, date, day, time,
     c.setFont('Helvetica-Bold', 16)
     c.drawCentredString(W/2, bar_y+31, gym['name'])
 
-    # Class info centered
+    # Class info centered — white so it's readable on any brand color header
     parts = [class_name]
     if day:  parts.append(day)
     if date: parts.append(date)
     if time: parts.append(time)
     class_line = '  ·  '.join(parts)
-    c.setFillColor(CCP_GRAY)
+    c.setFillColor(WHITE)
     c.setFont('Helvetica', 8.5)
     c.drawCentredString(W/2, bar_y+16, class_line)
 
