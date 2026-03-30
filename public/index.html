@@ -284,6 +284,16 @@ span.s.fd:hover{color:#e8e8e8}
         &#9888;&#65039; Print Settings: <strong>Landscape</strong> &middot; <strong>Scale 100%</strong> &middot; <strong>Color</strong>
       </div>
     </div>
+
+    <div style="margin-top:16px;padding-top:16px;border-top:1px solid #333;text-align:center">
+      <button onclick="closeModal()" style="
+        background:#333;border:1px solid #555;color:#ccc;padding:10px 24px;
+        border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;
+        transition:all .15s;
+      " onmouseover="this.style.background='#444';this.style.color='#fff'"
+         onmouseout="this.style.background='#333';this.style.color='#ccc'"
+      >&#8592; Back to Gym Selection</button>
+    </div>
   </div>
 </div>
 
@@ -354,11 +364,23 @@ function openGymModal(code) {
   modalOverlay.classList.add('open');
 }
 
-document.getElementById('modalClose').addEventListener('click', () => {
+function closeModal() {
   modalOverlay.classList.remove('open');
-});
+  // Reset state so next gym starts fresh
+  document.getElementById('allInput').value = '';
+  document.getElementById('dzAll').classList.remove('loaded');
+  document.getElementById('dzAllFiles').textContent = '';
+  document.getElementById('summary').classList.remove('show');
+  document.getElementById('printSection').style.display = 'none';
+  document.getElementById('errorMsg').classList.remove('show');
+  parsedEvalData = null;
+  parsedClasses = [];
+  selectedGym = null;
+}
+
+document.getElementById('modalClose').addEventListener('click', closeModal);
 modalOverlay.addEventListener('click', (e) => {
-  if (e.target === modalOverlay) modalOverlay.classList.remove('open');
+  if (e.target === modalOverlay) closeModal();
 });
 
 /* Program skill definitions */
