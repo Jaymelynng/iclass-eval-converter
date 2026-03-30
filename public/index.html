@@ -245,7 +245,10 @@ span.s.fd:hover{color:#e8e8e8}
 
     <!-- BLANK GRIDS — always visible, no upload needed -->
     <div class="modal-section">
-      <div class="modal-section-label">PRINT BLANK GRIDS</div>
+      <div style="text-align:center;margin-bottom:12px">
+        <div style="font-size:15px;font-weight:800;color:#fff;letter-spacing:.5px;margin-bottom:4px">PRINT BLANK SCORE SHEETS</div>
+        <div style="font-size:11px;color:#999">Pick a program below to download a blank evaluation grid. No file upload needed.</div>
+      </div>
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
         <button class="print-btn" onclick="generateBlank('Preschool')" style="text-align:center;padding:10px 8px">
           <span style="display:block;font-size:11px;font-weight:700">Preschool</span>
@@ -266,16 +269,18 @@ span.s.fd:hover{color:#e8e8e8}
           <span style="display:block;font-size:11px;font-weight:700">Level 3</span>
         </button>
       </div>
-      <div style="font-size:10px;color:#666;margin-top:6px;text-align:center">Empty score sheets with built-in skill data &middot; no upload needed</div>
     </div>
 
     <!-- EVAL GRIDS — requires XLS upload -->
     <div class="modal-section" style="border-top:1px solid #333;padding-top:16px">
-      <div class="modal-section-label">UPLOAD EVAL SCORES</div>
+      <div style="text-align:center;margin-bottom:12px">
+        <div style="font-size:15px;font-weight:800;color:#fff;letter-spacing:.5px;margin-bottom:4px">CONVERT EVAL SCORES</div>
+        <div style="font-size:11px;color:#999">Upload your iClassPro Skill Evaluation XLS to generate score sheets with stars pre-filled.</div>
+      </div>
       <div class="drop-zone" id="dzAll" style="min-width:100%">
         <div class="dz-icon">&#128203;</div>
         <div class="dz-title">Drop Skill Evaluation XLS here</div>
-        <div class="dz-sub">Download from iClassPro: Classes &rarr; Report &rarr; Class Evaluation Report &rarr; XLS</div>
+        <div class="dz-sub">iClassPro: Classes &rarr; Report &rarr; Class Evaluation Report &rarr; XLS</div>
         <div class="dz-file" id="dzAllFiles"></div>
         <input type="file" accept=".xlsx,.xls" id="allInput">
       </div>
