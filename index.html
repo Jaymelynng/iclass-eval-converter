@@ -683,12 +683,10 @@ function parseTabName(tabName) {
       // Time: "3:30pm", "4:30", "330", "1030am"
       const timeMatch = seg.match(/^(\d{1,2}):?(\d{2})\s*(am|pm)?$/i);
       if (timeMatch) {
-        let h = parseInt(timeMatch[1]);
+        const h = timeMatch[1];
         const m = timeMatch[2];
         const ampm = (timeMatch[3] || '').toLowerCase();
-        if (ampm === 'pm' && h < 12) h += 12;
-        if (ampm === 'am' && h === 12) h = 0;
-        result.time = h + ':' + m;
+        result.time = ampm ? `${h}:${m}${ampm}` : `${h}:${m}`;
         continue;
       }
       // Age: "Ages 3-4", "Ages 7-12", "3-4 yrs"
@@ -835,6 +833,7 @@ async function parseEvalXLS(file) {
 
       // Parse tab name for class metadata
       const tabInfo = parseTabName(sheetName);
+      console.log('[TAB PARSE]', sheetName, '→', tabInfo);
 
       // Parse data rows from ALL groups
       const eventMap = {}; // apparatus -> { skillMap: { skillName -> { criteria: [] } } }
