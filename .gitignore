@@ -1,0 +1,6 @@
+.vercel
+node_modules/
+__pycache__/
+*.pyc
+test_*.pdf
+.claude/
