@@ -1001,6 +1001,9 @@ async function parseEvalXLS(file) {
 
     updateUI();
 
+    // Auto-download eval PDF immediately after parsing
+    generatePages('eval');
+
   } catch(e) {
     errEl.innerHTML = '<strong>Excel parsing failed.</strong> ' + esc(e.message);
     errEl.classList.add('show');
