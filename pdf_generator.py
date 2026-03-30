@@ -33,11 +33,13 @@ GYMS = {
         'gray':   '#d8d8d8',
     },
     'CRR': {
-        'name':   'CAPITAL GYMNASTICS — Round Rock',
-        'logo':   'logos/crr_logo.png',
-        'blue':   '#2a2a2a',
-        'red':    '#ff1493',
-        'gray':   '#3c3939',
+        'name':        'CAPITAL GYMNASTICS — Round Rock',
+        'logo':        'logos/crr_logo.png',
+        'blue':        '#4a4a4b',   # top bar
+        'red':         '#ff1493',   # accent
+        'gray':        '#3c3939',
+        'event_dark':  '#111111',   # event headers (VAULT/BARS/BEAM/FLOOR) → black
+        'skill_mid':   '#ff1493',   # skill sub-headers → hot pink
     },
     'EST': {
         'name':   'Estrella Gymnastics',
@@ -256,23 +258,22 @@ GOLD       = hex_color('#C9A43C')
 GOLD_LIGHT = hex_color('#FFF8DC')
 WHITE      = hex_color('#ffffff')
 
-def _build_event_colors(blue_hex, red_hex):
-    """Build event color palettes from a gym's two brand colors.
-    VAULT/FLOOR use the 'red' (secondary/accent) color.
-    BARS/BEAM/SAFETY use the 'blue' (primary) color.
-    Each event gets dark, med, and light variants."""
-    dark_blue  = _darken(blue_hex, 0.20)
-    dark_red   = _darken(red_hex, 0.20)
-    med_blue   = _lighten(blue_hex, 0.30)
-    med_red    = _lighten(red_hex, 0.30)
-    # Column stripes use neutral light grey — keeps grid clean and readable
-    # regardless of how vivid the brand color is (e.g. hot pink)
-    STRIPE = '#f0f0f0'
+def _build_event_colors(blue_hex, red_hex, event_dark_hex=None, skill_mid_hex=None):
+    """Build event color palettes from a gym's brand colors.
+    Optional overrides:
+      event_dark_hex — explicit color for all event band headers (VAULT/BARS/BEAM/FLOOR)
+      skill_mid_hex  — explicit color for all skill sub-headers
+    """
+    dark_blue  = event_dark_hex or _darken(blue_hex, 0.20)
+    dark_red   = event_dark_hex or _darken(red_hex, 0.20)
+    med_blue   = skill_mid_hex  or _lighten(blue_hex, 0.30)
+    med_red    = skill_mid_hex  or _lighten(red_hex, 0.30)
+    STRIPE     = '#f0f0f0'
 
     ev_dark = {
         'VAULT':  hex_color(dark_red),
         'BARS':   hex_color(dark_blue),
-        'BEAM':   hex_color(blue_hex),
+        'BEAM':   hex_color(blue_hex if not event_dark_hex else dark_blue),
         'FLOOR':  hex_color(dark_red),
         'SAFETY': hex_color(dark_blue),
     }
@@ -384,7 +385,11 @@ def generate_pdf(gym_code, class_name, date, day, time,
     CCP_GRAY_DK  = hex_color('#555566')
 
     # Build event colors from this gym's brand
-    EV_DARK, EV_MED, EV_LIGHT = _build_event_colors(gym['blue'], gym['red'])
+    EV_DARK, EV_MED, EV_LIGHT = _build_event_colors(
+        gym['blue'], gym['red'],
+        event_dark_hex = gym.get('event_dark'),
+        skill_mid_hex  = gym.get('skill_mid'),
+    )
 
     SKILLS   = prog['skills']
     HAS_SAF  = prog.get('has_safety', False)
