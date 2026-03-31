@@ -353,7 +353,7 @@ const GYMS = {
   CRR: { name:'Capital Gymnastics Round Rock',    c1:'#ff1493', c2:'#c0c0c0', c3:'#3c3939', c4:'#ffffff', logo:'https://content.app-us1.com/511e9V/2025/09/07/54697754-fdd0-452b-9275-f1ac2421e995.png' },
   EST: { name:'Estrella Gymnastics',              c1:'#011837', c2:'#666666', c3:'#100f0f', c4:'#ffffff', logo:'https://content.app-us1.com/g55L0q/2025/05/13/eff29c8b-abb0-4595-aec3-ccf32d7e1940.png' },
   HGA: { name:'Houston Gymnastics Academy',       c1:'#c91724', c2:'#262626', c3:'#d0d0d8', c4:'#ffffff', logo:'https://content.app-us1.com/vqqEDb/2026/01/30/49f475ed-3dae-48f9-a3c7-1f5d98ccc26b.png' },
-  OAS: { name:'Oasis Gymnastics',                 c1:'#3eb29f', c2:'#3e266b', c3:'#e7e6f0', c4:'#ffffff', logo:'https://content.app-us1.com/ARRBG9/2026/01/30/217676e8-f661-411a-8ea8-9a94373c5bb0.png' },
+  OAS: { name:'Oasis Gymnastics',                 c1:'#3e266b', c2:'#3eb29f', c3:'#e7e6f0', c4:'#ffffff', logo:'https://content.app-us1.com/ARRBG9/2026/01/30/217676e8-f661-411a-8ea8-9a94373c5bb0.png' },
   RBA: { name:'Rowland Ballard Atascocita',       c1:'#1a3c66', c2:'#c52928', c3:'#739ab9', c4:'#ffffff', logo:'https://content.app-us1.com/obb1M5/2026/01/30/d5e1a9ce-e8aa-4a21-a886-523d5a12bbd5.png' },
   RBK: { name:'Rowland Ballard Kingwood',         c1:'#1a3c66', c2:'#c52928', c3:'#739ab9', c4:'#ffffff', logo:'https://content.app-us1.com/6ddeKB/2026/01/30/ebe5ff82-80c1-419b-b15d-6db55c974a7c.png' },
   SGT: { name:'Scottsdale Gymnastics',            c1:'#c72b12', c2:'#e6e6e6', c3:'#000000', c4:'#ffffff', logo:'https://content.app-us1.com/OoonDm/2026/01/09/7d45241b-ea60-4305-8ed9-fcbdafc7906f.png' },
@@ -821,7 +821,6 @@ async function parseEvalXLS(file) {
 
       // Parse tab name for class metadata
       const tabInfo = parseTabName(sheetName);
-      console.log('[TAB PARSE]', sheetName, '→', tabInfo);
 
       // Parse data rows from ALL groups
       const eventMap = {}; // apparatus -> { skillMap: { skillName -> { criteria: [] } } }
