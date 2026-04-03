@@ -14,7 +14,7 @@ W, H       = landscape(letter)   # 792 x 612
 MARGIN     = 18
 USABLE_W   = W - 2*MARGIN
 USABLE_H   = H - 2*MARGIN
-NUM_ROWS   = 6
+# NUM_ROWS is now per-program — defined in PROGRAMS dict below
 
 # ── Gym configuration ───────────────────────────────────────────────
 GYMS = {
@@ -50,17 +50,18 @@ GYMS = {
     },
     'HGA': {
         'name':   'Houston Gymnastics Academy',
-        'logo':   'logos/hga_logo.png',
+        'logo':   'logos/hga with shadow.png',
         'blue':   '#262626',
         'red':    '#c91724',
         'gray':   '#d0d0d8',
     },
     'OAS': {
-        'name':   'Oasis Gymnastics',
-        'logo':   'logos/oas_logo.png',
-        'blue':   '#3e266b',
-        'red':    '#3eb29f',
-        'gray':   '#e7e6f0',
+        'name':      'Oasis Gymnastics',
+        'logo':      'logos/oasis circle logo.png',
+        'blue':      '#3e266b',
+        'red':       '#3eb29f',
+        'gray':      '#e7e6f0',
+        'skill_text': '#3e266b',  # dark purple on light teal headers
     },
     'RBA': {
         'name':   'Rowland Ballard — Atascocita',
@@ -101,114 +102,120 @@ PROGRAMS = {
     'Preschool': {
         'has_safety': True,
         'footer_h': 68,
+        'num_rows': 6,
         'skills': [
-            {'event':'VAULT','short':'RUN + HURDLE',  'criteria':['Runs into hurdle, no stopping','Hurdles 1 foot to land on both feet','Arms by ears in jump']},
-            {'event':'BARS', 'short':'BAR FWD ROLL',   'criteria':['Unassisted front support for 3 sec','Looks at belly while rolling','Hands stay on bar until done']},
-            {'event':'BARS', 'short':'TUCK HANG',    'criteria':['Holds for 3 sec','Knees above belly button','Arms by ears']},
-            {'event':'BEAM', 'short':'WALK BEAM',    'criteria':['Chest up with arms out to the side','Steps heel to toe (front)','Walks across beam w/o wobbles']},
-            {'event':'BEAM', 'short':'BEAR CRAWL',   'criteria':['Hands on the line','Feet on the line','Straight legs']},
-            {'event':'BEAM', 'short':'BWD WALK',     'criteria':['Chest up with arms out to the side','Steps heel to toe (backward)','Eyes forward while walking back']},
-            {'event':'FLOOR','short':'MONKEY JUMP',  'criteria':['Turns hands towards "favorite foot"','Jumps over panel mat w/o touching','Starts and finishes with arms up']},
-            {'event':'FLOOR','short':'BWD HS WALK',  'criteria':['Walks up wall, hips over shoulders','Straight arms covering ears','Straight back']},
-            {'event':'FLOOR','short':'FWD ROLL',   'criteria':['Starts in a pencil shape','Eyes on belly','Stands up without using hands']},
-            {'event':'FLOOR','short':'TABLETOP',     'criteria':['Holds for 5 sec','Back flat, no sagging hips','Fingers facing feet']},
+            {'event':'VAULT','short':'Run + Hurdle\nto Two-Foot Jump',  'criteria':['Runs into the hurdle without stopping or stutter-stepping.','Hurdles off of one foot to land on both feet','Arms by ears in jump']},
+            {'event':'BARS', 'short':'Front Support\nFWD Roll\n(with spot)',   'criteria':['Unassisted front support for 3 sec','Looks at belly while rolling','Hands stay on bar until roll is complete']},
+            {'event':'BARS', 'short':'Tuck Hang',    'criteria':['Holds for 3 sec','Knees above belly button','Arms by ears']},
+            {'event':'BEAM', 'short':'Walk Across\nLow Beam\n(Unassisted)',    'criteria':['Chest up with arms out to the side','Steps one foot in front of the other (heel to toe)','Walks across the beam without wobbles']},
+            {'event':'BEAM', 'short':'Bear Crawl\non Line',   'criteria':['Hands on the line','Feet on the line','Straight legs']},
+            {'event':'BEAM', 'short':'Backward Walk\nwith Coach',     'criteria':['Chest up with arms out to the side','Steps one foot behind the other (heel to toe)','Keeps eyes forward while walking backward']},
+            {'event':'FLOOR','short':'Monkey Jump\nOver Panel Mat',  'criteria':['Turns hands towards "favorite foot"','Jumps over the panel mat without touching it','Starts and finishes with arms up']},
+            {'event':'FLOOR','short':'BWD Handstand\nWalk Up\n(5 sec hold)',  'criteria':['Walks feet up the wall until hips are above shoulders.','Straight arms covering ears','Straight back']},
+            {'event':'FLOOR','short':'FWD Roll\nDown Wedge',   'criteria':['Starts in a pencil shape','Eyes on belly','Stands up without using hands']},
+            {'event':'FLOOR','short':'Tabletop Hold',     'criteria':['Holds for 5 sec','Back flat, no sagging hips','Fingers facing feet']},
         ],
         'safety_criteria': ['Follows directions','Stays with the group','Keeps hands to self'],
     },
     'Junior': {
         'has_safety': True,
         'footer_h': 68,
+        'num_rows': 6,
         'skills': [
-            {'event':'VAULT','short':'RUN + HURDLE + JUMP TO MAT','criteria':['Accelerates into hurdle, no stutter','Hurdles 1 foot, hits board with 2','Arms down on board, up in the air']},
-            {'event':'BARS', 'short':'PULLOVER',      'criteria':['Chin at bar as feet walk above bar','Shifts hands, fingers forward','Holds front support, belly off bar']},
-            {'event':'BARS', 'short':'FORWARD ROLL',  'criteria':['Tips forward, rolls w/o letting go','Feet and knees together','Lands on feet with control']},
-            {'event':'BARS', 'short':'FRONT SUP HOLD','criteria':['Straight arms','Belly in, back rounded','Straight legs, toes pointed']},
-            {'event':'BEAM', 'short':'WALK MED BEAM', 'criteria':['Chest up, arms out to the side','Steps heel to toe','Walks across beam w/o wobbles']},
-            {'event':'BEAM', 'short':'LEVER (FLOOR)', 'criteria':['Lunge start & finish, no wobble','Back leg stays straight','Arms by ears']},
-            {'event':'BEAM', 'short':'BWD WALK BEAM', 'criteria':['Chest up, arms out to the side','Steps heel to toe backward','Eyes forward while walking back']},
-            {'event':'FLOOR','short':'CARTWHEEL',     'criteria':['Fav foot starts, opposite finishes','Straight legs','Legs pass through vertical']},
-            {'event':'FLOOR','short':'LUNGE TO HANDSTAND (Mat Supported)',      'criteria':['Starts and finishes in a lunge','Straight legs, feet together at vert','Straight line from hands to toes']},
-            {'event':'FLOOR','short':'FORWARD ROLL',  'criteria':['Continuous movement in the roll','Feet and knees together','Stands up without using hands']},
-            {'event':'FLOOR','short':'BRIDGE ELEV',   'criteria':['Pushes up w/o moving hands or feet','Straight arms by ears','Holds for 3 sec']},
+            {'event':'VAULT','short':'Run + Hurdle +\nStraight Jump\nto Panel Mat', 'criteria':['Run accelerates into the hurdle with no stutter-steps','Hurdles off one foot and hits the board with two feet','Arms down on the springboard, up in the air']},
+            {'event':'BARS', 'short':'Pullover\n(with Mat)',      'criteria':['Keeps chin at the bar while walking feet up the mat until feet are above the bar','Shifts hands (fingers FWD) to front support','Holds front support — pushing down on the bar, belly off the bar — for 3 seconds.']},
+            {'event':'BARS', 'short':'Forward Roll',  'criteria':['From front support, tips forward and completes the full rotation without letting go of the bar','Feet and knees together','Lands on feet with control — no dropping or crashing down']},
+            {'event':'BARS', 'short':'Front Support\n(5 sec hold)', 'criteria':['Straight arms','Belly in and back rounded','Straight legs and pointed toes in front of the bar']},
+            {'event':'BEAM', 'short':'Walk Across\nMedium Beam\n(Unassisted)', 'criteria':['Chest up with arms out to the side','Steps one foot in front of the other (heel to toe)','Walks across the beam without wobbles']},
+            {'event':'BEAM', 'short':'Lever\n(Floor)', 'criteria':['Starts and finishes in a lunge without wobbles','Back leg stays straight','Arms by ears']},
+            {'event':'BEAM', 'short':'Backward Walk\non Low Beam', 'criteria':['Chest up with arms out to the side','Steps one foot behind the other (heel to toe)','Keeps eyes forward while walking backward']},
+            {'event':'FLOOR','short':'Cartwheel\nto Lunge',     'criteria':['Starts with favorite foot in front and finishes with opposite foot in front','Straight legs','Legs pass through vertical']},
+            {'event':'FLOOR','short':'Lunge to\nHandstand\n(Mat Supported)', 'criteria':['Starts and finishes in a lunge','Straight legs and feet together at vertical','Straight line from hands to toes']},
+            {'event':'FLOOR','short':'Forward Roll',  'criteria':['Continuous movement in the roll','Feet and knees together','Stands up without using hands']},
+            {'event':'FLOOR','short':'Bridge\n(Feet Elevated)',   'criteria':['Pushes up without moving hands or feet','Straight arms by ears','Holds for 3 sec']},
         ],
         'safety_criteria': ['Follows directions','Stays with the group','Keeps hands to self'],
     },
     'Advanced Junior': {
         'has_safety': False,
         'footer_h': 18,
+        'num_rows': 8,
         'skills': [
-            {'event':'VAULT','short':'STRAIGHT JUMP', 'criteria':['Run accelerates into the hurdle','Arms down on the board, up in the air','Straight body and legs in the air']},
-            {'event':'VAULT','short':'HS FLATBACK',   'criteria':['Feet come together at vertical handstand','Straight line from hands to toes at vertical','Lands flat on the mat as one piece']},
-            {'event':'BARS', 'short':'KICK PULLOVER', 'criteria':['Chin stays at the bar until toes come over','Shifts hands, fingers forward to front sup','Straight legs throughout the skill']},
-            {'event':'BARS', 'short':'CAST',          'criteria':['Straight arms throughout the skill','Legs straight and together','Straight line from shoulders to toes']},
-            {'event':'BARS', 'short':'FS HOLD TO FWD ROLL','criteria':['Holds front support, straight arms','Chin to chest','Legs straight, lowers slowly to hang']},
-            {'event':'BEAM', 'short':'BEAM MOUNT',    'criteria':['Jumps to front support, straight arms','Straight leg swings over, no touch','Stands up with arms by ears']},
-            {'event':'BEAM', 'short':'LEVER',         'criteria':['Arms by ears throughout','Straight line fingers to back foot','Back leg stays straight']},
-            {'event':'BEAM', 'short':'RELEVÉ WALK',   'criteria':['Heels stay off the beam the entire walk','Walks with straight legs','Chest up with arms out to the side']},
-            {'event':'BEAM', 'short':'STRAIGHT JUMP', 'criteria':['Arms swing up/down on landing','Toes pointed in the air','Lands in the same spot it started']},
-            {'event':'BEAM', 'short':'STR JUMP DISM', 'criteria':['Arms swing up as feet leave beam','Straight line fingers to toes in air','Sticks safe landing position']},
-            {'event':'FLOOR','short':'HANDSTAND',     'criteria':['Feet come together at vertical','Straight line from hands to toes','Straight legs in the air/arms stay by ears']},
-            {'event':'FLOOR','short':'CARTWHEEL',     'criteria':['Legs pass through vertical','Second hand turned in','Arms stay by ears','Legs straight throughout','Opposite leg lunge finish']},
-            {'event':'FLOOR','short':'BACKWARD ROLL', 'criteria':['Rolls with fingers pointing to shoulders','Continuous movement in the roll','Feet and knees together throughout']},
-            {'event':'FLOOR','short':'BRIDGE 5 SEC',  'criteria':['Straight arms in the bridge','Head between the arms','Feet flat and together']},
+            {'event':'VAULT','short':'Straight Jump\nto Resi',    'criteria':['Run accelerates into the hurdle','Arms down on the board, up in the air','Straight body and legs in the air']},
+            {'event':'VAULT','short':'Handstand\nFlatback',       'criteria':['Feet together at vertical','Straight line from hands to toes at vertical','Lands flat on the mat as one piece']},
+            {'event':'BARS', 'short':'Kick\nPullover',            'criteria':['Chin stays at the bar until toes come over','Shifts hands (fingers FWD) to front support','Straight legs throughout the skill']},
+            {'event':'BARS', 'short':'Cast',                      'criteria':['Straight arms throughout the skill','Legs straight and together','Straight line from shoulders to toes']},
+            {'event':'BARS', 'short':'Front\nSupport \u2192\nRoll Down','criteria':['Holds front support with straight arms','Chin to chest','Legs straight/together, slowly lowers to hang']},
+            {'event':'BEAM', 'short':'Beam\nMount',               'criteria':['Jumps to front support with straight arms','Straight leg swings over w/out touching beam','Stands up with arms by ears']},
+            {'event':'BEAM', 'short':'Lever',                     'criteria':['Arms by ears throughout','Straight line from fingers to back foot','Back leg stays straight']},
+            {'event':'BEAM', 'short':'Relev\u00e9\nWalk',         'criteria':['Heels stay off the beam the entire walk','Walks with straight legs','Chest up with arms out to the side']},
+            {'event':'BEAM', 'short':'Straight\nJump',            'criteria':['Arms up on takeoff, down on landing','Toes pointed in the air','Lands in the same spot it started']},
+            {'event':'BEAM', 'short':'Straight\nJump\nDismount',  'criteria':['Arms swing up as feet leave the beam','Straight line from fingers to toes in the air','Sticks landing, hands in front, knees bent']},
+            {'event':'FLOOR','short':'Handstand',                 'criteria':['Feet come together at vertical','Straight line from hands to toes','Straight legs in the air/arms stay by ears']},
+            {'event':'FLOOR','short':'Cartwheel',                 'criteria':['Legs pass through vertical','Second hand turned in','Arms stay by ears','Legs straight throughout','Finishes in a lunge with opposite leg in front']},
+            {'event':'FLOOR','short':'Backward\nRoll',            'criteria':['Rolls with fingers pointing to shoulders','Continuous movement in the roll','Feet and knees together throughout']},
+            {'event':'FLOOR','short':'Bridge\n(5 sec hold)',       'criteria':['Straight arms in the bridge','Head between the arms','Feet flat and together']},
         ],
     },
     'Level 1': {
         'has_safety': False,
         'footer_h': 18,
+        'num_rows': 8,
         'skills': [
-            {'event':'VAULT','short':'STRAIGHT JUMP', 'criteria':['Run accelerates into the hurdle','Arms down on the board, up in the air','Straight body and legs in the air']},
-            {'event':'VAULT','short':'HS FLATBACK',   'criteria':['Feet come together at vertical handstand','Straight line from hands to toes at vertical','Lands flat on the mat as one piece']},
-            {'event':'BARS', 'short':'KICK PULLOVER', 'criteria':['Chin stays at the bar until toes come over','Shifts hands, fingers forward to front sup','Straight legs throughout the skill']},
-            {'event':'BARS', 'short':'CAST',          'criteria':['Straight arms throughout the skill','Legs straight and together','Straight line from shoulders to toes']},
-            {'event':'BARS', 'short':'FS HOLD TO FWD ROLL','criteria':['Holds front support, straight arms','Chin to chest','Legs straight, lowers slowly to hang']},
-            {'event':'BEAM', 'short':'BEAM MOUNT',    'criteria':['Jumps to front support, straight arms','Straight leg swings over, no touch','Stands up with arms by ears']},
-            {'event':'BEAM', 'short':'LEVER',         'criteria':['Arms by ears throughout','Straight line fingers to back foot','Back leg stays straight']},
-            {'event':'BEAM', 'short':'RELEVÉ WALK',   'criteria':['Heels stay off the beam the entire walk','Walks with straight legs','Chest up with arms out to the side']},
-            {'event':'BEAM', 'short':'STRAIGHT JUMP', 'criteria':['Arms swing up/down on landing','Toes pointed in the air','Lands in the same spot it started']},
-            {'event':'BEAM', 'short':'STR JUMP DISM', 'criteria':['Arms swing up as feet leave beam','Straight line fingers to toes in air','Sticks safe landing position']},
-            {'event':'FLOOR','short':'HANDSTAND',     'criteria':['Feet come together at vertical','Straight line from hands to toes','Straight legs in the air/arms stay by ears']},
-            {'event':'FLOOR','short':'CARTWHEEL',     'criteria':['Legs pass through vertical','Second hand turned in','Arms stay by ears','Legs straight throughout','Opposite leg lunge finish']},
-            {'event':'FLOOR','short':'BACKWARD ROLL', 'criteria':['Rolls with fingers pointing to shoulders','Continuous movement in the roll','Feet and knees together throughout']},
-            {'event':'FLOOR','short':'BRIDGE 5 SEC',  'criteria':['Straight arms in the bridge','Head between the arms','Feet flat and together']},
+            {'event':'VAULT','short':'Straight Jump\nto Resi',    'criteria':['Run accelerates into the hurdle','Arms down on the board, up in the air','Straight body and legs in the air']},
+            {'event':'VAULT','short':'Handstand\nFlatback',       'criteria':['Feet together at vertical','Straight line from hands to toes at vertical','Lands flat on the mat as one piece']},
+            {'event':'BARS', 'short':'Kick\nPullover',            'criteria':['Chin stays at the bar until toes come over','Shifts hands (fingers FWD) to front support','Straight legs throughout the skill']},
+            {'event':'BARS', 'short':'Cast',                      'criteria':['Straight arms throughout the skill','Legs straight and together','Straight line from shoulders to toes']},
+            {'event':'BARS', 'short':'Front\nSupport \u2192\nRoll Down','criteria':['Holds front support with straight arms','Chin to chest','Legs straight/together, slowly lowers to hang']},
+            {'event':'BEAM', 'short':'Beam\nMount',               'criteria':['Jumps to front support with straight arms','Straight leg swings over w/out touching beam','Stands up with arms by ears']},
+            {'event':'BEAM', 'short':'Lever',                     'criteria':['Arms by ears throughout','Straight line from fingers to back foot','Back leg stays straight']},
+            {'event':'BEAM', 'short':'Relev\u00e9\nWalk',         'criteria':['Heels stay off the beam the entire walk','Walks with straight legs','Chest up with arms out to the side']},
+            {'event':'BEAM', 'short':'Straight\nJump',            'criteria':['Arms up on takeoff, down on landing','Toes pointed in the air','Lands in the same spot it started']},
+            {'event':'BEAM', 'short':'Straight\nJump\nDismount',  'criteria':['Arms swing up as feet leave the beam','Straight line from fingers to toes in the air','Sticks landing, hands in front, knees bent']},
+            {'event':'FLOOR','short':'Handstand',                 'criteria':['Feet come together at vertical','Straight line from hands to toes','Straight legs in the air/arms stay by ears']},
+            {'event':'FLOOR','short':'Cartwheel',                 'criteria':['Legs pass through vertical','Second hand turned in','Arms stay by ears','Legs straight throughout','Finishes in a lunge with opposite leg in front']},
+            {'event':'FLOOR','short':'Backward\nRoll',            'criteria':['Rolls with fingers pointing to shoulders','Continuous movement in the roll','Feet and knees together throughout']},
+            {'event':'FLOOR','short':'Bridge\n(5 sec hold)',       'criteria':['Straight arms in the bridge','Head between the arms','Feet flat and together']},
         ],
     },
     'Level 2': {
         'has_safety': False,
         'footer_h': 18,
+        'num_rows': 8,
         'skills': [
-            {'event':'VAULT','short':'HS FLATBACK',       'criteria':['Arms down on board, up in the air','Straight line hands to toes at HS','Lands flat as one piece']},
-            {'event':'BARS', 'short':'CHIN-UP PULLOVER',  'criteria':['Pulls chin to bar (min forehead ht)','Feet leave floor at the same time','Legs straight and together throughout']},
-            {'event':'BARS', 'short':'CAST BACK HIP CIR', 'criteria':['Straight arms, shoulders lean back','Bar stays against thighs entire circle','Eyes on toes throughout the skill']},
-            {'event':'BARS', 'short':'CAST OFF DISM',     'criteria':['Straight arms throughout the cast','Shoulders over bar before pushing away','Cast 45 below horizontal']},
-            {'event':'BARS', 'short':'ROLL DN CHIN HANG', 'criteria':['Chin finishes above the bar','Holds tucked chin hang for 5 sec','Feet and knees together throughout']},
-            {'event':'BEAM', 'short':'PIVOT TURN',        'criteria':['Stays in relevé lock the entire turn','Arms stay overhead the entire turn','Straight legs']},
-            {'event':'BEAM', 'short':'VERTICAL HS',       'criteria':['Feet come together at vertical','Straight line from hands to toes','Arms stay by ears']},
-            {'event':'BEAM', 'short':'SIDE HS DISM',      'criteria':['Holds HS 1 sec before falling','Straight line shoulder to toes in dism','Shoulders over beam from HS to fall']},
-            {'event':'FLOOR','short':'BRIDGE KICKOVER',   'criteria':['Straight arms by ears','Legs stay straight through the split','One step from bridge hold to kickover']},
-            {'event':'FLOOR','short':'ROUND-OFF REBOUND', 'criteria':['Legs together & straight in snap-down','Hands off floor before feet hit','Rebounds up & back immediately']},
-            {'event':'FLOOR','short':'STR ARM BWD ROLL',  'criteria':['Pushes on pinkies at beginning of roll','Arms stay straight during the roll','Finishes in a strong push-up position']},
-            {'event':'FLOOR','short':'HALF TURN',         'criteria':['Arms stay in crown the entire turn','Stays in relevé the entire turn','Toe stays at the knee the entire turn']},
-            {'event':'FLOOR','short':'STEP LEAP',         'criteria':['Chest up, arms at sides in prep','Straight legs in the air','Lands in arabesque (1 sec hold)']},
+            {'event':'VAULT','short':'Handstand\nFlatback\non Resi',       'criteria':['Arms down on the board, up in the air','Straight line from hands to toes at handstand','Lands flat as one piece']},
+            {'event':'BARS', 'short':'Chin-Up\nPullover',  'criteria':['Pulls chin to the bar (bar min forehead height)','Feet leave the floor at the same time','Legs straight and together throughout']},
+            {'event':'BARS', 'short':'Cast Back\nHip Circle', 'criteria':['Straight arms as shoulders lean backwards','Bar stays against the thighs the entire circle','Eyes on toes throughout the skill']},
+            {'event':'BARS', 'short':'Cast Off\nDismount',     'criteria':['Straight arms throughout the cast','Shoulders over bar in cast before push away','Cast 45 below horizontal']},
+            {'event':'BARS', 'short':'Roll Down\nto Chin Hang', 'criteria':['Chin finishes above the bar','Holds tucked chin hang for 5 sec','Feet and knees together throughout']},
+            {'event':'BEAM', 'short':'Pivot Turn',        'criteria':['Stays in relev\u00e9 lock the entire turn','Arms stay overhead the entire turn','Straight legs']},
+            {'event':'BEAM', 'short':'Vertical\nHandstand',       'criteria':['Feet come together at vertical','Straight line from hands to toes','Arms stay by ears']},
+            {'event':'BEAM', 'short':'Side\nHandstand\nDismount',      'criteria':['Holds handstand for 1 sec before falling','Straight line from shoulder to toes in dismount','Shoulders over the beam from handstand to fall']},
+            {'event':'FLOOR','short':'Bridge\nKickover',   'criteria':['Straight arms by ears','Legs stay straight through the split','One step from bridge hold to kickover']},
+            {'event':'FLOOR','short':'Round-Off\nRebound', 'criteria':['Legs together and straight during the snap-down','Hands come off the floor before feet hit','Rebounds up and BWD immediately after landing']},
+            {'event':'FLOOR','short':'Straight Arm\nBackward Roll',  'criteria':['Pushes on pinkies at beginning of roll','Arms stay straight during the roll','Finishes in a strong push-up position']},
+            {'event':'FLOOR','short':'Half Turn',         'criteria':['Arms stay in crown the entire turn','Stays in relev\u00e9 the entire turn','Toe stays at the knee the entire turn']},
+            {'event':'FLOOR','short':'Step Leap',         'criteria':['Correct leap prep: chest up, arms at sides','Straight legs in the air','Lands in arabesque, front leg bent (1 sec)']},
         ],
     },
     'Level 3': {
         'has_safety': False,
         'footer_h': 18,
+        'num_rows': 8,
         'skills': [
-            {'event':'VAULT','short':'FRONT HANDSPRING',    'criteria':['Hands touch before body is vertical','Straight body at hand contact','Straight body after hands leave']},
-            {'event':'BARS', 'short':'GLIDE SWING',         'criteria':['Jumps to the bar with straight arms','Hips extended at the front of the swing','Returns in the same spot as the start']},
-            {'event':'BARS', 'short':'PO CAST BK HIP CIR',  'criteria':['Cast to 45 degrees below horizontal','Straight arms in back hip circle','Legs straight and together throughout']},
-            {'event':'BARS', 'short':'SOLE CIRCLE DISM',    'criteria':['Straight legs throughout','Feet rise as they come off of the bar','Body extended before landing']},
-            {'event':'BEAM', 'short':'SIDE HS ¼ TURN DISM', 'criteria':['Holds side HS for 1 sec before turning','Keeps body straight during the descent','Straight legs throughout']},
-            {'event':'BEAM', 'short':'HALF TURN',           'criteria':['Stays in relevé the entire turn','Arms freeze in crown during the turn','Toe stays at the knee the entire turn','Finishes the turn before stepping forward']},
-            {'event':'BEAM', 'short':'SPLIT JUMP',          'criteria':['Straight legs','Minimum 90 degree split','Lands in the same spot it started']},
-            {'event':'BEAM', 'short':'CARTWHEEL',           'criteria':['Second hand turned in','Head stays between arms','Kicks through vertical with straight legs']},
-            {'event':'FLOOR','short':'BACK HANDSPRING',     'criteria':['Skill travels backwards','Hands hit with open shoulders and hips','Thumbs facing each other','Legs together and straight throughout']},
-            {'event':'FLOOR','short':'FRONT HANDSPRING',    'criteria':['Straight arms by ears throughout','Lands in a tight arch','Rebounds forward with straight legs']},
-            {'event':'FLOOR','short':'CHASSÉ SPLIT LEAP',   'criteria':['Toes pointed in chassé','Minimum 120 degree split','Straight legs in the split']},
-            {'event':'FLOOR','short':'FULL TURN',           'criteria':['Arms stay in crown the entire turn','Stays in relevé the entire turn','Toe stays at the knee the entire turn']},
-            {'event':'FLOOR','short':'BACK WALKOVER',       'criteria':['Front leg lifts as hands reach back','Straight legs throughout','Arms stay by ears']},
+            {'event':'VAULT','short':'Front\nHandspring',    'criteria':['Hands touch mat/table before body is vertical','Straight body when hands touch mat/table','Straight body after hands leave the mat/table']},
+            {'event':'BARS', 'short':'Glide Swing',         'criteria':['Jumps to the bar with straight arms','Hips extended at the front of the swing','Returns in the same spot as the start']},
+            {'event':'BARS', 'short':'Pullover Cast\nBack Hip Circle',  'criteria':['Cast to 45 degrees below horizontal','Straight arms in back hip circle','Legs straight and together throughout']},
+            {'event':'BARS', 'short':'Sole Circle\nDismount',    'criteria':['Straight legs throughout','Feet rise as they come off of the bar','Body extended before landing']},
+            {'event':'BEAM', 'short':'Side HS\n1/4 Turn\nDismount', 'criteria':['Holds side HS for 1 sec before turning','Keeps body straight during the descent','Straight legs throughout']},
+            {'event':'BEAM', 'short':'Half Turn',           'criteria':['Stays in relev\u00e9 the entire turn','Arms freeze in crown during the turn','Toe stays at the knee the entire turn','Finishes the turn before stepping forward']},
+            {'event':'BEAM', 'short':'Split Jump',          'criteria':['Straight legs','Minimum 90 degree split','Lands in the same spot it started']},
+            {'event':'BEAM', 'short':'Cartwheel',           'criteria':['Second hand turned in','Head stays between arms','Kicks through vertical with straight legs']},
+            {'event':'FLOOR','short':'Back\nHandspring',     'criteria':['Skill travels backwards','Hands hit with open shoulders and hips','Thumbs facing each other','Legs together and straight throughout']},
+            {'event':'FLOOR','short':'Front\nHandspring',    'criteria':['Straight arms by ears throughout','Lands in a tight arch','Rebounds forward with straight legs']},
+            {'event':'FLOOR','short':'Chass\u00e9\nSplit Leap',   'criteria':['Toes pointed in chass\u00e9','Minimum 120 degree split','Straight legs in the split']},
+            {'event':'FLOOR','short':'Full Turn',           'criteria':['Arms stay in crown the entire turn','Stays in relev\u00e9 the entire turn','Toe stays at the knee the entire turn']},
+            {'event':'FLOOR','short':'Back\nWalkover',       'criteria':['Front leg lifts as hands reach back','Straight legs throughout','Arms stay by ears']},
         ],
     },
 }
@@ -227,14 +234,17 @@ PROGRAM_ALIASES = {
     'level 1': 'Level 1',
     'girls l1': 'Level 1',
     'gl1': 'Level 1',
+    'lev1': 'Level 1',
     'girls level 2': 'Level 2',
     'level 2': 'Level 2',
     'girls l2': 'Level 2',
     'gl2': 'Level 2',
+    'lev2': 'Level 2',
     'girls level 3': 'Level 3',
     'level 3': 'Level 3',
     'girls l3': 'Level 3',
     'gl3': 'Level 3',
+    'lev3': 'Level 3',
 }
 
 def resolve_program(name: str) -> str:
@@ -362,7 +372,7 @@ def build_score_lookup(score_map, students, skills):
 # MAIN GENERATOR
 # ════════════════════════════════════════════════════════════════════
 def generate_pdf(gym_code, class_name, date, day, time,
-                 students, program, score_map, mode='eval', _canvas=None):
+                 students, program, score_map, mode='eval', _canvas=None, ages=''):
     """
     Returns PDF as bytes (single-page), or draws onto _canvas if provided (multi-page).
     mode: 'eval' = pre-fill scores | 'blank' = all empty
@@ -391,9 +401,11 @@ def generate_pdf(gym_code, class_name, date, day, time,
         skill_mid_hex  = gym.get('skill_mid'),
     )
 
-    SKILLS   = prog['skills']
-    HAS_SAF  = prog.get('has_safety', False)
-    FOOTER_H = prog.get('footer_h', 18)
+    SKILLS      = prog['skills']
+    HAS_SAF     = prog.get('has_safety', False)
+    FOOTER_H    = prog.get('footer_h', 18)
+    NUM_ROWS    = prog.get('num_rows', 6)
+    SKILL_TEXT  = hex_color(gym.get('skill_text', '#ffffff'))
 
     NUM_SKILLS = len(SKILLS)
     NUM_COLS   = sum(len(sk['criteria'])+1 for sk in SKILLS)
@@ -465,29 +477,68 @@ def generate_pdf(gym_code, class_name, date, day, time,
     c.setFillColor(CCP_GRAY)
     c.rect(MARGIN, bar_y, USABLE_W, 2, fill=1, stroke=0)
 
-    # Logo — check both api-relative and public/ paths for Vercel compatibility
+    # Logo — check multiple paths for Vercel compatibility
     import os
     _here = os.path.dirname(os.path.abspath(__file__))
-    logo_path = os.path.join(_here, gym['logo'])
-    if not os.path.exists(logo_path):
-        logo_path = os.path.join(_here, '..', 'public', gym['logo'])
-    if os.path.exists(logo_path):
-        c.drawImage(logo_path, MARGIN+4, bar_y+4, width=40, height=40, mask='auto')
+    logo_candidates = [
+        os.path.join(_here, gym['logo']),
+        os.path.join(_here, 'public', gym['logo']),
+        os.path.join(_here, '..', 'public', gym['logo']),
+        os.path.join(_here, '..', gym['logo']),
+    ]
+    logo_path = next((p for p in logo_candidates if os.path.exists(p)), None)
+    logo_size = 42
+    logo_y    = bar_y + (TOP_BAR_H - logo_size) / 2
 
-    # Gym name centered
+    # Center logo + gym name as a unit in the page
+    c.setFont('Helvetica-Bold', 15)
+    name_w  = c.stringWidth(gym['name'], 'Helvetica-Bold', 15)
+    pair_w  = logo_size + 8 + name_w
+    pair_x  = (W - pair_w) / 2
+    logo_x  = pair_x
+    text_x  = pair_x + logo_size + 8
+
+    if logo_path:
+        c.drawImage(logo_path, logo_x, logo_y, width=logo_size, height=logo_size, mask='auto')
+
     c.setFillColor(WHITE)
-    c.setFont('Helvetica-Bold', 16)
-    c.drawCentredString(W/2, bar_y+31, gym['name'])
-
-    # Class info centered — white so it's readable on any brand color header
+    c.setFont('Helvetica-Bold', 15)
+    c.drawString(text_x, bar_y + 28, gym['name'])
     parts = [class_name]
     if day:  parts.append(day)
-    if date: parts.append(date)
     if time: parts.append(time)
-    class_line = '  ·  '.join(parts)
+    if ages: parts.append('Ages ' + ages if not ages.lower().startswith('ages') else ages)
+    class_line = '  |  '.join(parts)
+    c.setFont('Helvetica', 8)
+    c.drawString(text_x, bar_y + 14, class_line)
+
+    # ── SCORE KEY (top-right of header bar) ──────────────────────────
+    key_w, key_h = 108, 38
+    key_x = W - MARGIN - key_w - 4
+    key_y = bar_y + (TOP_BAR_H - key_h) / 2
     c.setFillColor(WHITE)
-    c.setFont('Helvetica', 8.5)
-    c.drawCentredString(W/2, bar_y+16, class_line)
+    c.setStrokeColor(CCP_BLUE); c.setLineWidth(1.2)
+    c.roundRect(key_x, key_y, key_w, key_h, 3, fill=1, stroke=1)
+    # "Key:" label
+    c.setFillColor(CCP_BLUE); c.setFont('Helvetica-Bold', 6.5)
+    c.drawCentredString(key_x + key_w/2, key_y + key_h - 9, 'SCORE KEY')
+    # Three items evenly spaced
+    item_cx = [key_x + key_w*0.18, key_x + key_w*0.50, key_x + key_w*0.82]
+    sym_y   = key_y + key_h - 22
+    lbl_y   = key_y + 3
+    sym_r   = 6.5
+    # Circle (Not Yet)
+    c.setFillColor(WHITE); c.setStrokeColor(hex_color('#aaaaaa')); c.setLineWidth(1.4)
+    c.circle(item_cx[0], sym_y, sym_r, fill=1, stroke=1)
+    # Red star (Earned)
+    draw_star(c, item_cx[1], sym_y, sym_r*1.15, CCP_RED, CCP_RED, lw=0)
+    # Gold star (Skill Complete)
+    draw_star(c, item_cx[2], sym_y, sym_r*1.15, GOLD, hex_color('#8a6a00'), lw=0.5)
+    # Labels
+    c.setFillColor(CCP_BLUE); c.setFont('Helvetica', 5.2)
+    c.drawCentredString(item_cx[0], lbl_y, 'Not Yet')
+    c.drawCentredString(item_cx[1], lbl_y, 'Earned')
+    c.drawCentredString(item_cx[2], lbl_y, 'Skill Complete')
 
     # ── HEADER: EVENT BANDS ───────────────────────────────────────────
     ev_top = CONTENT_TOP
@@ -498,10 +549,31 @@ def generate_pdf(gym_code, class_name, date, day, time,
         c.setFillColor(WHITE); c.setFont('Helvetica-Bold', 7.5)
         c.drawCentredString(x+w/2, ev_top-EV_HDR_H+5, ev)
 
-    # Navy block for name col
+    # Event band row — navy
     c.setFillColor(CCP_BLUE)
     c.rect(MARGIN, ev_top-EV_HDR_H, NAME_W, EV_HDR_H, fill=1, stroke=0)
-    c.rect(MARGIN, DATA_TOP, NAME_W, HEADER_H-EV_HDR_H, fill=1, stroke=0)
+
+    # Program label block — accent color, full criteria height
+    prog_block_h = HEADER_H - EV_HDR_H
+    c.setFillColor(CCP_RED)
+    c.rect(MARGIN, DATA_TOP, NAME_W, prog_block_h, fill=1, stroke=0)
+
+    # Large rotated program name in the block
+    label_parts = prog_key.upper().split()
+    prog_cx = MARGIN + NAME_W / 2
+    prog_cy = DATA_TOP + prog_block_h / 2
+    c.saveState()
+    c.translate(prog_cx, prog_cy)
+    c.rotate(90)
+    c.setFillColor(WHITE)
+    if len(label_parts) == 2:
+        c.setFont('Helvetica-Bold', 18)
+        c.drawCentredString(0,  10, label_parts[0])
+        c.drawCentredString(0, -12, label_parts[1])
+    else:
+        c.setFont('Helvetica-Bold', 14)
+        c.drawCentredString(0, 0, label_parts[0])
+    c.restoreState()
 
     # ── HEADER: SKILL NAMES ───────────────────────────────────────────
     sk_top = ev_top - EV_HDR_H
@@ -511,18 +583,24 @@ def generate_pdf(gym_code, class_name, date, day, time,
         w  = (len(sk['criteria'])+1)*COL_W
         c.setFillColor(EV_MED.get(ev, CCP_BLUE_MID))
         c.rect(x, sk_top-SK_HDR_H, w, SK_HDR_H, fill=1, stroke=0)
-        c.setFillColor(WHITE); c.setFont('Helvetica-Bold', 6)
+        c.setFillColor(SKILL_TEXT); c.setFont('Helvetica-Bold', 6)
         name = sk['short']
-        max_w = w - 4
-        if c.stringWidth(name, 'Helvetica-Bold', 6) > max_w:
-            words = name.split()
-            mid = max(1, len(words)//2)
-            line1 = ' '.join(words[:mid])
-            line2 = ' '.join(words[mid:])
-            c.drawCentredString(x+w/2, sk_top-SK_HDR_H+17, line1)
-            c.drawCentredString(x+w/2, sk_top-SK_HDR_H+8,  line2)
+        cx   = x + w/2
+        # Split on explicit \n, or auto-wrap if too wide
+        if '\n' in name:
+            lines = name.split('\n')
         else:
-            c.drawCentredString(x+w/2, sk_top-SK_HDR_H+12, name)
+            lines = [name]
+        if len(lines) == 1 and c.stringWidth(lines[0], 'Helvetica-Bold', 6) > w - 4:
+            words = lines[0].split()
+            mid   = max(1, len(words)//2)
+            lines = [' '.join(words[:mid]), ' '.join(words[mid:])]
+        # Draw lines centered vertically in SK_HDR_H
+        n      = len(lines)
+        line_h = 8
+        start_y = sk_top - SK_HDR_H/2 + (n-1)*line_h/2
+        for li, ln in enumerate(lines):
+            c.drawCentredString(cx, start_y - li*line_h, ln)
 
     # ── HEADER: CRITERIA (rotated) ────────────────────────────────────
     crit_top = sk_top - SK_HDR_H
@@ -574,6 +652,7 @@ def generate_pdf(gym_code, class_name, date, day, time,
     # "NAME" label in navy block
     c.setFillColor(WHITE); c.setFont('Helvetica-Bold', 7)
     c.drawCentredString(MARGIN+NAME_W/2, starlbl_top-STAR_LBL_H/2-2, 'NAME')
+
 
     # ── STUDENT ROWS ──────────────────────────────────────────────────
     for row in range(NUM_ROWS):
@@ -802,29 +881,72 @@ def generate_pdf(gym_code, class_name, date, day, time,
 def generate_multi_pdf(gym_code, classes, mode='eval'):
     """
     classes: list of dicts with keys: className, date, day, time, students, program, scoreMap
-    Returns one PDF with one page per class.
+    Returns one PDF with one page per class (or multiple pages if class exceeds row capacity).
     """
     buf = io.BytesIO()
     c   = canvas.Canvas(buf, pagesize=landscape(letter))
 
-    for i, cls in enumerate(classes):
-        if i > 0:
-            c.showPage()  # new page for each class after the first
-        generate_pdf(
-            gym_code   = gym_code,
-            class_name = cls.get('className', 'Class'),
-            date       = cls.get('date', ''),
-            day        = cls.get('day', ''),
-            time       = cls.get('time', ''),
-            students   = cls.get('students', []),
-            program    = cls.get('program', ''),
-            score_map  = cls.get('scoreMap', {}),
-            mode       = mode,
-            _canvas    = c,
-        )
+    first_page = True
+    for cls in classes:
+        program   = cls.get('program', '')
+        students  = cls.get('students', [])
+        score_map = cls.get('scoreMap', {})
+
+        # Determine row capacity for this program — skip unrecognized programs (Ninja, Xcel, etc.)
+        prog_key = resolve_program(program)
+        prog     = PROGRAMS.get(prog_key)
+        if not prog:
+            continue
+        capacity = prog.get('num_rows', 6)
+
+        # Split students into pages if over capacity
+        if len(students) == 0:
+            chunks = [[]]
+        else:
+            chunks = [students[i:i+capacity] for i in range(0, len(students), capacity)]
+
+        total_pages = len(chunks)
+        for chunk_idx, chunk in enumerate(chunks):
+            if not first_page:
+                c.showPage()
+            first_page = False
+
+            # Add page label to class name if overflow
+            class_name = cls.get('className', 'Class')
+            if total_pages > 1:
+                class_name = f"{class_name}  (pg {chunk_idx+1}/{total_pages})"
+
+            # Slice score_map columns for this page's students
+            chunk_score_map = _slice_score_map(score_map, chunk_idx * capacity, capacity)
+
+            generate_pdf(
+                gym_code   = gym_code,
+                class_name = class_name,
+                date       = cls.get('date', ''),
+                day        = cls.get('day', ''),
+                time       = cls.get('time', ''),
+                ages       = cls.get('ages', ''),
+                students   = chunk,
+                program    = program,
+                score_map  = chunk_score_map,
+                mode       = mode,
+                _canvas    = c,
+            )
 
     c.save()
     return buf.getvalue()
+
+
+# ── Score map slicer (for overflow pagination) ──────────────────────
+def _slice_score_map(score_map, start, count):
+    """Slice student columns from a score_map for a paginated chunk."""
+    sliced = {}
+    for apparatus, rows in score_map.items():
+        sliced[apparatus] = [
+            (row[start:start+count] if row else [])
+            for row in rows
+        ]
+    return sliced
 
 
 # ── Text truncation helper ──────────────────────────────────────────

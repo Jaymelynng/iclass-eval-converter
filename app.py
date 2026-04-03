@@ -5,19 +5,20 @@ Then open http://localhost:5050 in your browser
 """
 
 from flask import Flask, request, jsonify, send_file, send_from_directory
-import json, io, traceback
+import sys, os, json, io, traceback
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'api'))
 from pdf_generator import generate_pdf, generate_multi_pdf
 
-app = Flask(__name__, static_folder='.')
+app = Flask(__name__, static_folder='public')
 
 # ── Serve the frontend ───────────────────────────────────────────────
 @app.route('/')
 def index():
-    return send_from_directory('.', 'index.html')
+    return send_from_directory('public', 'index.html')
 
 @app.route('/<path:filename>')
 def static_files(filename):
-    return send_from_directory('.', filename)
+    return send_from_directory('public', filename)
 
 # ── PDF generation endpoint ──────────────────────────────────────────
 @app.route('/generate-pdf', methods=['POST'])
