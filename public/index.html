@@ -1738,15 +1738,13 @@ function resetForNewUpload() {
    WALKTHROUGH
    ═══════════════════════════════════════════ */
 const WT_STEPS = [
-  { section:'iClassPro',       title:'Log into iClassPro and click Classes in the top navigation bar', img:'sop-steps/step-02.png' },
-  { section:'iClassPro',       title:'Select the programs you want to print',                          img:'sop-steps/step-03.png' },
-  { section:'iClassPro',       title:'Select the specific classes and day you want to print',          img:'sop-steps/step-04.png' },
-  { section:'iClassPro',       title:'Check the box to select all classes',                            img:'sop-steps/step-05.png' },
-  { section:'iClassPro',       title:'Click Reports &rarr; Class Evaluation Forms',                    img:'sop-steps/step-07.png' },
-  { section:'iClassPro',       title:'Select XLS, then hit the download button',                       imgs:['sop-steps/step-08.png','sop-steps/step-09.png'] },
-  { section:'evalconvert.com', title:'Go to the converter tool and select your gym',                   img:'sop-steps/step-10.png' },
-  { section:'evalconvert.com', title:'Drop the XLS file — review the class list that populates',       img:'sop-steps/step-12.png' },
-  { section:'evalconvert.com', title:'Click Download PDF — your branded eval sheets are ready',        img:'sop-steps/step-13.png' },
+  { section:'iClassPro',       title:'Log into iClassPro and click Classes in the top navigation bar',          img:'sop-steps/step-02.png' },
+  { section:'iClassPro',       title:'Filter by program, then select the specific day you want to print',       imgs:['sop-steps/step-03.png','sop-steps/step-04.png'] },
+  { section:'iClassPro',       title:'Select all classes, then click Reports &rarr; Class Evaluation Forms',    imgs:['sop-steps/step-05.png','sop-steps/step-07.png'] },
+  { section:'iClassPro',       title:'Select XLS format and download the report to your computer',              imgs:['sop-steps/step-08.png','sop-steps/step-09.png'] },
+  { section:'evalconvert.com', title:'Go to the converter tool and select your gym',                            img:'sop-steps/step-10.png' },
+  { section:'evalconvert.com', title:'Drop the XLS file — review the class list that populates',               imgs:['sop-steps/step-11.png','sop-steps/step-12.png'] },
+  { section:'evalconvert.com', title:'Click Download PDF — your branded eval sheets are ready',                 img:'sop-steps/step-13.png' },
 ];
 let wtStep = 0;
 let _wtTransitioning = false;
@@ -1770,7 +1768,7 @@ function _wtKey(e) {
 
 function wtNext() {
   if (_wtTransitioning) return;
-  const crossingSection = wtStep === 5; // going from step 6 (idx 5) to step 7 (idx 6)
+  const crossingSection = wtStep === 3; // going from step 4 (idx 3) to step 5 (idx 4)
   if (wtStep < WT_STEPS.length - 1) {
     if (crossingSection) { wtShowSplash(() => { wtStep++; wtRender(true); }); }
     else { wtStep++; wtRender(true); }
@@ -1805,7 +1803,7 @@ function wtBuildSegs() {
   const el = document.getElementById('wtSegs');
   el.innerHTML = '';
   WT_STEPS.forEach((s, i) => {
-    if (i === 6) {
+    if (i === 4) {
       const gap = document.createElement('div');
       gap.className = 'wt-seg-gap';
       gap.title = 'Switch to evalconvert.com';
