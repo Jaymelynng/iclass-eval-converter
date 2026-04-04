@@ -294,7 +294,7 @@ span.s.fd:hover{color:#e8e8e8}
 .wt-accent{height:4px;flex-shrink:0;background:#1e3a5f;transition:background .5s ease}
 .wt-modal.section-eval .wt-accent{background:linear-gradient(90deg,#2a6a68,#5ab8b4)}
 /* step tracker */
-.wt-segs{display:flex;align-items:center;gap:4px;padding:10px 20px;background:#0e0e0e;flex-shrink:0;flex-wrap:wrap}
+.wt-segs{display:flex;align-items:center;justify-content:center;gap:4px;padding:10px 20px;background:#0e0e0e;flex-shrink:0;flex-wrap:wrap}
 .wt-seg{
   width:28px;height:28px;border-radius:50%;
   display:flex;align-items:center;justify-content:center;
@@ -333,7 +333,7 @@ span.s.fd:hover{color:#e8e8e8}
   transition:color .4s;font-variant-numeric:tabular-nums;
 }
 .wt-modal.section-eval .wt-ghost-num{color:rgba(90,184,180,.06)}
-.wt-header-left{flex:1;padding-left:70px;min-width:0}
+.wt-header-left{flex:1;padding-left:70px;min-width:0;text-align:center}
 .wt-badge{
   font-size:8px;font-weight:900;text-transform:uppercase;letter-spacing:3px;
   padding:3px 10px;border-radius:3px;display:inline-flex;align-items:center;gap:5px;
@@ -343,8 +343,8 @@ span.s.fd:hover{color:#e8e8e8}
 .wt-badge.evalconvert{background:rgba(58,184,180,.15);color:#3ab8b4;border:1px solid rgba(58,184,180,.25)}
 .wt-badge::before{content:'';width:5px;height:5px;border-radius:50%;background:currentColor;display:inline-block;flex-shrink:0}
 .wt-step-title{font-size:18px;font-weight:800;color:#fff;line-height:1.25;margin:0}
-.wt-counter-row{display:flex;align-items:center;gap:8px;margin-top:4px}
-.wt-counter{font-size:10px;color:#444;font-weight:700;letter-spacing:1.5px;text-transform:uppercase}
+.wt-counter-row{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:4px}
+.wt-counter{font-size:10px;color:#888;font-weight:700;letter-spacing:1.5px;text-transform:uppercase}
 .wt-close-btn{
   background:#1e1e1e;border:1px solid #2a2a2a;color:#555;
   font-size:18px;cursor:pointer;width:36px;height:36px;
@@ -362,36 +362,24 @@ span.s.fd:hover{color:#e8e8e8}
 .wt-modal.section-eval .wt-img-area::before{
   background:radial-gradient(ellipse at center,rgba(58,184,180,.04) 0%,transparent 70%);
 }
-/* zoom frame — replaces old wt-img / wt-multi-img */
-.wt-zoom-frame{
-  position:relative;overflow:hidden;
-  background-repeat:no-repeat;
-  background-size:var(--bsize,cover);
-  background-position:var(--bpos,center);
-  border-radius:12px;
+/* single image frame */
+#wtImgWrap{
+  display:none;max-width:100%;max-height:100%;border-radius:12px;
   box-shadow:0 20px 60px rgba(0,0,0,.8),0 0 0 1px rgba(255,255,255,.06);
-  transition:opacity .25s ease,background-position .5s ease,background-size .5s ease;
+  overflow:hidden;transition:opacity .25s ease;
 }
-/* single frame fills the image area */
-#wtImgWrap{width:100%;max-width:780px;height:380px;display:none}
-/* multi frames sit in flex row */
-.wt-multi .wt-zoom-frame{flex:1;min-width:0;height:340px;border-radius:10px;box-shadow:0 8px 30px rgba(0,0,0,.6)}
-/* pulsing spotlight ring — sits at center since bpos centers the focus */
-.wt-pulse-ring{
-  position:absolute;top:50%;left:50%;
-  width:44px;height:44px;margin:-22px 0 0 -22px;
-  border-radius:50%;pointer-events:none;z-index:5;
-  border:2.5px solid rgba(74,159,212,.9);
-  animation:wtRingPulse 1.6s ease-in-out infinite;
-}
-.wt-modal.section-eval .wt-pulse-ring{border-color:rgba(58,184,180,.9)}
-@keyframes wtRingPulse{
-  0%,100%{box-shadow:0 0 0 0 rgba(74,159,212,.55);opacity:1}
-  55%{box-shadow:0 0 0 18px rgba(74,159,212,0);opacity:.75}
-}
+#wtImgWrap img{width:100%;height:auto;object-fit:contain;display:block}
 /* multi-image strip */
 .wt-multi{display:none;align-items:center;justify-content:center;gap:0;width:100%;height:100%}
 .wt-multi.show{display:flex}
+.wt-multi-img{flex:1;min-width:0;max-height:100%;border-radius:10px;object-fit:contain;box-shadow:0 8px 30px rgba(0,0,0,.6);border:1px solid rgba(255,255,255,.06);transition:opacity .25s}
+.wt-multi-img.wt-zoom{aspect-ratio:4/3;object-fit:none}
+.wt-multi-img.fading{opacity:0}
+.wt-single-zoom{
+  width:100%;max-width:950px;aspect-ratio:21/9;border-radius:12px;
+  box-shadow:0 20px 60px rgba(0,0,0,.8),0 0 0 1px rgba(255,255,255,.06);
+  transition:opacity .25s ease;display:none;
+}
 .wt-multi-arrow{font-size:28px;color:#333;flex-shrink:0;padding:0 10px;font-weight:900}
 /* transition splash */
 .wt-splash{
@@ -661,7 +649,7 @@ span.s.fd:hover{color:#e8e8e8}
         <div class="wt-splash-text">Now open the converter tool</div>
         <div class="wt-splash-sub">Head to evalconvert.com</div>
       </div>
-      <div class="wt-zoom-frame" id="wtImgWrap"><div class="wt-pulse-ring"></div></div>
+      <div id="wtImgWrap"><img id="wtImg" src="" alt=""></div>
       <div class="wt-multi" id="wtMulti"></div>
     </div>
     <div class="wt-footer">
@@ -1758,14 +1746,14 @@ function resetForNewUpload() {
 const WT_STEPS = [
   { section:'iClassPro',
     title:'Log into iClassPro and click Classes in the top navigation bar',
-    img:'sop-steps/step-02.png',
-    focus:{ bsize:'300%', bpos:'29% 0%' }        // zooms to Classes tab in top nav
+    img:'sop-steps/step-01.png',
+    focus:{ bsize:'200%', bpos:'45% 0%' }        // zooms to Classes tab in top nav
   },
   { section:'iClassPro',
     title:'Filter by program, then select the specific day you want to print',
     imgs:['sop-steps/step-03.png','sop-steps/step-04.png'],
     foci:[
-      { bsize:'260%', bpos:'0% 35%' },            // program filter panel on left
+      { bsize:'300%', bpos:'0% 30%' },              // program filter sidebar on left
       { bsize:'200%', bpos:'10% 0%' }             // Select All + class list top
     ]
   },
@@ -1774,7 +1762,7 @@ const WT_STEPS = [
     imgs:['sop-steps/step-05.png','sop-steps/step-07.png'],
     foci:[
       { bsize:'260%', bpos:'17% 0%' },            // "53 Selected" badge
-      { bsize:'260%', bpos:'83% 75%' }            // Class Evaluation Forms in dropdown
+      { bsize:'260%', bpos:'63% 75%' }            // Class Evaluation Forms in dropdown
     ]
   },
   { section:'iClassPro',
@@ -1787,8 +1775,7 @@ const WT_STEPS = [
   },
   { section:'evalconvert.com',
     title:'Go to the converter tool and select your gym',
-    img:'sop-steps/step-10.png',
-    focus:{ bsize:'200%', bpos:'0% 30%' }         // CCP gym card
+    img:'sop-steps/step-10-grid.png'
   },
   { section:'evalconvert.com',
     title:'Drop the XLS file — review the class list that populates',
@@ -1904,17 +1891,15 @@ function wtRender(animate) {
   // Footer label
   document.getElementById('wtStepLabel').textContent = isEval ? 'evalconvert.com' : 'iClassPro';
 
-  // Image with zoom frame — single vs multi
+  // Image — single vs multi
   const imgWrap = document.getElementById('wtImgWrap');
+  const img = document.getElementById('wtImg');
   const multi = document.getElementById('wtMulti');
+  const zoomSingle = document.getElementById('wtZoomSingle');
   const isMulti = !!s.imgs;
   imgWrap.style.display = isMulti ? 'none' : 'block';
   multi.className = 'wt-multi' + (isMulti ? ' show' : '');
-
-  function applyZoom(el, f) {
-    el.style.backgroundSize     = f ? f.bsize : 'cover';
-    el.style.backgroundPosition = f ? f.bpos  : 'center';
-  }
+  if (isMulti && zoomSingle) zoomSingle.style.display = 'none';
 
   if (isMulti) {
     const build = () => {
@@ -1926,29 +1911,72 @@ function wtRender(animate) {
           arrow.textContent = '\u2192';
           multi.appendChild(arrow);
         }
-        const frame = document.createElement('div');
-        frame.className = 'wt-zoom-frame';
-        frame.style.backgroundImage = 'url(' + src + ')';
-        applyZoom(frame, s.foci ? s.foci[idx] : null);
-        const ring = document.createElement('div');
-        ring.className = 'wt-pulse-ring';
-        frame.appendChild(ring);
-        multi.appendChild(frame);
+        const f = s.foci && s.foci[idx];
+        if (f) {
+          const el = document.createElement('div');
+          el.className = 'wt-multi-img wt-zoom';
+          el.style.backgroundImage = 'url(' + src + ')';
+          el.style.backgroundSize = f.bsize;
+          el.style.backgroundPosition = f.bpos;
+          el.style.backgroundRepeat = 'no-repeat';
+          el.setAttribute('role','img');
+          el.setAttribute('aria-label', s.title.replace(/<[^>]+>/g,''));
+          multi.appendChild(el);
+        } else {
+          const el = document.createElement('img');
+          el.className = 'wt-multi-img';
+          el.src = src;
+          el.alt = s.title.replace(/<[^>]+>/g,'');
+          multi.appendChild(el);
+        }
       });
     };
     if (animate) {
-      multi.querySelectorAll('.wt-zoom-frame').forEach(f => { f.style.transition='none'; f.style.opacity='0'; });
-      setTimeout(() => { build(); }, 200);
+      multi.querySelectorAll('.wt-multi-img').forEach(i => i.classList.add('fading'));
+      setTimeout(build, 200);
     } else { build(); }
   } else {
-    const doSet = () => {
-      imgWrap.style.backgroundImage = 'url(' + s.img + ')';
-      applyZoom(imgWrap, s.focus || null);
-    };
-    if (animate) {
-      imgWrap.style.opacity = '0';
-      setTimeout(() => { doSet(); imgWrap.style.opacity = '1'; }, 200);
-    } else { doSet(); imgWrap.style.opacity = '1'; }
+    const f = s.focus;
+    if (f) {
+      imgWrap.style.display = 'none';
+      // Use a zoom div instead of the <img>
+      let zoomEl = document.getElementById('wtZoomSingle');
+      if (!zoomEl) {
+        zoomEl = document.createElement('div');
+        zoomEl.id = 'wtZoomSingle';
+        zoomEl.className = 'wt-single-zoom';
+        document.getElementById('wtImgArea').appendChild(zoomEl);
+      }
+      const apply = () => {
+        zoomEl.style.backgroundImage = 'url(' + s.img + ')';
+        zoomEl.style.backgroundSize = f.bsize;
+        zoomEl.style.backgroundPosition = f.bpos;
+        zoomEl.style.backgroundRepeat = 'no-repeat';
+        zoomEl.style.display = 'block';
+        zoomEl.style.opacity = '1';
+      };
+      if (animate) {
+        zoomEl.style.opacity = '0';
+        setTimeout(apply, 200);
+      } else { apply(); }
+    } else {
+      // Hide zoom div if it exists
+      const zoomEl = document.getElementById('wtZoomSingle');
+      if (zoomEl) zoomEl.style.display = 'none';
+      imgWrap.style.display = 'block';
+      if (animate) {
+        imgWrap.style.opacity = '0';
+        setTimeout(() => {
+          img.src = s.img;
+          img.alt = s.title.replace(/<[^>]+>/g,'');
+          imgWrap.style.opacity = '1';
+        }, 200);
+      } else {
+        img.src = s.img;
+        img.alt = s.title.replace(/<[^>]+>/g,'');
+        imgWrap.style.opacity = '1';
+      }
+    }
   }
 
   // Segments
