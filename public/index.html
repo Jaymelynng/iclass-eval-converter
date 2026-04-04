@@ -465,59 +465,45 @@ span.s.fd:hover{color:#e8e8e8}
 
   <div style="display:flex;flex-direction:column;gap:10px;margin-top:20px">
     <button class="wt-how-btn" onclick="wtOpen()" style="margin-top:0">
-      <span class="play-icon">&#9654;</span>
+      <img src="sop-steps/step-01.png" alt="Preview" style="width:54px;height:38px;border-radius:6px;object-fit:cover;object-position:center 15%;flex-shrink:0;border:1px solid rgba(74,159,212,.3)">
       <span class="wt-how-btn-text">
         <span class="wt-how-btn-label">Step-by-Step Guide</span>
         <span class="wt-how-btn-title">How to Export &amp; Use This Tool</span>
       </span>
+      <span style="font-size:10px;color:rgba(74,159,212,.7);font-weight:700;margin-left:auto;flex-shrink:0">7 STEPS</span>
       <span class="wt-how-btn-arrow">&#8250;</span>
     </button>
   </div>
 
   <div class="format-guide" style="margin-top:10px">
-    <button class="fg-toggle" onclick="fgToggle(this)" aria-expanded="false">
-      <span class="fg-toggle-left">
-        <span class="fg-toggle-icon">&#9776;</span>
-        <span>
-          <div class="fg-toggle-label">Class Name Format Guide</div>
-          <div class="fg-toggle-sub">How to format class names in iClassPro for the converter</div>
-        </span>
-      </span>
-      <span class="fg-toggle-arrow" id="fgArrow">&#8964;</span>
-    </button>
-    <div class="fg-body" id="fgBody">
-      <div class="fg-inner" style="margin-top:4px">
-        <div class="fg-rows">
-          <div>
-            <div class="fg-row-label">Standard</div>
-            <div class="fg-example-wrap">
-              <div class="fg-example" id="fgEx0">Preschool | Monday | 3:30pm | Ages 3-4</div>
-              <button class="fg-copy" onclick="fgCopy(0)" title="Copy">&#10697;</button>
-            </div>
-          </div>
-          <div>
-            <div class="fg-row-label">Two classes, same time</div>
-            <div class="fg-example-wrap">
-              <div class="fg-example" id="fgEx1">Preschool A | Monday | 3:30pm | Ages 3-4<br>Preschool B | Monday | 3:30pm | Ages 3-4</div>
-              <button class="fg-copy" onclick="fgCopy(1)" title="Copy">&#10697;</button>
-            </div>
-          </div>
-          <div>
-            <div class="fg-row-label">With note</div>
-            <div class="fg-example-wrap">
-              <div class="fg-example" id="fgEx2">Preschool | Monday | 3:30pm | Ages 3-4 (note here)</div>
-              <button class="fg-copy" onclick="fgCopy(2)" title="Copy">&#10697;</button>
-            </div>
-          </div>
+    <div style="padding:16px 20px 4px">
+      <div style="font-size:13px;font-weight:800;color:#444;letter-spacing:.5px;text-transform:uppercase;text-align:center">Class Name Format Guide</div>
+      <div style="font-size:11px;color:#888;text-align:center;margin-top:2px">How to format class names in iClassPro for the converter</div>
+    </div>
+    <div class="fg-body open" id="fgBody">
+      <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-bottom:12px">
+        <div class="fg-prog-chip active" onclick="fgSelect(this,'Preschool')">Preschool</div>
+        <div class="fg-prog-chip" onclick="fgSelect(this,'Junior')">Junior</div>
+        <div class="fg-prog-chip" onclick="fgSelect(this,'Advanced Junior')">Adv Junior</div>
+        <div class="fg-prog-chip" onclick="fgSelect(this,'Level 1')">Level 1</div>
+        <div class="fg-prog-chip" onclick="fgSelect(this,'Level 2')">Level 2</div>
+        <div class="fg-prog-chip" onclick="fgSelect(this,'Level 3')">Level 3</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:11px;font-weight:700;color:#555;white-space:nowrap;min-width:70px">Standard</span>
+          <div class="fg-example" id="fgEx0" style="flex:1;padding:8px 12px;font-size:13px">Preschool | Monday | 3:30pm | Ages 3-4</div>
+          <button class="fg-copy" onclick="fgCopy(0)" title="Copy" style="position:static">&#10697;</button>
         </div>
-        <div class="fg-right">
-          <div class="fg-prog-title">Programs</div>
-          <div class="fg-prog-chip active" onclick="fgSelect(this,'Preschool')">Preschool</div>
-          <div class="fg-prog-chip" onclick="fgSelect(this,'Junior')">Junior</div>
-          <div class="fg-prog-chip" onclick="fgSelect(this,'Advanced Junior')">Advanced Junior</div>
-          <div class="fg-prog-chip" onclick="fgSelect(this,'Level 1')">Level 1</div>
-          <div class="fg-prog-chip" onclick="fgSelect(this,'Level 2')">Level 2</div>
-          <div class="fg-prog-chip" onclick="fgSelect(this,'Level 3')">Level 3</div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:11px;font-weight:700;color:#555;white-space:nowrap;min-width:70px">A/B Split</span>
+          <div class="fg-example" id="fgEx1" style="flex:1;padding:8px 12px;font-size:13px">Preschool A | Monday | 3:30pm | Ages 3-4<br>Preschool B | Monday | 3:30pm | Ages 3-4</div>
+          <button class="fg-copy" onclick="fgCopy(1)" title="Copy" style="position:static">&#10697;</button>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:11px;font-weight:700;color:#555;white-space:nowrap;min-width:70px">With note</span>
+          <div class="fg-example" id="fgEx2" style="flex:1;padding:8px 12px;font-size:13px">Preschool | Monday | 3:30pm | Ages 3-4 (note here)</div>
+          <button class="fg-copy" onclick="fgCopy(2)" title="Copy" style="position:static">&#10697;</button>
         </div>
       </div>
     </div>
