@@ -362,18 +362,36 @@ span.s.fd:hover{color:#e8e8e8}
 .wt-modal.section-eval .wt-img-area::before{
   background:radial-gradient(ellipse at center,rgba(58,184,180,.04) 0%,transparent 70%);
 }
-.wt-img{
-  max-width:100%;max-height:100%;border-radius:12px;display:block;
+/* zoom frame — replaces old wt-img / wt-multi-img */
+.wt-zoom-frame{
+  position:relative;overflow:hidden;
+  background-repeat:no-repeat;
+  background-size:var(--bsize,cover);
+  background-position:var(--bpos,center);
+  border-radius:12px;
   box-shadow:0 20px 60px rgba(0,0,0,.8),0 0 0 1px rgba(255,255,255,.06);
-  object-fit:contain;
-  transition:opacity .25s ease,transform .25s ease;
+  transition:opacity .25s ease,background-position .5s ease,background-size .5s ease;
 }
-.wt-img.fading{opacity:0;transform:scale(.97)}
+/* single frame fills the image area */
+#wtImgWrap{width:100%;max-width:780px;height:380px;display:none}
+/* multi frames sit in flex row */
+.wt-multi .wt-zoom-frame{flex:1;min-width:0;height:340px;border-radius:10px;box-shadow:0 8px 30px rgba(0,0,0,.6)}
+/* pulsing spotlight ring — sits at center since bpos centers the focus */
+.wt-pulse-ring{
+  position:absolute;top:50%;left:50%;
+  width:44px;height:44px;margin:-22px 0 0 -22px;
+  border-radius:50%;pointer-events:none;z-index:5;
+  border:2.5px solid rgba(74,159,212,.9);
+  animation:wtRingPulse 1.6s ease-in-out infinite;
+}
+.wt-modal.section-eval .wt-pulse-ring{border-color:rgba(58,184,180,.9)}
+@keyframes wtRingPulse{
+  0%,100%{box-shadow:0 0 0 0 rgba(74,159,212,.55);opacity:1}
+  55%{box-shadow:0 0 0 18px rgba(74,159,212,0);opacity:.75}
+}
 /* multi-image strip */
 .wt-multi{display:none;align-items:center;justify-content:center;gap:0;width:100%;height:100%}
 .wt-multi.show{display:flex}
-.wt-multi-img{flex:1;min-width:0;max-height:100%;border-radius:10px;object-fit:contain;box-shadow:0 8px 30px rgba(0,0,0,.6);border:1px solid rgba(255,255,255,.06);transition:opacity .25s,transform .25s}
-.wt-multi-img.fading{opacity:0;transform:scale(.97)}
 .wt-multi-arrow{font-size:28px;color:#333;flex-shrink:0;padding:0 10px;font-weight:900}
 /* transition splash */
 .wt-splash{
@@ -643,7 +661,7 @@ span.s.fd:hover{color:#e8e8e8}
         <div class="wt-splash-text">Now open the converter tool</div>
         <div class="wt-splash-sub">Head to evalconvert.com</div>
       </div>
-      <img class="wt-img" id="wtImg" src="" alt="">
+      <div class="wt-zoom-frame" id="wtImgWrap"><div class="wt-pulse-ring"></div></div>
       <div class="wt-multi" id="wtMulti"></div>
     </div>
     <div class="wt-footer">
@@ -1738,13 +1756,53 @@ function resetForNewUpload() {
    WALKTHROUGH
    ═══════════════════════════════════════════ */
 const WT_STEPS = [
-  { section:'iClassPro',       title:'Log into iClassPro and click Classes in the top navigation bar',          img:'sop-steps/step-02.png' },
-  { section:'iClassPro',       title:'Filter by program, then select the specific day you want to print',       imgs:['sop-steps/step-03.png','sop-steps/step-04.png'] },
-  { section:'iClassPro',       title:'Select all classes, then click Reports &rarr; Class Evaluation Forms',    imgs:['sop-steps/step-05.png','sop-steps/step-07.png'] },
-  { section:'iClassPro',       title:'Select XLS format and download the report to your computer',              imgs:['sop-steps/step-08.png','sop-steps/step-09.png'] },
-  { section:'evalconvert.com', title:'Go to the converter tool and select your gym',                            img:'sop-steps/step-10.png' },
-  { section:'evalconvert.com', title:'Drop the XLS file — review the class list that populates',               imgs:['sop-steps/step-11.png','sop-steps/step-12.png'] },
-  { section:'evalconvert.com', title:'Click Download PDF — your branded eval sheets are ready',                 img:'sop-steps/step-13.png' },
+  { section:'iClassPro',
+    title:'Log into iClassPro and click Classes in the top navigation bar',
+    img:'sop-steps/step-02.png',
+    focus:{ bsize:'300%', bpos:'29% 0%' }        // zooms to Classes tab in top nav
+  },
+  { section:'iClassPro',
+    title:'Filter by program, then select the specific day you want to print',
+    imgs:['sop-steps/step-03.png','sop-steps/step-04.png'],
+    foci:[
+      { bsize:'260%', bpos:'0% 35%' },            // program filter panel on left
+      { bsize:'200%', bpos:'10% 0%' }             // Select All + class list top
+    ]
+  },
+  { section:'iClassPro',
+    title:'Select all classes, then click Reports &rarr; Class Evaluation Forms',
+    imgs:['sop-steps/step-05.png','sop-steps/step-07.png'],
+    foci:[
+      { bsize:'260%', bpos:'17% 0%' },            // "53 Selected" badge
+      { bsize:'260%', bpos:'83% 75%' }            // Class Evaluation Forms in dropdown
+    ]
+  },
+  { section:'iClassPro',
+    title:'Select XLS format and download the report to your computer',
+    imgs:['sop-steps/step-08.png','sop-steps/step-09.png'],
+    foci:[
+      { bsize:'260%', bpos:'50% 58%' },           // XLS button
+      { bsize:'260%', bpos:'58% 33%' }            // download icon in background tasks
+    ]
+  },
+  { section:'evalconvert.com',
+    title:'Go to the converter tool and select your gym',
+    img:'sop-steps/step-10.png',
+    focus:{ bsize:'200%', bpos:'0% 30%' }         // CCP gym card
+  },
+  { section:'evalconvert.com',
+    title:'Drop the XLS file — review the class list that populates',
+    imgs:['sop-steps/step-11.png','sop-steps/step-12.png'],
+    foci:[
+      { bsize:'180%', bpos:'50% 72%' },           // drop zone / upload area
+      { bsize:'180%', bpos:'50% 15%' }            // top of class list
+    ]
+  },
+  { section:'evalconvert.com',
+    title:'Click Download PDF — your branded eval sheets are ready',
+    img:'sop-steps/step-13.png',
+    focus:{ bsize:'200%', bpos:'50% 100%' }       // Download PDF button at bottom
+  },
 ];
 let wtStep = 0;
 let _wtTransitioning = false;
@@ -1788,12 +1846,12 @@ function wtGoTo(i) {
 function wtShowSplash(cb) {
   _wtTransitioning = true;
   const splash = document.getElementById('wtSplash');
-  const img = document.getElementById('wtImg');
-  img.classList.add('fading');
+  const imgWrap = document.getElementById('wtImgWrap');
+  if (imgWrap) imgWrap.style.opacity = '0';
   splash.classList.add('show');
   setTimeout(() => {
     splash.classList.remove('show');
-    img.classList.remove('fading');
+    if (imgWrap) imgWrap.style.opacity = '1';
     _wtTransitioning = false;
     cb();
   }, 1400);
@@ -1846,12 +1904,17 @@ function wtRender(animate) {
   // Footer label
   document.getElementById('wtStepLabel').textContent = isEval ? 'evalconvert.com' : 'iClassPro';
 
-  // Image with fade — single vs multi
-  const img = document.getElementById('wtImg');
+  // Image with zoom frame — single vs multi
+  const imgWrap = document.getElementById('wtImgWrap');
   const multi = document.getElementById('wtMulti');
   const isMulti = !!s.imgs;
-  img.style.display = isMulti ? 'none' : 'block';
+  imgWrap.style.display = isMulti ? 'none' : 'block';
   multi.className = 'wt-multi' + (isMulti ? ' show' : '');
+
+  function applyZoom(el, f) {
+    el.style.backgroundSize     = f ? f.bsize : 'cover';
+    el.style.backgroundPosition = f ? f.bpos  : 'center';
+  }
 
   if (isMulti) {
     const build = () => {
@@ -1863,29 +1926,29 @@ function wtRender(animate) {
           arrow.textContent = '\u2192';
           multi.appendChild(arrow);
         }
-        const el = document.createElement('img');
-        el.className = 'wt-multi-img';
-        el.src = src;
-        el.alt = s.title;
-        multi.appendChild(el);
+        const frame = document.createElement('div');
+        frame.className = 'wt-zoom-frame';
+        frame.style.backgroundImage = 'url(' + src + ')';
+        applyZoom(frame, s.foci ? s.foci[idx] : null);
+        const ring = document.createElement('div');
+        ring.className = 'wt-pulse-ring';
+        frame.appendChild(ring);
+        multi.appendChild(frame);
       });
     };
     if (animate) {
-      multi.querySelectorAll('.wt-multi-img').forEach(i => i.classList.add('fading'));
-      setTimeout(build, 200);
+      multi.querySelectorAll('.wt-zoom-frame').forEach(f => { f.style.transition='none'; f.style.opacity='0'; });
+      setTimeout(() => { build(); }, 200);
     } else { build(); }
   } else {
+    const doSet = () => {
+      imgWrap.style.backgroundImage = 'url(' + s.img + ')';
+      applyZoom(imgWrap, s.focus || null);
+    };
     if (animate) {
-      img.classList.add('fading');
-      setTimeout(() => {
-        img.src = s.img;
-        img.alt = s.title.replace(/<[^>]+>/g,'');
-        img.classList.remove('fading');
-      }, 200);
-    } else {
-      img.src = s.img;
-      img.alt = s.title.replace(/<[^>]+>/g,'');
-    }
+      imgWrap.style.opacity = '0';
+      setTimeout(() => { doSet(); imgWrap.style.opacity = '1'; }, 200);
+    } else { doSet(); imgWrap.style.opacity = '1'; }
   }
 
   // Segments
