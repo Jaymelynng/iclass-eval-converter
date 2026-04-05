@@ -492,17 +492,17 @@ span.s.fd:hover{color:#e8e8e8}
       <div style="display:flex;flex-direction:column;gap:8px">
         <div style="display:flex;align-items:center;gap:8px">
           <span style="font-size:11px;font-weight:700;color:#555;white-space:nowrap;min-width:70px">Standard</span>
-          <div class="fg-example" id="fgEx0" style="flex:1;padding:8px 12px;font-size:13px">Preschool | Monday | 3:30pm | Ages 3-4</div>
+          <div class="fg-example" id="fgEx0" style="flex:1;padding:8px 12px;font-size:13px">Preschool | Monday | 3:30pm</div>
           <button class="fg-copy" onclick="fgCopy(0)" title="Copy" style="position:static">&#10697;</button>
         </div>
         <div style="display:flex;align-items:center;gap:8px">
           <span style="font-size:11px;font-weight:700;color:#555;white-space:nowrap;min-width:70px">A/B Split</span>
-          <div class="fg-example" id="fgEx1" style="flex:1;padding:8px 12px;font-size:13px">Preschool A | Monday | 3:30pm | Ages 3-4<br>Preschool B | Monday | 3:30pm | Ages 3-4</div>
+          <div class="fg-example" id="fgEx1" style="flex:1;padding:8px 12px;font-size:13px">Preschool A | Monday | 3:30pm<br>Preschool B | Monday | 3:30pm</div>
           <button class="fg-copy" onclick="fgCopy(1)" title="Copy" style="position:static">&#10697;</button>
         </div>
         <div style="display:flex;align-items:center;gap:8px">
           <span style="font-size:11px;font-weight:700;color:#555;white-space:nowrap;min-width:70px">With note</span>
-          <div class="fg-example" id="fgEx2" style="flex:1;padding:8px 12px;font-size:13px">Preschool | Monday | 3:30pm | Ages 3-4 (note here)</div>
+          <div class="fg-example" id="fgEx2" style="flex:1;padding:8px 12px;font-size:13px">Preschool | Monday | 3:30pm (note here)</div>
           <button class="fg-copy" onclick="fgCopy(2)" title="Copy" style="position:static">&#10697;</button>
         </div>
       </div>
@@ -701,21 +701,21 @@ const GYMS = {
 
 /* ═══ FORMAT GUIDE LOGIC ═══ */
 const FG_EXAMPLES = {
-  'Preschool':  ['Preschool | Monday | 3:30pm | Ages 3-4',     'Preschool A | Monday | 3:30pm | Ages 3-4\nPreschool B | Monday | 3:30pm | Ages 3-4',     'Preschool | Monday | 3:30pm | Ages 3-4 (note here)'],
-  'Junior':     ['Junior | Tuesday | 4:00pm | Ages 5-6',       'Junior A | Tuesday | 4:00pm | Ages 5-6\nJunior B | Tuesday | 4:00pm | Ages 5-6',         'Junior | Tuesday | 4:00pm | Ages 5-6 (note here)'],
-  'Advanced Junior': ['Advanced Junior | Wednesday | 5:00pm | Ages 5-6', 'Advanced Junior A | Wednesday | 5:00pm | Ages 5-6\nAdvanced Junior B | Wednesday | 5:00pm | Ages 5-6', 'Advanced Junior | Wednesday | 5:00pm | Ages 5-6 (note here)'],
-  'Level 1':         ['Level 1 | Thursday | 5:30pm | Ages 7+',          'Level 1 A | Thursday | 5:30pm | Ages 7+\nLevel 1 B | Thursday | 5:30pm | Ages 7+',                 'Level 1 | Thursday | 5:30pm | Ages 7+ (note here)'],
-  'Level 2':         ['Level 2 | Monday | 6:00pm | Ages 7+',            'Level 2 A | Monday | 6:00pm | Ages 7+\nLevel 2 B | Monday | 6:00pm | Ages 7+',                     'Level 2 | Monday | 6:00pm | Ages 7+ (note here)'],
-  'Level 3':         ['Level 3 | Friday | 4:30pm | Ages 7+',            'Level 3 A | Friday | 4:30pm | Ages 7+\nLevel 3 B | Friday | 4:30pm | Ages 7+',                     'Level 3 | Friday | 4:30pm | Ages 7+ (note here)'],
+  'Preschool':  ['Preschool | Monday | 3:30pm',     'Preschool A | Monday | 3:30pm\nPreschool B | Monday | 3:30pm',     'Preschool | Monday | 3:30pm (note here)'],
+  'Junior':     ['Junior | Tuesday | 4:00pm',       'Junior A | Tuesday | 4:00pm\nJunior B | Tuesday | 4:00pm',         'Junior | Tuesday | 4:00pm (note here)'],
+  'Advanced Junior': ['Advanced Junior | Wednesday | 5:00pm', 'Advanced Junior A | Wednesday | 5:00pm\nAdvanced Junior B | Wednesday | 5:00pm', 'Advanced Junior | Wednesday | 5:00pm (note here)'],
+  'Level 1':         ['Level 1 | Thursday | 5:30pm',          'Level 1 A | Thursday | 5:30pm\nLevel 1 B | Thursday | 5:30pm',                 'Level 1 | Thursday | 5:30pm (note here)'],
+  'Level 2':         ['Level 2 | Monday | 6:00pm',            'Level 2 A | Monday | 6:00pm\nLevel 2 B | Monday | 6:00pm',                     'Level 2 | Monday | 6:00pm (note here)'],
+  'Level 3':         ['Level 3 | Friday | 4:30pm',            'Level 3 A | Friday | 4:30pm\nLevel 3 B | Friday | 4:30pm',                     'Level 3 | Friday | 4:30pm (note here)'],
 };
 
 const FG_TEMPLATES = {
-  'Preschool':  ['Preschool | Day | #:##pm | Ages 3-4',     'Preschool A | Day | #:##pm | Ages 3-4\nPreschool B | Day | #:##pm | Ages 3-4',     'Preschool | Day | #:##pm | Ages 3-4 (note here)'],
-  'Junior':     ['Junior | Day | #:##pm | Ages 5-6',        'Junior A | Day | #:##pm | Ages 5-6\nJunior B | Day | #:##pm | Ages 5-6',           'Junior | Day | #:##pm | Ages 5-6 (note here)'],
-  'Advanced Junior': ['Advanced Junior | Day | #:##pm | Ages 5-6',   'Advanced Junior A | Day | #:##pm | Ages 5-6\nAdvanced Junior B | Day | #:##pm | Ages 5-6',   'Advanced Junior | Day | #:##pm | Ages 5-6 (note here)'],
-  'Level 1':         ['Level 1 | Day | #:##pm | Ages 7+',           'Level 1 A | Day | #:##pm | Ages 7+\nLevel 1 B | Day | #:##pm | Ages 7+',                   'Level 1 | Day | #:##pm | Ages 7+ (note here)'],
-  'Level 2':         ['Level 2 | Day | #:##pm | Ages 7+',           'Level 2 A | Day | #:##pm | Ages 7+\nLevel 2 B | Day | #:##pm | Ages 7+',                   'Level 2 | Day | #:##pm | Ages 7+ (note here)'],
-  'Level 3':         ['Level 3 | Day | #:##pm | Ages 7+',           'Level 3 A | Day | #:##pm | Ages 7+\nLevel 3 B | Day | #:##pm | Ages 7+',                   'Level 3 | Day | #:##pm | Ages 7+ (note here)'],
+  'Preschool':  ['Preschool | Day | #:##pm',     'Preschool A | Day | #:##pm\nPreschool B | Day | #:##pm',     'Preschool | Day | #:##pm (note here)'],
+  'Junior':     ['Junior | Day | #:##pm',        'Junior A | Day | #:##pm\nJunior B | Day | #:##pm',           'Junior | Day | #:##pm (note here)'],
+  'Advanced Junior': ['Advanced Junior | Day | #:##pm',   'Advanced Junior A | Day | #:##pm\nAdvanced Junior B | Day | #:##pm',   'Advanced Junior | Day | #:##pm (note here)'],
+  'Level 1':         ['Level 1 | Day | #:##pm',           'Level 1 A | Day | #:##pm\nLevel 1 B | Day | #:##pm',                   'Level 1 | Day | #:##pm (note here)'],
+  'Level 2':         ['Level 2 | Day | #:##pm',           'Level 2 A | Day | #:##pm\nLevel 2 B | Day | #:##pm',                   'Level 2 | Day | #:##pm (note here)'],
+  'Level 3':         ['Level 3 | Day | #:##pm',           'Level 3 A | Day | #:##pm\nLevel 3 B | Day | #:##pm',                   'Level 3 | Day | #:##pm (note here)'],
 };
 
 function fgSelect(el, prog) {
@@ -1132,14 +1132,14 @@ function handleFiles(files) {
    TAB NAME PARSER
    Handles two formats:
      Old: "Mon 330 Preschool 34 yrs"
-     New: "Preschool | Monday | 3:30pm | Ages 3-4"
+     New: "Preschool | Monday | 3:30pm"
    ═══════════════════════════════════════════ */
 function parseTabName(tabName) {
   const result = { day:'', time:'', section:'', program:'', age:'' };
 
   // Split on pipe OR multiple spaces — handles both formats:
   //   "Preschool  Monday  330pm  Ages 3-4"
-  //   "Preschool | Monday | 3:30pm | Ages 3-4"
+  //   "Preschool | Monday | 3:30pm"
   //   "Mon 330 Preschool 34 yrs"
   const sep = tabName.includes('|') ? /\s*\|\s*/ : /\s{2,}|\s+(?=[A-Z])/;
   const segments = tabName.split(sep).map(s => s.trim()).filter(s => s.length > 0);
