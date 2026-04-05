@@ -999,6 +999,13 @@ const PROGRAM_ROWS = {
 /* Program name mapping from iClassPro text
    Ordered longest→shortest so "ADVANCED JUNIOR" matches before "JUNIOR" etc.
    Uses .includes() so any key that appears anywhere in the class name will match. */
+/* Class names matching any SKIP pattern are rejected BEFORE program matching.
+   Use this for classes that contain a valid keyword but should NOT be processed. */
+const PROGRAM_SKIP = [
+  /\bBOYS?\s*(LEVEL|LVL|LEV|L)\s*\d/i,     // Boys Level 1/2/3, Boys L1, Boys LVL 2, etc.
+  /\bBOY.?S?\s*(LEVEL|LVL|LEV|L)\s*\d/i,   // Boy's Level, Boy039s Level (broken apostrophe)
+];
+
 const PROGRAM_MAP = {
   // Advanced Junior — must come before JUNIOR
   'ADVANCED JUNIOR': 'Advanced Junior',
@@ -1387,13 +1394,15 @@ async function parseEvalXLS(file) {
     parsedClasses = evalResults.map(ed => {
       let program = null;
       const upper = ed.className.toUpperCase();
+      const tabUpper = ed.tabName ? ed.tabName.toUpperCase() : '';
+      // Skip check — reject before matching
+      const skipText = upper + ' ' + tabUpper;
+      if (PROGRAM_SKIP.some(re => re.test(skipText))) { return { ...ed, program: null }; }
       for (const [key, val] of Object.entries(PROGRAM_MAP)) {
         if (upper.includes(key)) { program = val; break; }
       }
-      // Fallback: try tab name (catches "Girls Recreational Gymnastics" → Level 1/2/3,
-      //           and "Junior Gymnastics" → Advanced Junior when tab says "Adv Junior...")
+      // Fallback: try tab name
       if (!program && ed.tabName) {
-        const tabUpper = ed.tabName.toUpperCase();
         for (const [key, val] of Object.entries(PROGRAM_MAP)) {
           if (tabUpper.includes(key)) { program = val; break; }
         }
@@ -1556,11 +1565,15 @@ function showConfirm(mode) {
   const classes = parsedEvalData.map(evalData => {
     let program = 'Unknown';
     const upper = evalData.className.toUpperCase();
+    const tabUpper = evalData.tabName ? evalData.tabName.toUpperCase() : '';
+    const skipText = upper + ' ' + tabUpper;
+    if (PROGRAM_SKIP.some(re => re.test(skipText))) {
+      return { className: evalData.className, day: '', time: '', ages: '', students: evalData.students, program: 'Unknown' };
+    }
     for (const [key, val] of Object.entries(PROGRAM_MAP)) {
       if (upper.includes(key)) { program = val; break; }
     }
     if (program === 'Unknown' && evalData.tabName) {
-      const tabUpper = evalData.tabName.toUpperCase();
       for (const [key, val] of Object.entries(PROGRAM_MAP)) {
         if (tabUpper.includes(key)) { program = val; break; }
       }
@@ -1635,13 +1648,16 @@ async function generatePages(mode) {
     const classes = parsedEvalData.map(evalData => {
       let program = 'Unknown';
       const upper = evalData.className.toUpperCase();
+      const tabUpper = evalData.tabName ? evalData.tabName.toUpperCase() : '';
+      const skipText = upper + ' ' + tabUpper;
+      if (PROGRAM_SKIP.some(re => re.test(skipText))) {
+        return { className: evalData.className, date: '', day: '', time: '', ages: '', students: evalData.students, program: 'Unknown', scoreMap: {} };
+      }
       for (const [key, val] of Object.entries(PROGRAM_MAP)) {
         if (upper.includes(key)) { program = val; break; }
       }
-      // Fallback: try tab name (catches "Girls Recreational Gymnastics" → Level 1/2/3,
-      //           and "Junior Gymnastics" → Advanced Junior when tab says "Adv Junior...")
+      // Fallback: try tab name
       if (program === 'Unknown' && evalData.tabName) {
-        const tabUpper = evalData.tabName.toUpperCase();
         for (const [key, val] of Object.entries(PROGRAM_MAP)) {
           if (tabUpper.includes(key)) { program = val; break; }
         }
