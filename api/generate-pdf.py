@@ -4,6 +4,8 @@ POST /generate-pdf with JSON body → returns PDF bytes.
 """
 from http.server import BaseHTTPRequestHandler
 import json, io, traceback
+import os, sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from pdf_generator import generate_pdf, generate_multi_pdf
 
 
