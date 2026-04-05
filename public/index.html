@@ -1255,7 +1255,7 @@ async function parseEvalXLS(file) {
       // Parse tab name for class metadata
       const tabInfo = parseTabName(sheetName);
       const tabClassName = tabInfo.program
-        ? tabInfo.program.replace(/\s*ages?\s+[\d–-]+\s*$/i, '').replace(/\s*ages?\s*$/i, '').trim()
+        ? tabInfo.program.replace(/\s*ages?\s+[\d–-]+\s*$/i, '').replace(/\s*ages?\s*$/i, '').replace(/\s+ag$/i, '').trim()
         : '';
 
       // ONE RESULT PER HEADER GROUP — each group = one class = one PDF page

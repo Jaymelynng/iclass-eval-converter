@@ -581,7 +581,7 @@ def generate_pdf(gym_code, class_name, date, day, time,
     parts = [class_name]
     if day:  parts.append(day)
     if time: parts.append(time)
-    if ages: parts.append('Ages ' + ages if not ages.lower().startswith('ages') else ages)
+    # Ages intentionally excluded — truncation at 31 chars turns "Ages" to "Ag"
     class_line = '  |  '.join(parts)
     c.setFont('Helvetica', 8)
     c.drawString(text_x, bar_y + 14, class_line)
