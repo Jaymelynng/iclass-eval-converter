@@ -1151,8 +1151,9 @@ function parseTabName(tabName) {
   const programParts = [];
 
   for (const seg of segments) {
-    // Skip "Ages" label alone
+    // Skip "Ages" label alone, and truncation fragments (single letters like "A" from "Ages")
     if (/^ages?$/i.test(seg)) continue;
+    if (/^[A-Z]$/i.test(seg) && result.time) continue;  // single letter after time = truncated "Ages"
 
     // Day
     if (dayRe.test(seg)) {
