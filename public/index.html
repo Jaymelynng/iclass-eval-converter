@@ -1002,8 +1002,7 @@ const PROGRAM_ROWS = {
 /* Class names matching any SKIP pattern are rejected BEFORE program matching.
    Use this for classes that contain a valid keyword but should NOT be processed. */
 const PROGRAM_SKIP = [
-  /\bBOYS?\s*(LEVEL|LVL|LEV|L)\s*\d/i,     // Boys Level 1/2/3, Boys L1, Boys LVL 2, etc.
-  /\bBOY.?S?\s*(LEVEL|LVL|LEV|L)\s*\d/i,   // Boy's Level, Boy039s Level (broken apostrophe)
+  /BOY.*?(LEVEL|LVL|LEV|L)\s*\d/i,         // Boys Level, Boy's Level, Boy039s Level, etc.
 ];
 
 const PROGRAM_MAP = {
