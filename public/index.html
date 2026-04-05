@@ -994,6 +994,9 @@ const PROGRAM_ROWS = {
   'Level 1':         8,
   'Level 2':         8,
   'Level 3':         8,
+  'Boys Level 1':    8,
+  'Boys Level 2':    8,
+  'Boys Level 3':    8,
 };
 
 /* Program name mapping from iClassPro text
@@ -1002,10 +1005,17 @@ const PROGRAM_ROWS = {
 /* Class names matching any SKIP pattern are rejected BEFORE program matching.
    Use this for classes that contain a valid keyword but should NOT be processed. */
 const PROGRAM_SKIP = [
-  /BOY.*?(LEVEL|LVL|LEV|L)\s*\d/i,         // Boys Level, Boy's Level, Boy039s Level, etc.
+  // Currently empty — Boys Level now supported
 ];
 
 const PROGRAM_MAP = {
+  // Boys Level — must come before generic LEVEL entries
+  'BOYS LEVEL 3':    'Boys Level 3',
+  'BOYS LEVEL 2':    'Boys Level 2',
+  'BOYS LEVEL 1':    'Boys Level 1',
+  'BOY039S LEVEL 3': 'Boys Level 3',
+  'BOY039S LEVEL 2': 'Boys Level 2',
+  'BOY039S LEVEL 1': 'Boys Level 1',
   // Advanced Junior — must come before JUNIOR
   'ADVANCED JUNIOR': 'Advanced Junior',
   'ADV JUNIOR':      'Advanced Junior',
