@@ -223,6 +223,7 @@ PROGRAMS = {
     # Final star ("3x in a row") is auto-added by the renderer.
     'Boys Level 1': {
         'has_safety': False,
+        'has_mastery': False,
         'footer_h': 18,
         'num_rows': 8,
         'skills': [
@@ -235,6 +236,7 @@ PROGRAMS = {
     },
     'Boys Level 2': {
         'has_safety': False,
+        'has_mastery': False,
         'footer_h': 18,
         'num_rows': 8,
         'skills': [
@@ -248,6 +250,7 @@ PROGRAMS = {
     },
     'Boys Level 3': {
         'has_safety': False,
+        'has_mastery': False,
         'footer_h': 18,
         'num_rows': 8,
         'skills': [
@@ -392,7 +395,7 @@ def draw_star(c, cx, cy, r, fill_color, stroke_color, lw=0.5):
 
 
 # ── Score lookup ─────────────────────────────────────────────────────
-def build_score_lookup(score_map, students, skills):
+def build_score_lookup(score_map, students, skills, has_mastery=True):
     """
     score_map from frontend: { apparatus_lower: [[row_of_scores], ...] }
     Each inner list = one criterion row, values per student (1=earned, 0/None=not).
@@ -421,17 +424,18 @@ def build_score_lookup(score_map, students, skills):
             lookup[skill_idx][crit_idx] = scores
             row_pointer[ev] += 1
 
-        # Final star row
-        row_idx = row_pointer[ev]
-        final_row = []
-        if ev in score_map and row_idx < len(score_map[ev]):
-            final_row = score_map[ev][row_idx]
-        final_scores = []
-        for stu_idx in range(len(students)):
-            val = final_row[stu_idx] if stu_idx < len(final_row) else None
-            final_scores.append(val == 1 or val == '1')
-        lookup[skill_idx]['final'] = final_scores
-        row_pointer[ev] += 1
+        # Final star row (only for programs with mastery)
+        if has_mastery:
+            row_idx = row_pointer[ev]
+            final_row = []
+            if ev in score_map and row_idx < len(score_map[ev]):
+                final_row = score_map[ev][row_idx]
+            final_scores = []
+            for stu_idx in range(len(students)):
+                val = final_row[stu_idx] if stu_idx < len(final_row) else None
+                final_scores.append(val == 1 or val == '1')
+            lookup[skill_idx]['final'] = final_scores
+            row_pointer[ev] += 1
 
     return lookup
 
@@ -471,12 +475,14 @@ def generate_pdf(gym_code, class_name, date, day, time,
 
     SKILLS      = prog['skills']
     HAS_SAF     = prog.get('has_safety', False)
+    HAS_MASTERY = prog.get('has_mastery', True)  # default True for girls programs
     FOOTER_H    = prog.get('footer_h', 18)
     NUM_ROWS    = prog.get('num_rows', 6)
     SKILL_TEXT  = hex_color(gym.get('skill_text', '#ffffff'))
+    MAST        = 1 if HAS_MASTERY else 0  # extra column per skill for mastery star
 
     NUM_SKILLS = len(SKILLS)
-    NUM_COLS   = sum(len(sk['criteria'])+1 for sk in SKILLS)
+    NUM_COLS   = sum(len(sk['criteria'])+MAST for sk in SKILLS)
 
     # Layout
     TOP_BAR_H  = 48
@@ -499,7 +505,7 @@ def generate_pdf(gym_code, class_name, date, day, time,
 
     # Score lookup
     if mode == 'eval' and score_map:
-        lookup = build_score_lookup(score_map, students, SKILLS)
+        lookup = build_score_lookup(score_map, students, SKILLS, has_mastery=HAS_MASTERY)
     else:
         lookup = {}   # blank mode
 
@@ -508,7 +514,7 @@ def generate_pdf(gym_code, class_name, date, day, time,
     col = 0
     for sk in SKILLS:
         skill_col_start.append(col)
-        col += len(sk['criteria']) + 1
+        col += len(sk['criteria']) + MAST
 
     ev_spans = {}
     for i, sk in enumerate(SKILLS):
@@ -648,7 +654,7 @@ def generate_pdf(gym_code, class_name, date, day, time,
     for i, sk in enumerate(SKILLS):
         ev = sk['event']
         x  = ev_x(skill_col_start[i])
-        w  = (len(sk['criteria'])+1)*COL_W
+        w  = (len(sk['criteria'])+MAST)*COL_W
         c.setFillColor(EV_MED.get(ev, CCP_BLUE_MID))
         c.rect(x, sk_top-SK_HDR_H, w, SK_HDR_H, fill=1, stroke=0)
         c.setFillColor(SKILL_TEXT); c.setFont('Helvetica-Bold', 6)
@@ -674,8 +680,8 @@ def generate_pdf(gym_code, class_name, date, day, time,
     crit_top = sk_top - SK_HDR_H
     for i, sk in enumerate(SKILLS):
         ev = sk['event']
-        crits_all  = sk['criteria'] + ['3× in a row']
-        star_labels = [f'★{j+1}' for j in range(len(sk['criteria']))] + ['★F']
+        crits_all  = sk['criteria'] + (['3× in a row'] if HAS_MASTERY else [])
+        star_labels = [f'★{j+1}' for j in range(len(sk['criteria']))] + (['★F'] if HAS_MASTERY else [])
         for j, (star, crit) in enumerate(zip(star_labels, crits_all)):
             col_x    = ev_x(skill_col_start[i]+j)
             is_final = (j == len(sk['criteria']))
@@ -703,10 +709,10 @@ def generate_pdf(gym_code, class_name, date, day, time,
     starlbl_top = crit_top - CRIT_H
     for i, sk in enumerate(SKILLS):
         ev = sk['event']
-        star_labels = [f'★{j+1}' for j in range(len(sk['criteria']))] + ['★F']
+        star_labels = [f'★{j+1}' for j in range(len(sk['criteria']))] + (['★F'] if HAS_MASTERY else [])
         for j, star in enumerate(star_labels):
             col_x    = ev_x(skill_col_start[i]+j)
-            is_final = (j == len(sk['criteria']))
+            is_final = HAS_MASTERY and (j == len(sk['criteria']))
             c.setFillColor(GOLD if is_final else EV_LIGHT.get(ev, CCP_BLUE_XLT))
             c.setStrokeColor(hex_color('#cccccc')); c.setLineWidth(0.3)
             c.rect(col_x, starlbl_top-STAR_LBL_H, COL_W, STAR_LBL_H, fill=1, stroke=1)
@@ -749,11 +755,11 @@ def generate_pdf(gym_code, class_name, date, day, time,
         for i in range(NUM_SKILLS):
             sk     = SKILLS[i]
             n_crit = len(sk['criteria'])
-            for j in range(n_crit+1):
+            for j in range(n_crit+MAST):
                 col_x    = ev_x(skill_col_start[i]+j)
                 cx       = col_x + COL_W/2
                 r_bub    = min(COL_W*0.31, (ROW_H-NAME_ZONE_H)*0.35)
-                is_final = (j == n_crit)
+                is_final = HAS_MASTERY and (j == n_crit)
 
                 # Get earned state
                 if mode == 'blank' or not lookup:
@@ -792,7 +798,7 @@ def generate_pdf(gym_code, class_name, date, day, time,
     c.line(ev_x(NUM_COLS), starlbl_top-STAR_LBL_H, ev_x(NUM_COLS), ev_top-EV_HDR_H)
 
     for i, sk in enumerate(SKILLS):
-        for j in range(1, len(sk['criteria'])+1):
+        for j in range(1, len(sk['criteria'])+MAST):
             x = ev_x(skill_col_start[i]+j)
             c.setStrokeColor(CCP_GRAY); c.setLineWidth(0.18)
             c.line(x, starlbl_top-STAR_LBL_H, x, sk_top-SK_HDR_H)
