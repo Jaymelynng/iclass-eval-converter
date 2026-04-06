@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Star Chart Converter SOP — Rise Athletics</title>
+<style>
+  /* ── Reset & Base ────────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --rise-red: #c8102e;
+    --rise-dark: #1a1a2e;
+    --rise-mid: #3a3a5c;
+    --text: #222;
+    --text-light: #555;
+    --bg: #fff;
+    --border: #e0e0e0;
+    --accent-icp: #2563eb;
+    --accent-eval: #059669;
+    --section-bg: #f8f9fb;
+  }
+
+  html { font-size: 15px; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    color: var(--text);
+    background: var(--bg);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── Layout ──────────────────────────────────────── */
+  .page-wrap {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 40px 32px 60px;
+  }
+
+  /* ── Print Button (screen only) ──────────────────── */
+  .print-btn {
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    z-index: 100;
+    background: var(--rise-red);
+    color: #fff;
+    border: none;
+    padding: 14px 28px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(200,16,46,0.35);
+    transition: transform 0.15s, box-shadow 0.15s;
+    letter-spacing: 0.02em;
+  }
+  .print-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 24px rgba(200,16,46,0.45);
+  }
+
+  /* ── Header ──────────────────────────────────────── */
+  .sop-header {
+    text-align: center;
+    padding-bottom: 36px;
+    border-bottom: 3px solid var(--rise-red);
+    margin-bottom: 40px;
+  }
+  .sop-header .brand-line {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+  .sop-header .brand-dot {
+    width: 10px; height: 10px;
+    background: var(--rise-red);
+    border-radius: 50%;
+  }
+  .sop-header .brand-name {
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--rise-red);
+  }
+  .sop-header h1 {
+    font-size: 1.85rem;
+    font-weight: 800;
+    color: var(--rise-dark);
+    line-height: 1.25;
+    margin-bottom: 6px;
+  }
+  .sop-header .subtitle {
+    font-size: 1.05rem;
+    color: var(--text-light);
+    font-weight: 400;
+  }
+
+  /* ── Section divider ─────────────────────────────── */
+  .section-divider {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 44px 0 28px;
+  }
+  .section-divider::before,
+  .section-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+  .section-divider span {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-light);
+    white-space: nowrap;
+  }
+
+  /* ── Step Card ───────────────────────────────────── */
+  .step-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 32px;
+    overflow: hidden;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+  .step-top {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 18px 24px;
+    border-bottom: 1px solid var(--border);
+    background: var(--section-bg);
+  }
+  .step-num {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #fff;
+    flex-shrink: 0;
+  }
+  .step-card.icp .step-num { background: var(--accent-icp); }
+  .step-card.eval .step-num { background: var(--accent-eval); }
+
+  .step-badge {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+  .step-card.icp .step-badge {
+    background: #dbeafe;
+    color: var(--accent-icp);
+  }
+  .step-card.eval .step-badge {
+    background: #d1fae5;
+    color: var(--accent-eval);
+  }
+
+  .step-title {
+    font-size: 1.02rem;
+    font-weight: 600;
+    color: var(--rise-dark);
+    line-height: 1.35;
+  }
+
+  .step-images {
+    padding: 20px 24px;
+  }
+  .step-images.single img {
+    width: 100%;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    display: block;
+  }
+  .step-images.dual {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    align-items: start;
+  }
+  .step-images.dual img {
+    width: 100%;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    display: block;
+  }
+  .dual-arrow {
+    display: none; /* visual flow handled by grid order */
+  }
+
+  /* ── Format Guide ────────────────────────────────── */
+  .format-guide {
+    background: var(--section-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 28px 28px 24px;
+    margin-top: 44px;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+  .format-guide h2 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--rise-dark);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .format-guide h2 .icon {
+    font-size: 1.1rem;
+  }
+  .format-block {
+    margin-bottom: 16px;
+  }
+  .format-block strong {
+    display: block;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+  .format-block code {
+    display: inline-block;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 6px 14px;
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    font-size: 0.88rem;
+    color: var(--rise-dark);
+    letter-spacing: 0.01em;
+  }
+  .program-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 4px;
+  }
+  .program-chip {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 4px 12px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .format-note {
+    background: #fff;
+    border-left: 3px solid var(--accent-icp);
+    padding: 10px 16px;
+    font-size: 0.85rem;
+    color: var(--text-light);
+    border-radius: 0 5px 5px 0;
+    margin-top: 12px;
+    line-height: 1.5;
+  }
+
+  /* ── Troubleshooting ─────────────────────────────── */
+  .troubleshooting {
+    margin-top: 36px;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+  .troubleshooting h2 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--rise-dark);
+    margin-bottom: 16px;
+  }
+  .ts-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+  }
+  .ts-table th {
+    text-align: left;
+    padding: 10px 14px;
+    background: var(--rise-dark);
+    color: #fff;
+    font-weight: 600;
+    font-size: 0.8rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .ts-table th:first-child { border-radius: 6px 0 0 0; }
+  .ts-table th:last-child { border-radius: 0 6px 0 0; }
+  .ts-table td {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .ts-table tr:last-child td { border-bottom: none; }
+  .ts-table tr:nth-child(even) td { background: var(--section-bg); }
+  .ts-issue {
+    font-weight: 600;
+    color: var(--rise-dark);
+  }
+
+  /* ── Footer ──────────────────────────────────────── */
+  .sop-footer {
+    margin-top: 48px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    text-align: center;
+    font-size: 0.82rem;
+    color: var(--text-light);
+  }
+  .sop-footer strong {
+    color: var(--text);
+  }
+
+  /* ══════════════════════════════════════════════════
+     PRINT STYLES
+     ══════════════════════════════════════════════════ */
+  @media print {
+    html { font-size: 13px; }
+    body { background: #fff; }
+
+    .print-btn { display: none !important; }
+
+    .page-wrap {
+      max-width: 100%;
+      padding: 20px 24px 30px;
+    }
+
+    .sop-header {
+      padding-bottom: 16px;
+      margin-bottom: 20px;
+    }
+
+    .step-card {
+      margin-bottom: 18px;
+      box-shadow: none;
+      border: 1px solid #ccc;
+      page-break-inside: avoid;
+      break-inside: avoid;
+    }
+
+    .step-images { padding: 14px 18px; }
+    .step-images img { max-height: 300px; object-fit: contain; }
+    .step-images.dual img { max-height: 240px; }
+
+    .section-divider { margin: 24px 0 16px; }
+
+    .format-guide,
+    .troubleshooting {
+      page-break-inside: avoid;
+      break-inside: avoid;
+    }
+
+    .sop-footer { margin-top: 24px; }
+
+    /* Force backgrounds to print */
+    .step-num,
+    .step-badge,
+    .ts-table th {
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+  }
+
+  /* ── Responsive (screen) ─────────────────────────── */
+  @media screen and (max-width: 640px) {
+    .page-wrap { padding: 24px 16px 40px; }
+    .sop-header h1 { font-size: 1.4rem; }
+    .step-images.dual {
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+    .step-top { flex-wrap: wrap; gap: 10px; }
+  }
+</style>
+</head>
+<body>
+
+<button class="print-btn" onclick="window.print()">Download / Print this Guide</button>
+
+<div class="page-wrap">
+
+  <!-- ═══ HEADER ═══ -->
+  <header class="sop-header">
+    <div class="brand-line">
+      <div class="brand-dot"></div>
+      <span class="brand-name">Rise Athletics</span>
+      <div class="brand-dot"></div>
+    </div>
+    <h1>Star Chart Converter</h1>
+    <p class="subtitle">How to Export &amp; Print Evaluation Sheets</p>
+  </header>
+
+  <!-- ═══ iClassPro SECTION ═══ -->
+  <div class="section-divider"><span>Part 1 &mdash; iClassPro</span></div>
+
+  <!-- STEP 1 -->
+  <div class="step-card icp">
+    <div class="step-top">
+      <div class="step-num">1</div>
+      <span class="step-badge">iClassPro</span>
+      <span class="step-title">Log into iClassPro and click <strong>Classes</strong> in the top navigation bar</span>
+    </div>
+    <div class="step-images single">
+      <img src="sop-steps/step-01.png" alt="Step 1: Click Classes in iClassPro navigation">
+    </div>
+  </div>
+
+  <!-- STEP 2 -->
+  <div class="step-card icp">
+    <div class="step-top">
+      <div class="step-num">2</div>
+      <span class="step-badge">iClassPro</span>
+      <span class="step-title">Filter by program, then select the specific day you want to print</span>
+    </div>
+    <div class="step-images dual">
+      <img src="sop-steps/step-03.png" alt="Step 2a: Filter by program in sidebar">
+      <img src="sop-steps/step-04.png" alt="Step 2b: Select the day">
+    </div>
+  </div>
+
+  <!-- STEP 3 -->
+  <div class="step-card icp">
+    <div class="step-top">
+      <div class="step-num">3</div>
+      <span class="step-badge">iClassPro</span>
+      <span class="step-title">Select all classes, then click <strong>Reports</strong> &rarr; <strong>Class Evaluation Forms</strong></span>
+    </div>
+    <div class="step-images dual">
+      <img src="sop-steps/step-05.png" alt="Step 3a: Select all classes">
+      <img src="sop-steps/step-07.png" alt="Step 3b: Click Reports, then Class Evaluation Forms">
+    </div>
+  </div>
+
+  <!-- STEP 4 -->
+  <div class="step-card icp">
+    <div class="step-top">
+      <div class="step-num">4</div>
+      <span class="step-badge">iClassPro</span>
+      <span class="step-title">Select <strong>XLS</strong> format and download the report to your computer</span>
+    </div>
+    <div class="step-images dual">
+      <img src="sop-steps/step-08.png" alt="Step 4a: Select XLS format">
+      <img src="sop-steps/step-09.png" alt="Step 4b: Download the report">
+    </div>
+  </div>
+
+  <!-- ═══ evalconvert.com SECTION ═══ -->
+  <div class="section-divider"><span>Part 2 &mdash; evalconvert.com</span></div>
+
+  <!-- STEP 5 -->
+  <div class="step-card eval">
+    <div class="step-top">
+      <div class="step-num">5</div>
+      <span class="step-badge">evalconvert.com</span>
+      <span class="step-title">Go to <strong>evalconvert.com</strong> and select your gym</span>
+    </div>
+    <div class="step-images single">
+      <img src="sop-steps/step-10-grid.png" alt="Step 5: Select your gym on evalconvert.com">
+    </div>
+  </div>
+
+  <!-- STEP 6 -->
+  <div class="step-card eval">
+    <div class="step-top">
+      <div class="step-num">6</div>
+      <span class="step-badge">evalconvert.com</span>
+      <span class="step-title">Drop the XLS file &mdash; review the class list that populates</span>
+    </div>
+    <div class="step-images dual">
+      <img src="sop-steps/step-11.png" alt="Step 6a: Drop the XLS file">
+      <img src="sop-steps/step-12.png" alt="Step 6b: Review the class list">
+    </div>
+  </div>
+
+  <!-- STEP 7 -->
+  <div class="step-card eval">
+    <div class="step-top">
+      <div class="step-num">7</div>
+      <span class="step-badge">evalconvert.com</span>
+      <span class="step-title">Click <strong>Download PDF</strong> &mdash; your branded eval sheets are ready</span>
+    </div>
+    <div class="step-images single">
+      <img src="sop-steps/step-13.png" alt="Step 7: Click Download PDF">
+    </div>
+  </div>
+
+  <!-- ═══ FORMAT GUIDE ═══ -->
+  <div class="format-guide">
+    <h2><span class="icon">&#9881;</span> Class Name Format Guide</h2>
+
+    <div class="format-block">
+      <strong>Required Format in iClassPro</strong>
+      <code>Program | Day | Time | Ages</code>
+    </div>
+
+    <div class="format-block">
+      <strong>Example</strong>
+      <code>Preschool | Monday | 3:30pm | Ages 3-4</code>
+    </div>
+
+    <div class="format-block">
+      <strong>Accepted Program Keywords</strong>
+      <div class="program-list">
+        <span class="program-chip">Preschool</span>
+        <span class="program-chip">Junior</span>
+        <span class="program-chip">Advanced Junior</span>
+        <span class="program-chip">Level 1</span>
+        <span class="program-chip">Level 2</span>
+        <span class="program-chip">Level 3</span>
+      </div>
+    </div>
+
+    <div class="format-note">
+      <strong>A/B Splits:</strong> If two classes run at the same time on the same day, add A or B after the time to differentiate them.
+      <br>Example: <code>Level 1 | Tuesday | 4:00pm A | Ages 5-7</code>
+    </div>
+  </div>
+
+  <!-- ═══ TROUBLESHOOTING ═══ -->
+  <div style="background:#fff8e1;border:2px solid #f9a825;border-radius:12px;padding:20px 24px;margin-bottom:24px;">
+    <div style="font-size:15px;font-weight:800;color:#e65100;margin-bottom:8px;">⚠ Important: Other Programs</div>
+    <div style="font-size:13px;color:#333;line-height:1.7;">
+      Right now, this tool supports <strong>Preschool, Junior, Advanced Junior, Level 1, Level 2, and Level 3</strong> only.<br><br>
+      Other programs like <strong>Ninja, Tumbling, Cheer, IGT, and Specialty Classes</strong> are <strong>not included yet</strong> and will need to be printed separately using your normal process (iClassPro PDF report).<br><br>
+      When you upload your XLS file, the converter will show you which classes were skipped at the bottom. This is expected — those programs will be added in the future.
+    </div>
+  </div>
+
+  <div class="troubleshooting">
+    <h2>Troubleshooting</h2>
+    <table class="ts-table">
+      <thead>
+        <tr>
+          <th style="width:36%">Problem</th>
+          <th>Solution</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="ts-issue">File won't upload</td>
+          <td>The file must be in <strong>XLS</strong> format. If you downloaded a PDF or CSV from iClassPro, go back to Step 4 and make sure you select the XLS option before downloading.</td>
+        </tr>
+        <tr>
+          <td class="ts-issue">Missing pages in the PDF</td>
+          <td>The class name must contain a recognized program keyword (Preschool, Junior, Advanced Junior, Level 1, Level 2, or Level 3). Classes without a keyword are silently skipped. Check your class names in iClassPro.</td>
+        </tr>
+        <tr>
+          <td class="ts-issue">Wrong class name on the PDF</td>
+          <td>The PDF pulls the class name directly from iClassPro. Go into iClassPro and update the class name to match the required format: <strong>Program | Day | Time | Ages</strong>.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ═══ FOOTER ═══ -->
+  <footer class="sop-footer">
+    <strong>evalconvert.com</strong> &nbsp;&bull;&nbsp; Rise Athletics
+  </footer>
+
+</div><!-- .page-wrap -->
+
+</body>
+</html>
