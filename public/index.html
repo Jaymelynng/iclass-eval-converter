@@ -464,24 +464,31 @@ span.s.fd:hover{color:#e8e8e8}
   <div class="gym-grid" id="gymGrid"></div>
 
   <div style="display:flex;flex-direction:column;gap:10px;margin-top:20px">
-    <div style="background:linear-gradient(135deg,#1e3a5f 0%,#163060 100%);border:1px solid rgba(74,159,212,.35);border-radius:12px;overflow:hidden;box-shadow:0 4px 24px rgba(74,159,212,.15);">
-      <button class="wt-how-btn" onclick="wtOpen()" style="margin-top:0;border-radius:12px 12px 0 0;border:none;">
-        <img src="sop-steps/step-10-grid.png" alt="Preview" style="width:80px;height:50px;border-radius:6px;object-fit:cover;flex-shrink:0;border:1px solid rgba(74,159,212,.3)">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <button class="wt-how-btn" onclick="wtOpen()" style="margin-top:0">
+        <span class="play-icon">&#9654;</span>
         <span class="wt-how-btn-text">
-          <span class="wt-how-btn-label">Step-by-Step Guide</span>
+          <span class="wt-how-btn-label">Interactive Walkthrough</span>
           <span class="wt-how-btn-title">How to Export &amp; Use This Tool</span>
         </span>
-        <span style="font-size:10px;color:rgba(74,159,212,.7);font-weight:700;margin-left:auto;flex-shrink:0">7 STEPS</span>
+        <span style="font-size:10px;color:rgba(74,159,212,.7);font-weight:700;flex-shrink:0">7 STEPS</span>
         <span class="wt-how-btn-arrow">&#8250;</span>
       </button>
-      <a href="sop-guide.html" target="_blank" onclick="event.stopPropagation()" style="
-        display:flex;align-items:center;justify-content:center;gap:8px;
-        padding:11px 22px;margin:0 14px 14px;border-radius:8px;
-        background:#4caf50;color:#fff;font-size:13px;font-weight:800;
-        text-decoration:none;transition:all .15s;letter-spacing:.3px;
-        box-shadow:0 2px 8px rgba(76,175,80,.3);
-      " onmouseover="this.style.background='#5cc060';this.style.boxShadow='0 4px 16px rgba(76,175,80,.4)'" onmouseout="this.style.background='#4caf50';this.style.boxShadow='0 2px 8px rgba(76,175,80,.3)'">
-        &#128196; Download Printable Guide
+      <a href="sop-guide.html" target="_blank" style="
+        display:flex;align-items:center;gap:12px;
+        background:linear-gradient(135deg,#2a2a2a 0%,#1a1a1a 100%);
+        border:1px solid #444;
+        color:#fff;padding:14px 22px;border-radius:12px;
+        font-size:13px;font-weight:800;cursor:pointer;
+        text-decoration:none;transition:all .2s;
+        box-shadow:0 4px 24px rgba(0,0,0,.3);
+      " onmouseover="this.style.borderColor='#888';this.style.transform='translateY(-1px)'" onmouseout="this.style.borderColor='#444';this.style.transform=''">
+        <span style="font-size:28px;flex-shrink:0">&#128196;</span>
+        <span style="display:flex;flex-direction:column;gap:1px">
+          <span style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#888;line-height:1">Printable Version</span>
+          <span style="font-size:14px;font-weight:800;color:#fff;line-height:1.2">Download SOP Guide</span>
+        </span>
+        <span style="margin-left:auto;font-size:18px;color:#666;flex-shrink:0">&#8599;</span>
       </a>
     </div>
   </div>
