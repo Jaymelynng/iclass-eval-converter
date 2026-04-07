@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-Full-stack web application that converts iClassPro skill evaluation XLS exports into branded, multi-page PDFs. Supports 10 gyms, 6 training programs, automatic score-to-star rendering, and blank grid generation.
+Full-stack web application that converts iClassPro skill evaluation XLS exports into branded, multi-page PDFs. Supports 10 gyms, 9 training programs (6 girls + 3 boys), automatic score-to-star rendering, and blank grid generation.
 
 ---
 
@@ -23,14 +23,19 @@ Full-stack web application that converts iClassPro skill evaluation XLS exports 
   ├── vercel.json                # Vercel routing + cache config
   ├── reference-pdfs/            # Reference PDFs for design comparison
   ├── stress tests/              # Stress test spreadsheets + audit results
+  ├── renaming-tools/            # iClassPro class rename tool (HTML)
+  ├── auditing tools source of truth and results/  # Skill tree audit reference + results
+  ├── STAR CHART MEETINGS AND PLANNING TRANSCRIPTS/  # Meeting notes and planning docs
   ├── SkillsStars_Manager_Checklist (2).docx  # Reference doc
   │
   ├── api/
   │   ├── generate-pdf.py        # Vercel serverless HTTP handler
-  │   └── pdf_generator.py       # PDF engine — single authoritative source
+  │   ├── pdf_generator.py       # PDF engine — single authoritative source
+  │   └── logos/                 # Logo copies for Vercel Python function access
   │
   └── public/
       ├── index.html             # Entire frontend (HTML + CSS + JS in one file)
+      ├── sop-guide.html         # Standard Operating Procedure guide for managers
       └── logos/                 # Gym logos served by both Vercel static + browser
           ├── CCP_logo_transparent.png
           ├── crr_logo.png
@@ -77,6 +82,41 @@ Full-stack web application that converts iClassPro skill evaluation XLS exports 
 - POST `/generate-pdf` → `api/generate-pdf.py` (Python serverless)
 - GET `/*` → `public/` (static files)
 - HTML files: no-cache so deploys take effect immediately
+
+### CRITICAL: .vercelignore
+
+The `.vercelignore` file MUST exist in the repo root. It excludes large folders from the serverless bundle. Without it, the bundle exceeds Vercel's 250MB Lambda limit and deploys fail silently (500 errors on every request).
+
+```
+node_modules
+stress tests
+renaming-tools
+layout-attempts
+auditing tools source of truth and results
+reference-pdfs
+.playwright-mcp
+```
+
+**If you add a new large folder to the repo, add it to `.vercelignore` immediately.**
+
+### CRITICAL: Python Import Path
+
+`api/generate-pdf.py` MUST include this before importing pdf_generator:
+
+```python
+import os, sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+```
+
+Vercel's Python runtime does NOT automatically add the `api/` directory to the module search path. Without this, the serverless function crashes with `ModuleNotFoundError: No module named 'pdf_generator'`. This broke in production on April 5, 2026 when Vercel updated their runtime.
+
+### Post-Deploy Checklist
+
+After every `git push` or `npx vercel --prod`:
+1. Wait 2 minutes for Vercel to build
+2. Check Vercel logs at vercel.com → star-chart-converter → Logs for errors
+3. Open evalconvert.com, select any gym, upload a test file, confirm PDF downloads
+4. If 500 error: check logs for import errors or bundle size errors
 
 ### Deploy Command
 
@@ -368,6 +408,15 @@ function parseTabName(tabName) {
 }
 ```
 
+**Ages stripping from tab names:** After extracting day and time, the parser strips age segments and truncation fragments from the program name. This handles iClassPro tab names like `"Level 1  Monday  330pm  Ages 7-8"` where "Ages 7-8" would otherwise become part of the class name. The cleanup chain:
+```javascript
+tabInfo.program.replace(/\s*ages?\s+[\d–-]+\s*$/i, '')  // "Ages 7-8"
+               .replace(/\s*ages?\s*$/i, '')              // trailing "Ages" alone
+               .replace(/\s+ag$/i, '')                     // truncated "Ag" fragment
+               .trim()
+```
+Single-letter fragments after the time field (like a lone "A" from truncated "Ages") are also skipped during segment parsing.
+
 **Known limitation: iClassPro strips pipe characters from XLS tab names on export.**
 Even if the class is named `"Level 1 | Monday | 3:30pm | Ages 7-8"` in iClassPro, the XLS tab name will come through as `"Level 1  Monday  330pm  Ages 7-8"` (spaces only, no pipes). The parser handles both formats, so this works — but it means the pipe format in iClassPro class names is effectively cosmetic only.
 
@@ -416,18 +465,25 @@ a.href = url; a.download = filename; a.click();
 
 ## Program Definitions
 
-6 programs defined in `api/pdf_generator.py` under `PROGRAMS` dict:
+9 programs defined in `api/pdf_generator.py` under `PROGRAMS` dict:
 
-| Program | Skills | Has Safety | Footer Height |
-|---------|--------|-----------|---------------|
-| Preschool | 10 | Yes | 68pt |
-| Junior | 11 | Yes | 68pt |
-| Advanced Junior | 14 | No | 18pt |
-| Level 1 | 14 | No | 18pt |
-| Level 2 | 13 | No | 18pt |
-| Level 3 | 13 | No | 18pt |
+| Program | Skills | Has Safety | Has Mastery | Footer Height | num_rows | Events |
+|---------|--------|-----------|-------------|---------------|----------|--------|
+| Preschool | 10 | Yes | Yes | 68pt | 6 | 4 (Vault, Bars, Beam, Floor) |
+| Junior | 11 | Yes | Yes | 68pt | 6 | 4 (Vault, Bars, Beam, Floor) |
+| Advanced Junior | 14 | No | Yes | 18pt | 6 | 4 (Vault, Bars, Beam, Floor) |
+| Level 1 | 14 | No | Yes | 18pt | 6 | 4 (Vault, Bars, Beam, Floor) |
+| Level 2 | 13 | No | Yes | 18pt | 6 | 4 (Vault, Bars, Beam, Floor) |
+| Level 3 | 13 | No | Yes | 18pt | 6 | 4 (Vault, Bars, Beam, Floor) |
+| Boys Level 1 | 22 | No | No | 18pt | 8 | 5 (Floor, Mushroom, Vault, P Bars, Bars) |
+| Boys Level 2 | 22 | No | No | 18pt | 8 | 6 (Floor, Pommel, Rings, Vault, P Bars, H Bars) |
+| Boys Level 3 | 23 | No | No | 18pt | 8 | 6 (Floor, Pommel, Rings, Vault, P Bars, H Bars) |
 
-Each skill:
+### has_mastery Flag
+
+Girls programs use `has_mastery: True` (default). Each skill has 3 criteria columns plus a final "mastery" star column ("Puts it all together"). Boys programs use `has_mastery: False` — their skills are structured as flat criteria lists per event with no final mastery star. The `build_score_lookup()` function and the PDF renderer both check `has_mastery` to decide whether to draw the 4th star column.
+
+Each skill (girls programs):
 ```python
 {
     'event':    'VAULT',           # Apparatus
@@ -440,14 +496,44 @@ Each skill:
 }
 ```
 
+Each skill (boys programs):
+```python
+{
+    'event':    'FLOOR',           # Apparatus
+    'short':    'Floor',           # Displayed in skill header band
+    'criteria': [                  # Each becomes one column (NO final star)
+        'Handstand',
+        'Cartwheel',
+        'Backward roll to feet',
+        'Bridge',
+        'Forward roll',
+        'Round off introduction',
+    ]
+}
+```
+
 Program resolution handles iClassPro naming variations (case-insensitive, substring):
 ```python
 'preschool', 'new preschool'          → 'Preschool'
 'junior', 'new junior', 'jr'          → 'Junior'
 'advanced junior', 'adv jr', 'adv j'  → 'Advanced Junior'
 'girls level 1', 'level 1', 'gl1'     → 'Level 1'
+'boys level 1', 'boys l1'             → 'Boys Level 1'
+'boy039s level 1'                     → 'Boys Level 1'  # iClassPro apostrophe corruption
 # etc.
 ```
+
+### PROGRAM_SKIP
+
+`PROGRAM_SKIP` is a JavaScript array of regex patterns in `public/index.html`. Any class whose name matches a PROGRAM_SKIP pattern is rejected **before** program matching — it never reaches the PDF generator. Currently empty:
+
+```javascript
+const PROGRAM_SKIP = [
+  // Currently empty — Boys Level now supported
+];
+```
+
+This existed previously to skip Boys Level classes before they were supported. When Boys Level 1/2/3 were added to both frontend and backend, the skip patterns were removed. If a new unsupported program needs to be excluded, add a regex pattern here.
 
 ---
 
@@ -463,7 +549,7 @@ if os.path.exists(logo_path):
     c.drawImage(logo_path, MARGIN+4, bar_y+4, width=40, height=40, mask='auto')
 ```
 
-On Vercel, the first path (`api/logos/`) doesn't exist, so it falls back to `public/logos/`. The `mask='auto'` tells ReportLab to treat white pixels as transparent.
+Logos are copied to both `api/logos/` and `public/logos/`. On Vercel, the Python function resolves `api/logos/` first (local to the serverless bundle). The `public/logos/` fallback exists for backwards compatibility. The `mask='auto'` tells ReportLab to treat white pixels as transparent.
 
 ---
 
@@ -487,10 +573,21 @@ python app.py
 
 ## Adding a New Gym
 
-1. **api/pdf_generator.py**: Add entry to `GYMS` dict
-2. **public/index.html**: Add entry to `GYMS` JS object + logo URL
+### Code Changes
+1. **api/pdf_generator.py**: Add entry to `GYMS` dict (name, logo path, blue/red hex, optional overrides)
+2. **public/index.html**: Add entry to `GYMS` JS object + logo CDN URL
 3. **public/logos/**: Add logo PNG (transparent background preferred)
-4. Deploy: `git add -A && git commit -m "..." && git push && npx vercel --prod`
+4. **api/logos/**: Copy same logo PNG here (Vercel Python function needs local access)
+5. Deploy: `git add -A && git commit -m "..." && git push && npx vercel --prod`
+
+### Full Onboarding Process (per gym)
+1. **Skill tree verification**: Compare the gym's iClassPro skill ratings against the source of truth audit reference (`Skills_Stars_Audit_Reference.xlsx` in `auditing tools source of truth and results/`). Every criterion text and order must match exactly. Do not do structure-only checks.
+2. **Rename tool**: Use the renaming tool (`renaming-tools/`) to generate properly formatted class names following the `Program | Day | Time | Ages` convention.
+3. **Class rename in iClassPro**: Apply the generated names to all classes in the gym's iClassPro account.
+4. **Skill ratings**: Verify that skill rating scales in iClassPro match the expected 1-star binary system (3 criteria + 1 mastery per skill for girls programs, flat criteria for boys).
+5. **Discipline assignment**: Ensure every class has the correct discipline assigned in iClassPro so the converter can resolve the program.
+6. **Test export**: Export a Class Evaluation Report from iClassPro and run it through the converter. Verify page count, class names, scores, and layout.
+7. **Manager walkthrough**: Walk the gym manager through the SOP guide (`public/sop-guide.html`) covering export, upload, and download steps.
 
 ## Adding a New Program
 
@@ -503,13 +600,17 @@ python app.py
 
 ## Known Constraints
 
-- Max 6 students per page (hardcoded `NUM_ROWS = 6`)
+- Max 6 students per page for girls programs (hardcoded `NUM_ROWS = 6`); max 8 for boys programs (`num_rows: 8`)
 - Criteria text is pixel-width-truncated to fit rotated column (~88pt tall)
 - Fonts are limited to ReportLab built-ins (Helvetica family) — no custom fonts
-- Logo must be accessible at runtime (Vercel reads from `public/logos/`)
+- Logo must be accessible at runtime (Vercel reads from `api/logos/` first, falls back to `public/logos/`)
 - XLS file must use iClassPro's "Class Evaluation Report" format
 - Single-number ages (e.g. "7") are not extracted from tab names — only age ranges ("5-6") work
 - Classes resolving to program `'Unknown'` are silently dropped (no error, no page)
+- Boys Level classes use different apparatus than girls (Floor, Mushroom/Pommel, Vault, P Bars, Bars/H Bars, Rings) — the color system maps these to the same palette using event name matching
+- **Hidden classes in iClassPro**: Classes set to "hidden" in iClassPro still appear in the XLS export. Managers may see unexpected classes in the converter output. This is an iClassPro behavior, not a converter bug.
+- **iClassPro bulk assign bug**: When bulk-assigning skill ratings in iClassPro, the system sometimes applies ratings to the wrong students or duplicates ratings across classes. Always verify ratings after bulk operations by re-exporting and checking the converter output.
+- **iClassPro apostrophe corruption**: iClassPro encodes apostrophes as `039` in some exports (e.g. `"Boy039s Level 1"`). The `PROGRAM_ALIASES` dict in `pdf_generator.py` includes these corrupted forms as aliases.
 
 ---
 
