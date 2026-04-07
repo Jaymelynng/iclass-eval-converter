@@ -524,8 +524,8 @@
     </div>
 
     <div class="format-note">
-      <strong>A/B Splits:</strong> If two classes run at the same time on the same day, add A or B after the time to differentiate them.
-      <br>Example: <code>Level 1 | Tuesday | 4:00pm A | Ages 5-7</code>
+      <strong>A/B Splits:</strong> If two classes of the same program run at the same time, add A or B after the program name.
+      <br>Example: <code>Level 1 A | Tuesday | 4:00pm | Ages 7+</code> and <code>Level 1 B | Tuesday | 4:00pm | Ages 7+</code>
     </div>
   </div>
 
@@ -560,6 +560,10 @@
         <tr>
           <td class="ts-issue">Wrong class name on the PDF</td>
           <td>The PDF pulls the class name directly from iClassPro. Go into iClassPro and update the class name to match the required format: <strong>Program | Day | Time | Ages</strong>.</td>
+        </tr>
+        <tr>
+          <td class="ts-issue">Class has more pages than expected</td>
+          <td>If a class is booked over capacity (more than 6 students for Preschool/Junior, or more than 8 for Levels), the tool automatically splits it across two pages and labels them <strong>(pg 1/2)</strong> and <strong>(pg 2/2)</strong>. This is normal — just print both pages.</td>
         </tr>
       </tbody>
     </table>
