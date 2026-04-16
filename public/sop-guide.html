@@ -403,22 +403,24 @@
     <p class="subtitle">How to Export &amp; Print Evaluation Sheets</p>
   </header>
 
-  <!-- ═══ JUMP-TO NAVIGATION — interactive anchors ═══ -->
+  <!-- ═══ JUMP-TO NAVIGATION — interactive anchors with brand color ═══ -->
   <style>
     html { scroll-behavior: smooth; }
     .jump-nav {
-      background: #fafafa;
-      border: 1.5px solid #1a1a1a;
-      padding: 16px 20px;
+      background: linear-gradient(180deg, #f4f7fc 0%, #fafbfe 100%);
+      border: 2px solid #1f53a3;
+      border-radius: 6px;
+      padding: 18px 22px;
       margin: 0 0 32px;
+      box-shadow: 0 2px 0 #1f53a3;
     }
     .jump-nav-head {
       display: flex; align-items: baseline; gap: 12px; margin-bottom: 14px;
-      border-bottom: 1px solid #ddd; padding-bottom: 10px;
+      border-bottom: 1px solid #d4dff0; padding-bottom: 10px;
     }
     .jump-nav-title {
       font-size: 11px; font-weight: 900; letter-spacing: 2.5px;
-      text-transform: uppercase; color: #1a1a1a;
+      text-transform: uppercase; color: #1f53a3;
     }
     .jump-nav-sub {
       font-size: 12px; color: #666; font-weight: 500;
@@ -430,34 +432,102 @@
       display: flex; align-items: center; justify-content: space-between; gap: 10px;
       padding: 14px 16px;
       background: #fff;
-      border: 1.5px solid #1a1a1a;
+      border: 1.5px solid #cdd7e8;
+      border-radius: 4px;
       text-decoration: none;
       color: #1a1a1a;
       transition: all .15s ease;
       cursor: pointer;
     }
     .jump-link:hover {
-      background: #1a1a1a;
+      background: #1f53a3;
       color: #fff;
+      border-color: #1f53a3;
       transform: translateY(-1px);
-      box-shadow: 0 4px 0 #ccc;
+      box-shadow: 0 4px 12px rgba(31,83,163,0.3);
     }
     .jump-link:hover .jump-arrow { transform: translateX(3px); }
     .jump-link-num {
       font-size: 10px; font-weight: 900; letter-spacing: 1.5px;
-      color: #888; text-transform: uppercase; margin-bottom: 3px;
+      color: #1f53a3; text-transform: uppercase; margin-bottom: 3px;
     }
-    .jump-link:hover .jump-link-num { color: #bbb; }
+    .jump-link:hover .jump-link-num { color: #bfd0ea; }
     .jump-link-label {
       font-size: 13px; font-weight: 800; line-height: 1.2;
     }
-    .jump-arrow { font-size: 18px; font-weight: 900; transition: transform .15s ease; flex-shrink: 0; }
+    .jump-arrow { font-size: 18px; font-weight: 900; transition: transform .15s ease; flex-shrink: 0; color: #1f53a3; }
+    .jump-link:hover .jump-arrow { color: #fff; }
     @media (max-width: 720px) {
       .jump-nav-grid { grid-template-columns: 1fr 1fr; }
     }
     @media print {
       .jump-nav { display: none; }
     }
+
+    /* ═══ BACK TO TOP FLOATING BUTTON ═══ */
+    .back-to-top {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: #1f53a3;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      font-weight: 900;
+      box-shadow: 0 4px 14px rgba(31,83,163,0.4), 0 0 0 3px #fff;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(10px);
+      transition: all .2s ease;
+      z-index: 999;
+      text-decoration: none;
+    }
+    .back-to-top.visible {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+    .back-to-top:hover {
+      background: #17407d;
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(31,83,163,0.55), 0 0 0 3px #fff;
+    }
+    .back-to-top-label {
+      position: absolute;
+      bottom: 62px;
+      right: 0;
+      background: #1a1a1a;
+      color: #fff;
+      padding: 6px 10px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .5px;
+      white-space: nowrap;
+      opacity: 0;
+      transform: translateY(4px);
+      transition: all .15s ease;
+      pointer-events: none;
+    }
+    .back-to-top:hover .back-to-top-label {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    @media print {
+      .back-to-top { display: none; }
+    }
+
+    /* ═══ COLOR ACCENTS for Quick Reference section ═══ */
+    .ref-works { border-left: 4px solid #2e7d32 !important; }
+    .ref-not-std { border-left: 4px solid #ef6c00 !important; background: #fffaf0 !important; }
+    .ref-scoring { border-left-color: #1f53a3 !important; }
   </style>
   <nav class="jump-nav" aria-label="Section navigation">
     <div class="jump-nav-head">
@@ -644,8 +714,8 @@
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;margin-bottom:36px;border:1px solid #1a1a1a;page-break-inside:avoid;break-inside:avoid;">
 
       <!-- COVERED -->
-      <div style="padding:22px 24px;border-right:1px solid #1a1a1a;background:#fff;">
-        <div style="font-size:10px;font-weight:800;color:#2e7d32;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;">Works in this tool</div>
+      <div class="ref-works" style="padding:22px 24px;border-right:1px solid #1a1a1a;background:#f5faf5;">
+        <div style="font-size:10px;font-weight:800;color:#2e7d32;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;">✓ Works in this tool</div>
         <div style="font-size:15px;font-weight:700;color:#1a1a1a;line-height:1.7;">
           Preschool &nbsp;&middot;&nbsp; Junior &nbsp;&middot;&nbsp; Advanced Junior<br>
           Level 1 &nbsp;&middot;&nbsp; Level 2 &nbsp;&middot;&nbsp; Level 3
@@ -656,8 +726,8 @@
       </div>
 
       <!-- NOT YET STANDARDIZED -->
-      <div style="padding:22px 24px;background:#fafafa;">
-        <div style="font-size:10px;font-weight:800;color:#bf360c;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;">Not yet standardized</div>
+      <div class="ref-not-std" style="padding:22px 24px;">
+        <div style="font-size:10px;font-weight:800;color:#bf360c;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;">! Not yet standardized</div>
         <div style="font-size:15px;font-weight:700;color:#1a1a1a;line-height:1.7;">
           Ninja &nbsp;&middot;&nbsp; Tumbling &nbsp;&middot;&nbsp; Cheer<br>
           IGT &nbsp;&middot;&nbsp; Specialty Classes
@@ -670,7 +740,7 @@
     </div>
 
     <!-- ── ONE SCORING SYSTEM — editorial pull-quote ── -->
-    <div style="border-left:4px solid #1a1a1a;padding:4px 0 4px 24px;margin:0 0 36px 0;page-break-inside:avoid;break-inside:avoid;">
+    <div class="ref-scoring" style="border-left:4px solid #1f53a3;padding:4px 0 4px 24px;margin:0 0 36px 0;page-break-inside:avoid;break-inside:avoid;">
       <div style="font-size:10px;font-weight:800;color:#888;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;">How the scoring works</div>
       <div style="font-size:22px;font-weight:800;color:#1a1a1a;line-height:1.25;letter-spacing:-0.3px;margin-bottom:10px;">
         One scoring system. All of iClass.
@@ -746,6 +816,29 @@
   </footer>
 
 </div><!-- .page-wrap -->
+
+<!-- ═══ BACK TO TOP BUTTON ═══ -->
+<a href="#" class="back-to-top" id="backToTop" aria-label="Back to top">
+  <span style="line-height:1;">&uarr;</span>
+  <span class="back-to-top-label">Back to top</span>
+</a>
+
+<script>
+  (function(){
+    var btn = document.getElementById('backToTop');
+    if (!btn) return;
+    function toggle() {
+      if (window.scrollY > 300) btn.classList.add('visible');
+      else btn.classList.remove('visible');
+    }
+    window.addEventListener('scroll', toggle, { passive: true });
+    btn.addEventListener('click', function(e){
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+    toggle();
+  })();
+</script>
 
 </body>
 </html>
