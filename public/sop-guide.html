@@ -403,8 +403,101 @@
     <p class="subtitle">How to Export &amp; Print Evaluation Sheets</p>
   </header>
 
+  <!-- ═══ JUMP-TO NAVIGATION — interactive anchors ═══ -->
+  <style>
+    html { scroll-behavior: smooth; }
+    .jump-nav {
+      background: #fafafa;
+      border: 1.5px solid #1a1a1a;
+      padding: 16px 20px;
+      margin: 0 0 32px;
+    }
+    .jump-nav-head {
+      display: flex; align-items: baseline; gap: 12px; margin-bottom: 14px;
+      border-bottom: 1px solid #ddd; padding-bottom: 10px;
+    }
+    .jump-nav-title {
+      font-size: 11px; font-weight: 900; letter-spacing: 2.5px;
+      text-transform: uppercase; color: #1a1a1a;
+    }
+    .jump-nav-sub {
+      font-size: 12px; color: #666; font-weight: 500;
+    }
+    .jump-nav-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;
+    }
+    .jump-link {
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+      padding: 14px 16px;
+      background: #fff;
+      border: 1.5px solid #1a1a1a;
+      text-decoration: none;
+      color: #1a1a1a;
+      transition: all .15s ease;
+      cursor: pointer;
+    }
+    .jump-link:hover {
+      background: #1a1a1a;
+      color: #fff;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 0 #ccc;
+    }
+    .jump-link:hover .jump-arrow { transform: translateX(3px); }
+    .jump-link-num {
+      font-size: 10px; font-weight: 900; letter-spacing: 1.5px;
+      color: #888; text-transform: uppercase; margin-bottom: 3px;
+    }
+    .jump-link:hover .jump-link-num { color: #bbb; }
+    .jump-link-label {
+      font-size: 13px; font-weight: 800; line-height: 1.2;
+    }
+    .jump-arrow { font-size: 18px; font-weight: 900; transition: transform .15s ease; flex-shrink: 0; }
+    @media (max-width: 720px) {
+      .jump-nav-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media print {
+      .jump-nav { display: none; }
+    }
+  </style>
+  <nav class="jump-nav" aria-label="Section navigation">
+    <div class="jump-nav-head">
+      <span class="jump-nav-title">Jump to</span>
+      <span class="jump-nav-sub">Click any section to go there</span>
+    </div>
+    <div class="jump-nav-grid">
+      <a href="#walkthrough" class="jump-link">
+        <div>
+          <div class="jump-link-num">Part 1</div>
+          <div class="jump-link-label">Export from iClassPro</div>
+        </div>
+        <span class="jump-arrow">&rarr;</span>
+      </a>
+      <a href="#converter" class="jump-link">
+        <div>
+          <div class="jump-link-num">Part 2</div>
+          <div class="jump-link-label">Use the Converter</div>
+        </div>
+        <span class="jump-arrow">&rarr;</span>
+      </a>
+      <a href="#format" class="jump-link">
+        <div>
+          <div class="jump-link-num">Format Guide</div>
+          <div class="jump-link-label">Class Name Format</div>
+        </div>
+        <span class="jump-arrow">&rarr;</span>
+      </a>
+      <a href="#reference" class="jump-link">
+        <div>
+          <div class="jump-link-num">Reference</div>
+          <div class="jump-link-label">Programs, Scoring, Help</div>
+        </div>
+        <span class="jump-arrow">&rarr;</span>
+      </a>
+    </div>
+  </nav>
+
   <!-- ═══ iClassPro SECTION ═══ -->
-  <div class="section-divider"><span>Part 1 &mdash; iClassPro</span></div>
+  <div class="section-divider" id="walkthrough"><span>Part 1 &mdash; iClassPro</span></div>
 
   <!-- STEP 1 -->
   <div class="step-card icp">
@@ -458,7 +551,7 @@
   </div>
 
   <!-- ═══ evalconvert.com SECTION ═══ -->
-  <div class="section-divider"><span>Part 2 &mdash; evalconvert.com</span></div>
+  <div class="section-divider" id="converter"><span>Part 2 &mdash; evalconvert.com</span></div>
 
   <!-- STEP 5 -->
   <div class="step-card eval">
@@ -498,7 +591,7 @@
   </div>
 
   <!-- ═══ FORMAT GUIDE ═══ -->
-  <div class="format-guide">
+  <div class="format-guide" id="format">
     <h2><span class="icon">&#9881;</span> Class Name Format Guide (iClassPro)</h2>
 
     <div class="format-block">
@@ -537,7 +630,7 @@
   <!-- ═══════════════════════════════════════════════════════════════
        QUICK REFERENCE — clean editorial design, print-friendly
        ═══════════════════════════════════════════════════════════════ -->
-  <div style="margin:40px 0 24px;page-break-before:always;font-family:inherit;">
+  <div id="reference" style="margin:40px 0 24px;padding-top:12px;page-break-before:always;font-family:inherit;">
 
     <!-- Editorial-style section header with thin rule -->
     <div style="border-top:3px solid #1a1a1a;padding-top:16px;margin-bottom:28px;">
