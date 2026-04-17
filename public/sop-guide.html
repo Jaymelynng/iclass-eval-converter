@@ -395,6 +395,33 @@
 
 <button class="print-btn" onclick="window.print()">Download / Print this Guide</button>
 
+<!-- ═══ STICKY SIDE NAV (wide screens only) ═══ -->
+<nav class="side-nav" aria-label="Page sections">
+  <div class="side-nav-title">On this page</div>
+  <ul>
+    <li>
+      <a href="#walkthrough" class="side-link" data-target="walkthrough">
+        <span class="side-link-num">Part 1</span>Export from iClassPro
+      </a>
+    </li>
+    <li>
+      <a href="#converter" class="side-link" data-target="converter">
+        <span class="side-link-num">Part 2</span>Use the Converter
+      </a>
+    </li>
+    <li>
+      <a href="#format" class="side-link" data-target="format">
+        <span class="side-link-num">Format</span>Class Name Format
+      </a>
+    </li>
+    <li>
+      <a href="#reference" class="side-link" data-target="reference">
+        <span class="side-link-num">Reference</span>Programs &amp; Help
+      </a>
+    </li>
+  </ul>
+</nav>
+
 <div class="page-wrap">
 
   <!-- ═══ HEADER ═══ -->
@@ -405,7 +432,80 @@
 
   <!-- ═══ JUMP-TO NAVIGATION — interactive anchors with brand color ═══ -->
   <style>
-    html { scroll-behavior: smooth; }
+    html { scroll-behavior: smooth; scroll-padding-top: 24px; }
+    #walkthrough, #converter, #format, #reference { scroll-margin-top: 24px; }
+
+    /* ═══ SIDE NAV — sticky on left, shows current section ═══ */
+    .side-nav {
+      position: fixed;
+      top: 50%;
+      left: 24px;
+      transform: translateY(-50%);
+      width: 200px;
+      background: #fff;
+      border: 1.5px solid #1f53a3;
+      border-left: 5px solid #1f53a3;
+      border-radius: 4px;
+      padding: 18px 16px;
+      box-shadow: 0 6px 20px rgba(31,83,163,0.18);
+      z-index: 100;
+      font-family: inherit;
+    }
+    .side-nav-title {
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: 2px;
+      color: #1f53a3;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #e3ebf7;
+    }
+    .side-nav ul { list-style: none; margin: 0; padding: 0; }
+    .side-nav li { margin: 0; }
+    .side-link {
+      display: block;
+      padding: 10px 12px;
+      color: #1a1a1a;
+      text-decoration: none;
+      border-left: 3px solid transparent;
+      font-weight: 600;
+      font-size: 12.5px;
+      line-height: 1.3;
+      transition: all .12s ease;
+      margin-bottom: 2px;
+      border-radius: 2px;
+    }
+    .side-link:hover {
+      background: #f4f7fc;
+      border-left-color: #1f53a3;
+      padding-left: 16px;
+      color: #1f53a3;
+    }
+    .side-link.active {
+      background: #1f53a3;
+      color: #fff;
+      border-left-color: #17407d;
+      font-weight: 800;
+    }
+    .side-link-num {
+      display: block;
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: #1f53a3;
+      margin-bottom: 2px;
+    }
+    .side-link.active .side-link-num { color: #b4cdeb; }
+    .side-link:hover .side-link-num { color: #1f53a3; }
+    @media (max-width: 1300px) {
+      .side-nav { display: none; }
+    }
+    @media print {
+      .side-nav { display: none; }
+    }
+
     .jump-nav {
       background: linear-gradient(180deg, #f4f7fc 0%, #fafbfe 100%);
       border: 2px solid #1f53a3;
@@ -863,6 +963,7 @@
 </a>
 
 <script>
+  // Back to top button
   (function(){
     var btn = document.getElementById('backToTop');
     if (!btn) return;
@@ -876,6 +977,34 @@
       window.scrollTo({ top: 0, behavior: 'smooth' });
     });
     toggle();
+  })();
+
+  // Side nav active section highlight (scroll-spy)
+  (function(){
+    var ids = ['walkthrough','converter','format','reference'];
+    var sections = ids.map(function(id){ return document.getElementById(id); }).filter(Boolean);
+    var links = document.querySelectorAll('.side-link');
+    if (!sections.length || !links.length || !('IntersectionObserver' in window)) return;
+
+    function setActive(id) {
+      links.forEach(function(l){
+        l.classList.toggle('active', l.dataset.target === id);
+      });
+    }
+
+    var observer = new IntersectionObserver(function(entries){
+      // pick the topmost intersecting section
+      var best = null, bestTop = Infinity;
+      entries.forEach(function(e){
+        if (e.isIntersecting) {
+          var top = e.boundingClientRect.top;
+          if (top < bestTop) { best = e.target; bestTop = top; }
+        }
+      });
+      if (best) setActive(best.id);
+    }, { rootMargin: '-15% 0px -70% 0px', threshold: 0 });
+
+    sections.forEach(function(s){ observer.observe(s); });
   })();
 </script>
 
