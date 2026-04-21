@@ -469,9 +469,214 @@ span.s.fd:hover{color:#e8e8e8}
 .fg-toggle-arrow.open{transform:rotate(180deg)}
 .fg-body{display:none;padding:20px 24px 24px}
 .fg-body.open{display:block}
+
+/* ── WHAT'S NEW PILL + PANEL ── */
+.wn-pill{
+  position:fixed;top:20px;right:20px;z-index:100;
+  display:inline-flex;align-items:center;gap:8px;
+  background:linear-gradient(135deg,#1a1a1a 0%,#2a2a2a 100%);
+  border:1px solid #444;
+  color:#fff;padding:9px 16px 9px 14px;border-radius:999px;
+  font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;
+  box-shadow:0 4px 16px rgba(0,0,0,.3);
+  transition:all .2s;
+}
+.wn-pill:hover{transform:translateY(-1px);border-color:#888;box-shadow:0 6px 20px rgba(0,0,0,.4)}
+.wn-pill .wn-sparkle{font-size:14px;background:linear-gradient(135deg,#f472b6,#a78bfa);-webkit-background-clip:text;background-clip:text;color:transparent;font-weight:900}
+.wn-pill .wn-version{opacity:.7;font-size:11px;margin-left:2px}
+.wn-pill .wn-dot{width:8px;height:8px;border-radius:50%;background:#f472b6;box-shadow:0 0 0 0 rgba(244,114,182,.7);animation:wnPulse 1.8s infinite;display:none}
+.wn-pill.has-new .wn-dot{display:block}
+@keyframes wnPulse{
+  0%{box-shadow:0 0 0 0 rgba(244,114,182,.6)}
+  70%{box-shadow:0 0 0 10px rgba(244,114,182,0)}
+  100%{box-shadow:0 0 0 0 rgba(244,114,182,0)}
+}
+
+.wn-backdrop{
+  position:fixed;inset:0;background:rgba(0,0,0,.55);
+  z-index:2400;opacity:0;pointer-events:none;transition:opacity .25s;
+}
+.wn-backdrop.open{opacity:1;pointer-events:auto}
+
+.wn-panel{
+  position:fixed;top:0;right:0;height:100vh;width:440px;max-width:92vw;
+  background:#0f0f10;color:#eaeaea;z-index:2500;
+  display:flex;flex-direction:column;
+  transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);
+  box-shadow:-20px 0 60px rgba(0,0,0,.5);
+  font-family:inherit;
+}
+.wn-panel.open{transform:translateX(0)}
+
+.wn-head{padding:22px 24px 0;border-bottom:1px solid #242425;flex-shrink:0}
+.wn-head-top{display:flex;justify-content:space-between;align-items:center}
+.wn-title{font-size:20px;font-weight:800;letter-spacing:-.3px;margin:0;display:flex;align-items:center;gap:10px}
+.wn-title .wn-sparkle{font-size:18px}
+.wn-x{width:34px;height:34px;border-radius:8px;border:1px solid #333;background:transparent;color:#aaa;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:inherit}
+.wn-x:hover{background:#1e1e1f;color:#fff}
+.wn-sub{font-size:12px;color:#8a8a8a;margin:4px 0 0}
+.wn-tabs{display:flex;gap:22px;margin-top:16px}
+.wn-tab{padding:10px 0;font-size:12.5px;font-weight:700;color:#888;cursor:pointer;border-bottom:2px solid transparent;letter-spacing:.3px;background:none;border-top:0;border-left:0;border-right:0;font-family:inherit}
+.wn-tab.active{color:#fff;border-bottom-color:#f472b6}
+.wn-tab .wn-tag{background:#2a2a2b;color:#bbb;border-radius:999px;font-size:10px;padding:2px 7px;margin-left:6px;font-weight:700}
+.wn-tab.active .wn-tag{background:linear-gradient(135deg,#f472b6,#a78bfa);color:#fff}
+
+.wn-body{flex:1;overflow-y:auto;padding:22px 24px 40px}
+.wn-pane{display:none}
+.wn-pane.active{display:block}
+
+/* Timeline entries (Updates tab) */
+.wn-entry{position:relative;padding:0 0 28px 22px;margin-bottom:2px;border-left:2px solid #242425}
+.wn-entry:last-child{border-left-color:transparent;padding-bottom:4px}
+.wn-entry::before{content:"";position:absolute;left:-6px;top:4px;width:10px;height:10px;border-radius:50%;background:#f472b6;box-shadow:0 0 0 3px #0f0f10}
+.wn-entry.old::before{background:#555}
+.wn-entry-meta{display:flex;align-items:center;gap:8px;font-size:10.5px;color:#8a8a8a;margin-bottom:6px;font-weight:700;letter-spacing:.4px}
+.wn-ver{background:linear-gradient(135deg,#f472b6,#a78bfa);color:#fff;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:800;letter-spacing:.5px}
+.wn-ver.old{background:#333;color:#aaa}
+.wn-h{font-size:15px;font-weight:700;color:#fff;margin:0 0 8px;line-height:1.35}
+.wn-bullets{margin:0;padding:0;list-style:none;font-size:13px;color:#bdbdbd;line-height:1.55}
+.wn-bullets li{padding-left:16px;position:relative;margin-bottom:4px}
+.wn-bullets li::before{content:"→";position:absolute;left:0;color:#f472b6;font-weight:800}
+
+/* How To groups */
+.wn-htgroup{margin-bottom:22px}
+.wn-hth{font-size:10.5px;text-transform:uppercase;letter-spacing:2.5px;color:#8a8a8a;font-weight:800;margin:0 0 10px}
+.wn-htitem{background:#161617;border:1px solid #242425;border-radius:10px;padding:12px 14px;margin-bottom:8px;font-size:13px;color:#d0d0d0;line-height:1.5}
+.wn-htitem strong{color:#fff;display:block;margin-bottom:3px;font-size:13.5px}
+.wn-kw{color:#f472b6;font-weight:700}
+
+/* Roadmap items */
+.wn-rmap{background:#161617;border:1px solid #242425;border-radius:10px;padding:14px;margin-bottom:10px;display:flex;gap:14px;align-items:flex-start}
+.wn-rpill{font-size:9.5px;padding:3px 8px;border-radius:999px;font-weight:800;letter-spacing:.5px;flex-shrink:0;margin-top:2px}
+.wn-rpill.now{background:#1d7a3a;color:#fff}
+.wn-rpill.next{background:#b8761d;color:#fff}
+.wn-rpill.later{background:#444;color:#ccc}
+.wn-rpill.v2{background:linear-gradient(135deg,#f472b6,#a78bfa);color:#fff}
+.wn-rtitle{font-size:13.5px;color:#fff;font-weight:700;margin:0 0 4px}
+.wn-rbody{font-size:12.5px;color:#a0a0a0;line-height:1.5;margin:0}
+
+.wn-foot{border-top:1px solid #242425;padding:14px 24px;font-size:11px;color:#666;display:flex;justify-content:space-between;flex-shrink:0}
+
+@media print{.wn-pill,.wn-panel,.wn-backdrop{display:none!important}}
 </style>
 </head>
 <body>
+
+<!-- ═══════════ WHAT'S NEW PILL ═══════════ -->
+<button class="wn-pill no-print" id="wnPill" onclick="wnOpen()" aria-label="What's New">
+  <span class="wn-sparkle">&#10022;</span>
+  <span>What's New</span>
+  <span class="wn-version" id="wnPillVersion">v2.1</span>
+  <span class="wn-dot"></span>
+</button>
+
+<!-- ═══════════ WHAT'S NEW PANEL ═══════════ -->
+<div class="wn-backdrop no-print" id="wnBackdrop" onclick="wnClose()"></div>
+<aside class="wn-panel no-print" id="wnPanel" aria-hidden="true">
+  <div class="wn-head">
+    <div class="wn-head-top">
+      <h3 class="wn-title"><span class="wn-sparkle">&#10022;</span> What's New</h3>
+      <button class="wn-x" onclick="wnClose()" aria-label="Close">&times;</button>
+    </div>
+    <p class="wn-sub">Changelog &middot; Newest first</p>
+    <div class="wn-tabs">
+      <button class="wn-tab active" data-pane="updates" onclick="wnTab('updates')">Updates <span class="wn-tag">3</span></button>
+      <button class="wn-tab" data-pane="howto" onclick="wnTab('howto')">How To</button>
+      <button class="wn-tab" data-pane="roadmap" onclick="wnTab('roadmap')">Roadmap</button>
+    </div>
+  </div>
+
+  <div class="wn-body">
+
+    <!-- UPDATES PANE -->
+    <div class="wn-pane active" id="wnPaneUpdates">
+      <div class="wn-entry">
+        <div class="wn-entry-meta"><span class="wn-ver">v2.1</span> APR 21, 2026</div>
+        <h4 class="wn-h">Wizard flow + two-event layouts</h4>
+        <ul class="wn-bullets">
+          <li>Convert and Print Blank are step-by-step wizards &mdash; no more one giant form</li>
+          <li>Page layout picker: all 4 events on 1 page, or split Vault+Bars / Beam+Floor</li>
+          <li>Criteria text is bigger and easier to read</li>
+          <li>Select All / Clear All buttons for blank score sheets</li>
+          <li>Rebuilt SOP guide with side navigation</li>
+        </ul>
+      </div>
+      <div class="wn-entry">
+        <div class="wn-entry-meta"><span class="wn-ver">v2.0</span> APR 16, 2026</div>
+        <h4 class="wn-h">Brand-unified colors across all 10 gyms</h4>
+        <ul class="wn-bullets">
+          <li>Every gym now has a single brand color driving the whole sheet</li>
+          <li>Events alternate warm/cool for visual scanability</li>
+          <li>WCAG contrast math per gym (CRR pink darkened, EST navy lightened)</li>
+          <li>Logos embedded in the tool &mdash; no more Vercel path issues</li>
+        </ul>
+      </div>
+      <div class="wn-entry old">
+        <div class="wn-entry-meta"><span class="wn-ver old">v1.0</span> APR 6, 2026 &middot; LAUNCH</div>
+        <h4 class="wn-h">evalconvert.com goes live at all 10 gyms</h4>
+        <ul class="wn-bullets">
+          <li>First company-wide tool &mdash; 797 classes renamed, 11,132 data points stress-tested</li>
+          <li>Preschool, Junior, Advanced Junior, Level 1&ndash;3 supported</li>
+          <li>Interactive walkthrough + printable SOP guide</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- HOW TO PANE -->
+    <div class="wn-pane" id="wnPaneHowto">
+      <div class="wn-htgroup">
+        <div class="wn-hth">Scoring</div>
+        <div class="wn-htitem"><strong>One star, three criteria + mastery</strong>The old 5-star subjective system is gone. Every program uses 3 binary criteria per skill plus a gold mastery star ("did it 3&times; in a row").</div>
+      </div>
+      <div class="wn-htgroup">
+        <div class="wn-hth">Class naming in iClassPro</div>
+        <div class="wn-htitem"><strong>Format: <span class="wn-kw">Program | Day | Time | Ages</span></strong>Ages STAY in iClassPro. The converter strips them from the PDF only.</div>
+        <div class="wn-htitem"><strong>Carry parentheticals over</strong>(NEW!), (Invite Only), (homeschool) &mdash; must appear in the renamed class or data's lost.</div>
+        <div class="wn-htitem"><strong>A/B suffixes &mdash; only when needed</strong>Only add "A" or "B" when two classes share the exact same program + day + time.</div>
+        <div class="wn-htitem"><strong>6 accepted program keywords only</strong>Preschool, Junior, Advanced Junior, Level 1, Level 2, Level 3. Abbreviations like L1, GL1, lev1 silently skip.</div>
+      </div>
+      <div class="wn-htgroup">
+        <div class="wn-hth">What doesn't convert (yet)</div>
+        <div class="wn-htitem"><strong>Ninja &middot; Tumbling &middot; IGT &middot; Specialty &middot; Cheer</strong>These skip silently. If you need help translating the old system to the new one for these programs, reach out to Kim or Jayme.</div>
+      </div>
+      <div class="wn-htgroup">
+        <div class="wn-hth">iClassPro quirks</div>
+        <div class="wn-htitem"><strong>Apostrophes break</strong>"Boy's Level 1" exports as <span class="wn-kw">boy039s Level 1</span>. Rename to avoid apostrophes.</div>
+        <div class="wn-htitem"><strong>15-minute export cache</strong>If you rename a class and export in under 15 min, the old name still shows. Wait and re-export.</div>
+        <div class="wn-htitem"><strong>Global skill rating scale</strong>iClass allows ONE rating scale gym-wide: 1 star, 0 = "Working on it", 1 = "Got it!".</div>
+      </div>
+      <div class="wn-htgroup">
+        <div class="wn-hth">Gym-specific</div>
+        <div class="wn-htitem"><strong>Advanced Junior in iClass</strong>Lives UNDER the Junior category &mdash; don't create a separate category. Skills = copy Level 1 verbatim.</div>
+        <div class="wn-htitem"><strong>CPF custom names</strong>"Dynamite Girls" and "Hot Shots" = Advanced Junior.</div>
+      </div>
+    </div>
+
+    <!-- ROADMAP PANE -->
+    <div class="wn-pane" id="wnPaneRoadmap">
+      <div class="wn-hth">In progress</div>
+      <div class="wn-rmap"><span class="wn-rpill now">NOW</span><div><p class="wn-rtitle">Per-class event layouts</p><p class="wn-rbody">Pick different events for different programs in the same upload. "Level 2 on Vault+Bars, Level 1 + Adv Jr on Beam+Floor" &mdash; all in one download.</p></div></div>
+
+      <div class="wn-hth" style="margin-top:16px">Coming soon</div>
+      <div class="wn-rmap"><span class="wn-rpill next">NEXT</span><div><p class="wn-rtitle">Coach name on PDF</p><p class="wn-rbody">Auto-pulled from the Skill Evaluation PDF &mdash; upload both XLS and PDF, coach name appears in the header automatically.</p></div></div>
+      <div class="wn-rmap"><span class="wn-rpill next">NEXT</span><div><p class="wn-rtitle">Button color tune-up</p><p class="wn-rbody">Download buttons visually distinct from the top bar so they're easier to find.</p></div></div>
+
+      <div class="wn-hth" style="margin-top:16px">Later</div>
+      <div class="wn-rmap"><span class="wn-rpill later">LATER</span><div><p class="wn-rtitle">Trial / first-day / makeup indicators</p><p class="wn-rbody">Pulled from the iClass Roll Sheet. Heads-up on who's new without flipping through another PDF.</p></div></div>
+      <div class="wn-rmap"><span class="wn-rpill later">LATER</span><div><p class="wn-rtitle">Staleness alerts</p><p class="wn-rbody">"This kid hasn't been evaluated on Vault in 6 weeks." Uses per-skill timestamps from the eval PDF.</p></div></div>
+      <div class="wn-rmap"><span class="wn-rpill later">LATER</span><div><p class="wn-rtitle">Parent-facing individual student report</p><p class="wn-rbody">Same upload flow, one full-page report per student.</p></div></div>
+
+      <div class="wn-hth" style="margin-top:16px">V2 (months out)</div>
+      <div class="wn-rmap"><span class="wn-rpill v2">V2</span><div><p class="wn-rtitle">Self-service gym + skill editor</p><p class="wn-rbody">Jayme &amp; Kim will add gyms, change colors, edit skills, and adjust keywords without a developer.</p></div></div>
+    </div>
+
+  </div>
+
+  <div class="wn-foot">
+    <span>Posted by Jayme &amp; Kim</span>
+    <span>Feedback? Text Jayme.</span>
+  </div>
+</aside>
 
 <!-- ═══════════ LANDING PAGE ═══════════ -->
 <div class="landing no-print" id="landing">
@@ -2781,6 +2986,34 @@ function esc(s) {
       errEl.classList.add('show');
     }
   }, 3000);
+})();
+
+/* ══════ WHAT'S NEW PANEL ══════ */
+const WN_LATEST = 'v2.1';
+function wnOpen(){
+  document.getElementById('wnPanel').classList.add('open');
+  document.getElementById('wnBackdrop').classList.add('open');
+  document.getElementById('wnPanel').setAttribute('aria-hidden','false');
+  try{ localStorage.setItem('wnLastSeen', WN_LATEST); }catch(e){}
+  document.getElementById('wnPill').classList.remove('has-new');
+}
+function wnClose(){
+  document.getElementById('wnPanel').classList.remove('open');
+  document.getElementById('wnBackdrop').classList.remove('open');
+  document.getElementById('wnPanel').setAttribute('aria-hidden','true');
+}
+function wnTab(id){
+  document.querySelectorAll('.wn-tab').forEach(t=>t.classList.toggle('active', t.dataset.pane===id));
+  document.querySelectorAll('.wn-pane').forEach(p=>p.classList.toggle('active', p.id==='wnPane'+id.charAt(0).toUpperCase()+id.slice(1)));
+}
+document.addEventListener('keydown', e => { if(e.key==='Escape') wnClose(); });
+(function wnInit(){
+  try{
+    const last = localStorage.getItem('wnLastSeen');
+    if(last !== WN_LATEST){
+      document.getElementById('wnPill').classList.add('has-new');
+    }
+  }catch(e){}
 })();
 </script>
 </body>
