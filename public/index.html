@@ -130,11 +130,21 @@ body{
 .modal-divider{background:#333;width:1px}
 @media(max-width:700px){.modal-columns{grid-template-columns:1fr;gap:16px}.modal-divider{display:none;height:1px;width:100%;background:#333}}
 .modal-close{
-  position:absolute;top:14px;right:18px;background:#333;border:1px solid #555;
-  color:#fff;font-size:18px;cursor:pointer;line-height:1;width:32px;height:32px;
-  border-radius:6px;display:flex;align-items:center;justify-content:center;
+  position:absolute;top:14px;right:18px;
+  background:var(--c1,#1f53a3);
+  border:2px solid var(--c1-light,#4d7cc7);
+  color:var(--c1-text,#fff);font-size:22px;font-weight:900;
+  cursor:pointer;line-height:1;width:40px;height:40px;
+  border-radius:8px;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 3px 10px rgba(0,0,0,0.35);
+  transition:all .15s ease;
+  z-index:10;
 }
-.modal-close:hover{background:#555;border-color:#777}
+.modal-close:hover{
+  filter:brightness(1.15);
+  transform:translateY(-1px);
+  box-shadow:0 5px 14px rgba(0,0,0,0.5);
+}
 .modal-header{display:flex;align-items:center;gap:14px;margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid #333}
 .modal-logo{width:52px;height:52px;border-radius:8px;object-fit:contain;background:#fff;padding:4px}
 .modal-gym-name{font-size:20px;font-weight:800}
@@ -830,6 +840,60 @@ span.s.fd:hover{color:#e8e8e8}
         border-radius:10px; padding:12px 16px; color:#ffaaaa; font-size:12px;
         margin-top:12px; font-weight:600;
       }
+
+      /* ═══ SUCCESS STATE after download ═══ */
+      .wiz-success {
+        text-align:center;
+        padding:20px 20px 10px;
+      }
+      .wiz-success-icon {
+        display:inline-flex; align-items:center; justify-content:center;
+        width:80px; height:80px; border-radius:50%;
+        background:#2e7d32;
+        color:#fff; font-size:48px; font-weight:900;
+        margin:0 auto 16px;
+        box-shadow:0 6px 24px rgba(46,125,50,0.5), inset 0 2px 0 rgba(255,255,255,0.3);
+        line-height:1;
+      }
+      .wiz-success-title {
+        font-size:24px; font-weight:900; color:#fff;
+        letter-spacing:.3px; margin-bottom:6px;
+      }
+      .wiz-success-sub {
+        font-size:13px; color:#bbb; margin-bottom:24px;
+      }
+      .wiz-success-btns {
+        display:flex; gap:12px; justify-content:center; flex-wrap:wrap;
+      }
+      .wiz-start-over {
+        background:transparent;
+        color:var(--c1,#1f53a3);
+        border:2px solid var(--c1,#1f53a3);
+        padding:12px 22px; border-radius:10px;
+        font-size:13px; font-weight:800; cursor:pointer;
+        letter-spacing:.5px; text-transform:uppercase;
+        transition:all .15s;
+      }
+      .wiz-start-over:hover {
+        background:var(--c1,#1f53a3);
+        color:var(--c1-text,#fff);
+        transform:translateY(-2px);
+      }
+      .wiz-close-big {
+        background:linear-gradient(180deg, var(--c1-light,#5a84d0) 0%, var(--c1,#1f53a3) 50%, var(--c1-dark,#12345f) 100%);
+        color:var(--c1-text,#fff);
+        border:none; padding:14px 32px; border-radius:10px;
+        font-size:14px; font-weight:900; cursor:pointer;
+        letter-spacing:.8px; text-transform:uppercase;
+        box-shadow:0 4px 14px var(--c1-shadow,rgba(31,83,163,0.55)),
+                   inset 0 1px 0 rgba(255,255,255,0.4);
+        transition:all .12s;
+      }
+      .wiz-close-big:hover {
+        filter:brightness(1.12);
+        transform:translateY(-2px);
+        box-shadow:0 6px 18px var(--c1-shadow,rgba(31,83,163,0.7));
+      }
     </style>
 
     <!-- WIZARD ENTRY: "What do you need?" — SIDE BY SIDE with visual previews -->
@@ -906,7 +970,18 @@ span.s.fd:hover{color:#e8e8e8}
         <div id="wizConfirmSummary"></div>
       </div>
 
-      <div class="wiz-footer">
+      <!-- C-Step 4: Success confirmation with CLOSE button -->
+      <div id="wizC4" class="wiz-step wiz-success" style="display:none">
+        <div class="wiz-success-icon">&check;</div>
+        <div class="wiz-success-title">PDF Downloaded!</div>
+        <div class="wiz-success-sub" id="wizConvertSuccessSub">Check your Downloads folder.</div>
+        <div class="wiz-success-btns">
+          <button type="button" class="wiz-start-over" onclick="wizReset()">Convert Another &#x21bb;</button>
+          <button type="button" class="wiz-close-big" onclick="closeModal()">Close &times;</button>
+        </div>
+      </div>
+
+      <div class="wiz-footer" id="wizConvertFooter">
         <button class="wiz-back" onclick="wizBack()">&larr; Back</button>
         <button class="wiz-next" id="wizConvertNext" onclick="wizNext()">Next &rarr;</button>
       </div>
@@ -959,7 +1034,18 @@ span.s.fd:hover{color:#e8e8e8}
         </div>
       </div>
 
-      <div class="wiz-footer">
+      <!-- B-Step 3: Success confirmation with CLOSE button -->
+      <div id="wizB3" class="wiz-step wiz-success" style="display:none">
+        <div class="wiz-success-icon">&check;</div>
+        <div class="wiz-success-title">PDF Downloaded!</div>
+        <div class="wiz-success-sub" id="wizBlankSuccessSub">Check your Downloads folder.</div>
+        <div class="wiz-success-btns">
+          <button type="button" class="wiz-start-over" onclick="wizReset()">Generate Another &#x21bb;</button>
+          <button type="button" class="wiz-close-big" onclick="closeModal()">Close &times;</button>
+        </div>
+      </div>
+
+      <div class="wiz-footer" id="wizBlankFooter">
         <button class="wiz-back" onclick="wizBack()">&larr; Back</button>
         <button class="wiz-next" id="wizBlankNext" onclick="wizNext()">Next &rarr;</button>
       </div>
@@ -1963,6 +2049,14 @@ function wizReset() {
   // Reset all steps to hidden except step 1
   wizShowStep('wizC', 1);
   wizShowStep('wizB', 1);
+  // Restore footers + progress bars that were hidden on success
+  const cf = document.getElementById('wizConvertFooter');
+  if (cf) cf.style.display = '';
+  const bf = document.getElementById('wizBlankFooter');
+  if (bf) bf.style.display = '';
+  document.querySelectorAll('.wiz-progress-row').forEach(r => r.style.display = '');
+  // Uncheck any leftover blank program checkboxes
+  document.querySelectorAll('.blank-prog-cb').forEach(cb => cb.checked = false);
 }
 
 function wizShowStep(prefix, stepNum) {
@@ -2172,6 +2266,22 @@ async function generateBlankMulti() {
       URL.revokeObjectURL(url);
     }, 100);
 
+    // Show success step with a prominent Close button
+    const sub = document.getElementById('wizBlankSuccessSub');
+    if (sub) {
+      const count = classes.length;
+      sub.textContent = count === 1
+        ? `1 PDF saved to your Downloads folder.`
+        : `${count} pages saved to your Downloads folder.`;
+    }
+    // Hide normal footer (Back/Next) and show success step
+    const footer = document.getElementById('wizBlankFooter');
+    if (footer) footer.style.display = 'none';
+    wizShowStep('wizB', 3);
+    // Hide the progress bar on success — the job is done
+    const progressRow = document.querySelector('#wizBlank .wiz-progress-row');
+    if (progressRow) progressRow.style.display = 'none';
+
   } catch(e) {
     alert('PDF generation failed: ' + e.message);
   } finally {
@@ -2353,13 +2463,28 @@ async function generatePages(mode) {
       URL.revokeObjectURL(url);
     }, 100);
 
+    // Restore modal + landing visibility so success step can render
+    document.getElementById('modalOverlay').style.display = '';
+    document.querySelector('.landing').style.display = '';
+
+    // Show success step with Close button
+    const sub = document.getElementById('wizConvertSuccessSub');
+    if (sub) {
+      const n = classes.length;
+      sub.textContent = n === 1
+        ? `1 class saved to your Downloads folder.`
+        : `${n} classes saved to your Downloads folder as a single PDF.`;
+    }
+    const footer = document.getElementById('wizConvertFooter');
+    if (footer) footer.style.display = 'none';
+    const progressRow = document.querySelector('#wizConvert .wiz-progress-row');
+    if (progressRow) progressRow.style.display = 'none';
+    wizShowStep('wizC', 4);
+
   } catch(e) {
     alert('PDF generation failed: ' + e.message);
   } finally {
     document.getElementById('loadingMsg')?.remove();
-    // Go back to landing page after download
-    closeModal();
-    document.querySelector('.landing').style.display = '';
   }
 }
 
