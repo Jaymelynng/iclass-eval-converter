@@ -774,8 +774,10 @@ def generate_pdf(gym_code, class_name, date, day, time,
 
             if USE_HORIZONTAL:
                 # Word-wrap the criteria text horizontally inside the cell.
+                # Mastery column ("3× in a row") gets bigger font since the text
+                # is short and this column deserves emphasis.
                 _font = 'Helvetica-Bold'
-                _size = 9.0
+                _size = 13.0 if is_final else 9.0
                 _max_w = COL_W - 4
                 _max_h = CRIT_H - 6
 
@@ -839,7 +841,11 @@ def generate_pdf(gym_code, class_name, date, day, time,
                 c.setFillColor(fg); c.setFont(_font, _size)
                 _lh = _size + 1.5
                 _total_h = len(_lines) * _lh
-                _start_y = _total_h / 2 - _size / 3
+                # Baseline offset for proper visual centering. In the rotated
+                # frame, the text's ascender/descender causes the visual
+                # midpoint to sit ~size/2 above the baseline. Shift baseline
+                # by -_size so the text block's visual center lands at y=0.
+                _start_y = _total_h / 2 - _size
                 for _li, _ln in enumerate(_lines):
                     c.drawCentredString(0, _start_y - _li * _lh, _ln)
                 c.restoreState()
