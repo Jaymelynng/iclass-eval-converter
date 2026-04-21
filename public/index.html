@@ -471,20 +471,21 @@ span.s.fd:hover{color:#e8e8e8}
 .fg-body.open{display:block}
 
 /* ── WHAT'S NEW PILL + PANEL ── */
+/* LIGHT panel on dark page: white bg, dark text, pink accent. Matches inspo photos. */
 .wn-pill{
   position:fixed;top:20px;right:20px;z-index:100;
   display:inline-flex;align-items:center;gap:8px;
-  background:linear-gradient(135deg,#1a1a1a 0%,#2a2a2a 100%);
-  border:1px solid #444;
-  color:#fff;padding:9px 16px 9px 14px;border-radius:999px;
+  background:#ffffff;
+  border:1px solid #e5e5e5;
+  color:#1a1a1a;padding:10px 18px 10px 16px;border-radius:999px;
   font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;
-  box-shadow:0 4px 16px rgba(0,0,0,.3);
+  box-shadow:0 4px 20px rgba(0,0,0,.25);
   transition:all .2s;
 }
-.wn-pill:hover{transform:translateY(-1px);border-color:#888;box-shadow:0 6px 20px rgba(0,0,0,.4)}
-.wn-pill .wn-sparkle{font-size:14px;background:linear-gradient(135deg,#f472b6,#a78bfa);-webkit-background-clip:text;background-clip:text;color:transparent;font-weight:900}
-.wn-pill .wn-version{opacity:.7;font-size:11px;margin-left:2px}
-.wn-pill .wn-dot{width:8px;height:8px;border-radius:50%;background:#f472b6;box-shadow:0 0 0 0 rgba(244,114,182,.7);animation:wnPulse 1.8s infinite;display:none}
+.wn-pill:hover{transform:translateY(-1px);box-shadow:0 8px 28px rgba(0,0,0,.35);border-color:#f472b6}
+.wn-pill .wn-sparkle{font-size:15px;background:linear-gradient(135deg,#f472b6,#a78bfa);-webkit-background-clip:text;background-clip:text;color:transparent;font-weight:900}
+.wn-pill .wn-version{color:#888;font-size:11px;margin-left:2px;font-weight:700}
+.wn-pill .wn-dot{width:9px;height:9px;border-radius:50%;background:#f472b6;box-shadow:0 0 0 0 rgba(244,114,182,.7);animation:wnPulse 1.8s infinite;display:none}
 .wn-pill.has-new .wn-dot{display:block}
 @keyframes wnPulse{
   0%{box-shadow:0 0 0 0 rgba(244,114,182,.6)}
@@ -493,69 +494,70 @@ span.s.fd:hover{color:#e8e8e8}
 }
 
 .wn-backdrop{
-  position:fixed;inset:0;background:rgba(0,0,0,.55);
+  position:fixed;inset:0;background:rgba(0,0,0,.45);
   z-index:2400;opacity:0;pointer-events:none;transition:opacity .25s;
 }
 .wn-backdrop.open{opacity:1;pointer-events:auto}
 
 .wn-panel{
-  position:fixed;top:0;right:0;height:100vh;width:440px;max-width:92vw;
-  background:#0f0f10;color:#eaeaea;z-index:2500;
+  position:fixed;top:0;right:0;height:100vh;width:460px;max-width:92vw;
+  background:#ffffff;color:#1a1a1a;z-index:2500;
   display:flex;flex-direction:column;
   transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);
-  box-shadow:-20px 0 60px rgba(0,0,0,.5);
+  box-shadow:-20px 0 60px rgba(0,0,0,.4);
   font-family:inherit;
 }
 .wn-panel.open{transform:translateX(0)}
 
-.wn-head{padding:22px 24px 0;border-bottom:1px solid #242425;flex-shrink:0}
+.wn-head{padding:24px 26px 0;border-bottom:1px solid #ececec;flex-shrink:0}
 .wn-head-top{display:flex;justify-content:space-between;align-items:center}
-.wn-title{font-size:20px;font-weight:800;letter-spacing:-.3px;margin:0;display:flex;align-items:center;gap:10px}
-.wn-title .wn-sparkle{font-size:18px}
-.wn-x{width:34px;height:34px;border-radius:8px;border:1px solid #333;background:transparent;color:#aaa;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:inherit}
-.wn-x:hover{background:#1e1e1f;color:#fff}
-.wn-sub{font-size:12px;color:#8a8a8a;margin:4px 0 0}
-.wn-tabs{display:flex;gap:22px;margin-top:16px}
-.wn-tab{padding:10px 0;font-size:12.5px;font-weight:700;color:#888;cursor:pointer;border-bottom:2px solid transparent;letter-spacing:.3px;background:none;border-top:0;border-left:0;border-right:0;font-family:inherit}
-.wn-tab.active{color:#fff;border-bottom-color:#f472b6}
-.wn-tab .wn-tag{background:#2a2a2b;color:#bbb;border-radius:999px;font-size:10px;padding:2px 7px;margin-left:6px;font-weight:700}
+.wn-title{font-size:22px;font-weight:800;letter-spacing:-.4px;margin:0;display:flex;align-items:center;gap:10px;color:#1a1a1a}
+.wn-title .wn-sparkle{font-size:20px;background:linear-gradient(135deg,#f472b6,#a78bfa);-webkit-background-clip:text;background-clip:text;color:transparent}
+.wn-x{width:36px;height:36px;border-radius:10px;border:1px solid #e5e5e5;background:#fafafa;color:#555;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:inherit;line-height:1}
+.wn-x:hover{background:#f472b6;color:#fff;border-color:#f472b6}
+.wn-sub{font-size:12px;color:#888;margin:4px 0 0;font-weight:500}
+.wn-tabs{display:flex;gap:24px;margin-top:18px}
+.wn-tab{padding:12px 0;font-size:13px;font-weight:700;color:#888;cursor:pointer;border-bottom:2px solid transparent;letter-spacing:.2px;background:none;border-top:0;border-left:0;border-right:0;font-family:inherit}
+.wn-tab.active{color:#1a1a1a;border-bottom-color:#f472b6}
+.wn-tab:hover{color:#1a1a1a}
+.wn-tab .wn-tag{background:#eee;color:#555;border-radius:999px;font-size:10px;padding:2px 7px;margin-left:6px;font-weight:700}
 .wn-tab.active .wn-tag{background:linear-gradient(135deg,#f472b6,#a78bfa);color:#fff}
 
-.wn-body{flex:1;overflow-y:auto;padding:22px 24px 40px}
+.wn-body{flex:1;overflow-y:auto;padding:22px 26px 40px;background:#fafaf9}
 .wn-pane{display:none}
 .wn-pane.active{display:block}
 
-/* Timeline entries (Updates tab) */
-.wn-entry{position:relative;padding:0 0 28px 22px;margin-bottom:2px;border-left:2px solid #242425}
+/* Timeline entries (Updates tab) — white cards on off-white bg */
+.wn-entry{position:relative;padding:0 0 24px 22px;margin-bottom:0;border-left:2px solid #ececec}
 .wn-entry:last-child{border-left-color:transparent;padding-bottom:4px}
-.wn-entry::before{content:"";position:absolute;left:-6px;top:4px;width:10px;height:10px;border-radius:50%;background:#f472b6;box-shadow:0 0 0 3px #0f0f10}
-.wn-entry.old::before{background:#555}
-.wn-entry-meta{display:flex;align-items:center;gap:8px;font-size:10.5px;color:#8a8a8a;margin-bottom:6px;font-weight:700;letter-spacing:.4px}
-.wn-ver{background:linear-gradient(135deg,#f472b6,#a78bfa);color:#fff;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:800;letter-spacing:.5px}
-.wn-ver.old{background:#333;color:#aaa}
-.wn-h{font-size:15px;font-weight:700;color:#fff;margin:0 0 8px;line-height:1.35}
-.wn-bullets{margin:0;padding:0;list-style:none;font-size:13px;color:#bdbdbd;line-height:1.55}
-.wn-bullets li{padding-left:16px;position:relative;margin-bottom:4px}
+.wn-entry::before{content:"";position:absolute;left:-6px;top:4px;width:10px;height:10px;border-radius:50%;background:#f472b6;box-shadow:0 0 0 3px #fafaf9}
+.wn-entry.old::before{background:#bbb}
+.wn-entry-meta{display:flex;align-items:center;gap:8px;font-size:10.5px;color:#888;margin-bottom:8px;font-weight:700;letter-spacing:.4px}
+.wn-ver{background:linear-gradient(135deg,#f472b6,#a78bfa);color:#fff;padding:3px 9px;border-radius:4px;font-size:10px;font-weight:800;letter-spacing:.5px}
+.wn-ver.old{background:#d0d0d0;color:#555}
+.wn-h{font-size:16px;font-weight:800;color:#1a1a1a;margin:0 0 10px;line-height:1.35;letter-spacing:-.2px}
+.wn-bullets{margin:0;padding:0;list-style:none;font-size:13px;color:#4a4a4a;line-height:1.6}
+.wn-bullets li{padding-left:18px;position:relative;margin-bottom:5px}
 .wn-bullets li::before{content:"→";position:absolute;left:0;color:#f472b6;font-weight:800}
 
-/* How To groups */
-.wn-htgroup{margin-bottom:22px}
-.wn-hth{font-size:10.5px;text-transform:uppercase;letter-spacing:2.5px;color:#8a8a8a;font-weight:800;margin:0 0 10px}
-.wn-htitem{background:#161617;border:1px solid #242425;border-radius:10px;padding:12px 14px;margin-bottom:8px;font-size:13px;color:#d0d0d0;line-height:1.5}
-.wn-htitem strong{color:#fff;display:block;margin-bottom:3px;font-size:13.5px}
-.wn-kw{color:#f472b6;font-weight:700}
+/* How To groups — white cards with subtle borders */
+.wn-htgroup{margin-bottom:24px}
+.wn-hth{font-size:10.5px;text-transform:uppercase;letter-spacing:2.5px;color:#888;font-weight:800;margin:0 0 10px}
+.wn-htitem{background:#ffffff;border:1px solid #ececec;border-radius:10px;padding:13px 15px;margin-bottom:8px;font-size:13px;color:#4a4a4a;line-height:1.55;box-shadow:0 1px 2px rgba(0,0,0,.02)}
+.wn-htitem strong{color:#1a1a1a;display:block;margin-bottom:4px;font-size:13.5px;font-weight:800}
+.wn-kw{color:#d4268b;font-weight:700}
 
-/* Roadmap items */
-.wn-rmap{background:#161617;border:1px solid #242425;border-radius:10px;padding:14px;margin-bottom:10px;display:flex;gap:14px;align-items:flex-start}
-.wn-rpill{font-size:9.5px;padding:3px 8px;border-radius:999px;font-weight:800;letter-spacing:.5px;flex-shrink:0;margin-top:2px}
+/* Coming Soon items — white cards with colored status pills */
+.wn-rmap{background:#ffffff;border:1px solid #ececec;border-radius:10px;padding:14px 15px;margin-bottom:10px;display:flex;gap:14px;align-items:flex-start;box-shadow:0 1px 2px rgba(0,0,0,.02)}
+.wn-rpill{font-size:9.5px;padding:4px 9px;border-radius:999px;font-weight:800;letter-spacing:.6px;flex-shrink:0;margin-top:2px}
 .wn-rpill.now{background:#1d7a3a;color:#fff}
-.wn-rpill.next{background:#b8761d;color:#fff}
-.wn-rpill.later{background:#444;color:#ccc}
+.wn-rpill.next{background:#d48a1c;color:#fff}
+.wn-rpill.later{background:#e5e5e5;color:#555}
 .wn-rpill.v2{background:linear-gradient(135deg,#f472b6,#a78bfa);color:#fff}
-.wn-rtitle{font-size:13.5px;color:#fff;font-weight:700;margin:0 0 4px}
-.wn-rbody{font-size:12.5px;color:#a0a0a0;line-height:1.5;margin:0}
+.wn-rtitle{font-size:13.5px;color:#1a1a1a;font-weight:800;margin:0 0 4px}
+.wn-rbody{font-size:12.5px;color:#6a6a6a;line-height:1.5;margin:0}
 
-.wn-foot{border-top:1px solid #242425;padding:14px 24px;font-size:11px;color:#666;display:flex;justify-content:space-between;flex-shrink:0}
+.wn-foot{border-top:1px solid #ececec;padding:14px 26px;font-size:11px;color:#888;display:flex;justify-content:space-between;flex-shrink:0;background:#fff;font-weight:600}
 
 @media print{.wn-pill,.wn-panel,.wn-backdrop{display:none!important}}
 </style>
@@ -582,7 +584,7 @@ span.s.fd:hover{color:#e8e8e8}
     <div class="wn-tabs">
       <button class="wn-tab active" data-pane="updates" onclick="wnTab('updates')">Updates <span class="wn-tag">3</span></button>
       <button class="wn-tab" data-pane="howto" onclick="wnTab('howto')">How To</button>
-      <button class="wn-tab" data-pane="roadmap" onclick="wnTab('roadmap')">Roadmap</button>
+      <button class="wn-tab" data-pane="roadmap" onclick="wnTab('roadmap')">Coming Soon</button>
     </div>
   </div>
 
