@@ -971,85 +971,9 @@ span.s.fd:hover{color:#e8e8e8}
       <div id="printSection"></div>
     </div>
 
-    <div class="modal-columns" style="display:none">
-
-      <!-- LEFT: CONVERT EVAL SCORES -->
-      <div style="display:flex;flex-direction:column">
-        <div class="col-header" style="background:var(--c1,#1f53a3);border-radius:8px 8px 0 0;padding:14px 16px;text-align:center">
-          <div style="font-size:16px;font-weight:900;color:#fff;letter-spacing:1px">CONVERT EVAL SCORES</div>
-          <div style="font-size:11px;color:rgba(255,255,255,.85);margin-top:4px;font-weight:500">Drop your iClassPro XLS &mdash; PDF downloads automatically</div>
-        </div>
-        <div style="background:#1a1a1a;border-radius:0 0 8px 8px;padding:16px;flex:1;display:flex;flex-direction:column;gap:12px;border:1px solid #333;border-top:none">
-          <div class="drop-zone" id="dzAll" style="min-width:100%;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:180px;border-width:3px">
-            <div style="font-size:48px;margin-bottom:8px;opacity:.6">&#128196;</div>
-            <div class="dz-title" style="font-size:15px;font-weight:800">Drop Skill Evaluation XLS</div>
-            <div style="font-size:28px;font-weight:900;color:var(--c1,#1f53a3);margin:6px 0;letter-spacing:2px">HERE</div>
-            <div class="dz-sub" style="font-size:10px">iClassPro: Classes &rarr; Report &rarr; Class Evaluation Report &rarr; XLS</div>
-            <div class="dz-file" id="dzAllFiles" style="margin-top:8px"></div>
-            <input type="file" accept=".xlsx,.xls" id="allInput">
-          </div>
-          <div class="error-msg" id="errorMsg"></div>
-          <div class="summary" id="summary">
-            <div class="summary-text" id="summaryText"></div>
-            <div class="badges" id="summaryBadges"></div>
-          </div>
-          <div id="printSection" style="display:none"></div>
-        </div>
-      </div>
-
-      <!-- DIVIDER -->
-      <div class="modal-divider"></div>
-
-      <!-- RIGHT: PRINT BLANK SCORE SHEETS -->
-      <div style="display:flex;flex-direction:column">
-        <div class="col-header" id="blankHeader" style="background:var(--c2,#bf0a30);border-radius:8px 8px 0 0;padding:14px 16px;text-align:center">
-          <div style="font-size:16px;font-weight:900;color:var(--c2-text,#fff);letter-spacing:1px">PRINT BLANK SCORE SHEETS</div>
-          <div style="font-size:11px;color:var(--c2-text-sub,rgba(255,255,255,.85));margin-top:4px;font-weight:500">Select programs and number of copies. No upload needed.</div>
-        </div>
-        <div style="background:#1a1a1a;border-radius:0 0 8px 8px;padding:16px;flex:1;display:flex;flex-direction:column;border:1px solid #333;border-top:none">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;gap:8px">
-            <button type="button" onclick="toggleAllBlankPrograms(true)" style="flex:1;background:#2a2a2a;color:#fff;border:1px solid #444;border-radius:6px;padding:7px 10px;font-size:11px;font-weight:700;cursor:pointer;letter-spacing:.5px" onmouseover="this.style.background='#3a3a3a'" onmouseout="this.style.background='#2a2a2a'">SELECT ALL</button>
-            <button type="button" onclick="toggleAllBlankPrograms(false)" style="flex:1;background:#2a2a2a;color:#fff;border:1px solid #444;border-radius:6px;padding:7px 10px;font-size:11px;font-weight:700;cursor:pointer;letter-spacing:.5px" onmouseover="this.style.background='#3a3a3a'" onmouseout="this.style.background='#2a2a2a'">CLEAR ALL</button>
-          </div>
-          <div style="display:flex;flex-direction:column;gap:5px;flex:1" id="blankProgramList">
-            <label style="display:flex;align-items:center;gap:10px;padding:9px 12px;background:#2a2a2a;border-radius:6px;cursor:pointer;transition:background .15s" onmouseover="this.style.background='#333'" onmouseout="this.style.background='#2a2a2a'">
-              <input type="checkbox" value="Preschool" class="blank-prog-cb" style="width:18px;height:18px;accent-color:var(--c1,#1f53a3)">
-              <span style="flex:1;font-size:13px;font-weight:700;color:#fff">Preschool</span>
-              <input type="number" min="1" max="20" value="1" class="blank-prog-qty" style="width:44px;background:#111;border:1px solid #444;border-radius:4px;color:#fff;text-align:center;font-size:13px;padding:5px">
-            </label>
-            <label style="display:flex;align-items:center;gap:10px;padding:9px 12px;background:#2a2a2a;border-radius:6px;cursor:pointer;transition:background .15s" onmouseover="this.style.background='#333'" onmouseout="this.style.background='#2a2a2a'">
-              <input type="checkbox" value="Junior" class="blank-prog-cb" style="width:18px;height:18px;accent-color:var(--c1,#1f53a3)">
-              <span style="flex:1;font-size:13px;font-weight:700;color:#fff">Junior</span>
-              <input type="number" min="1" max="20" value="1" class="blank-prog-qty" style="width:44px;background:#111;border:1px solid #444;border-radius:4px;color:#fff;text-align:center;font-size:13px;padding:5px">
-            </label>
-            <label style="display:flex;align-items:center;gap:10px;padding:9px 12px;background:#2a2a2a;border-radius:6px;cursor:pointer;transition:background .15s" onmouseover="this.style.background='#333'" onmouseout="this.style.background='#2a2a2a'">
-              <input type="checkbox" value="Advanced Junior" class="blank-prog-cb" style="width:18px;height:18px;accent-color:var(--c1,#1f53a3)">
-              <span style="flex:1;font-size:13px;font-weight:700;color:#fff">Advanced Junior</span>
-              <input type="number" min="1" max="20" value="1" class="blank-prog-qty" style="width:44px;background:#111;border:1px solid #444;border-radius:4px;color:#fff;text-align:center;font-size:13px;padding:5px">
-            </label>
-            <label style="display:flex;align-items:center;gap:10px;padding:9px 12px;background:#2a2a2a;border-radius:6px;cursor:pointer;transition:background .15s" onmouseover="this.style.background='#333'" onmouseout="this.style.background='#2a2a2a'">
-              <input type="checkbox" value="Level 1" class="blank-prog-cb" style="width:18px;height:18px;accent-color:var(--c1,#1f53a3)">
-              <span style="flex:1;font-size:13px;font-weight:700;color:#fff">Level 1</span>
-              <input type="number" min="1" max="20" value="1" class="blank-prog-qty" style="width:44px;background:#111;border:1px solid #444;border-radius:4px;color:#fff;text-align:center;font-size:13px;padding:5px">
-            </label>
-            <label style="display:flex;align-items:center;gap:10px;padding:9px 12px;background:#2a2a2a;border-radius:6px;cursor:pointer;transition:background .15s" onmouseover="this.style.background='#333'" onmouseout="this.style.background='#2a2a2a'">
-              <input type="checkbox" value="Level 2" class="blank-prog-cb" style="width:18px;height:18px;accent-color:var(--c1,#1f53a3)">
-              <span style="flex:1;font-size:13px;font-weight:700;color:#fff">Level 2</span>
-              <input type="number" min="1" max="20" value="1" class="blank-prog-qty" style="width:44px;background:#111;border:1px solid #444;border-radius:4px;color:#fff;text-align:center;font-size:13px;padding:5px">
-            </label>
-            <label style="display:flex;align-items:center;gap:10px;padding:9px 12px;background:#2a2a2a;border-radius:6px;cursor:pointer;transition:background .15s" onmouseover="this.style.background='#333'" onmouseout="this.style.background='#2a2a2a'">
-              <input type="checkbox" value="Level 3" class="blank-prog-cb" style="width:18px;height:18px;accent-color:var(--c1,#1f53a3)">
-              <span style="flex:1;font-size:13px;font-weight:700;color:#fff">Level 3</span>
-              <input type="number" min="1" max="20" value="1" class="blank-prog-qty" style="width:44px;background:#111;border:1px solid #444;border-radius:4px;color:#fff;text-align:center;font-size:13px;padding:5px">
-            </label>
-          </div>
-          <button onclick="generateBlankMulti()" style="width:100%;text-align:center;padding:13px;margin-top:12px;border:none;border-radius:8px;font-size:14px;font-weight:800;color:var(--c2-text,#fff);cursor:pointer;background:var(--c2,#bf0a30);transition:filter .15s;letter-spacing:.5px" onmouseover="this.style.filter='brightness(1.2)'" onmouseout="this.style.filter=''">
-            Download Blank Grids
-          </button>
-        </div>
-      </div>
-
-    </div><!-- /modal-columns (hidden legacy) -->
+    <!-- (Hidden legacy modal-columns block removed — was duplicating checkbox IDs
+         causing Blank Grid download to generate 2x pages. Wizard above is the
+         single source of truth for dzAll, blank-prog-cb, blank-prog-qty, etc.) -->
 
     <div style="margin-top:14px;text-align:center">
       <button onclick="closeModal()" style="
