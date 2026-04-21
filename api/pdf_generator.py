@@ -118,7 +118,7 @@ PROGRAMS = {
             {'event':'BARS', 'short':'Pullover\n(with Mat)',      'criteria':['Chin at bar, walks feet above bar','Shifts hands FWD to front support','Front support 3 sec, belly off bar']},
             {'event':'BARS', 'short':'Forward Roll',  'criteria':['From front support, rolls forward','Feet and knees together','Lands on feet with control']},
             {'event':'BARS', 'short':'Front Support\n(5 sec hold)', 'criteria':['Straight arms','Belly in and back rounded','Straight legs, pointed toes in front']},
-            {'event':'BEAM', 'short':'Walk Across\nMedium Beam\n(Unassisted)', 'criteria':['Chest up with arms out to the side','One foot in front, no shuffling','Walks across beam without wobbles']},
+            {'event':'BEAM', 'short':'Walk Across\nMedium Beam\n(Unassisted)', 'criteria':['Chest up with arms out to the side','Places one foot directly in front of the other (straight)','Walks across beam without wobbles']},
             {'event':'BEAM', 'short':'Lever\n(Floor)', 'criteria':['Starts/finishes in lunge, no wobbles','Back leg stays straight','Arms by ears']},
             {'event':'BEAM', 'short':'Backward Walk\non Low Beam', 'criteria':['Chest up with arms out to the side','Heel-to-toe steps backward','Eyes forward while walking back']},
             {'event':'FLOOR','short':'Cartwheel\nto Lunge',     'criteria':['Starts fav foot front, ends opposite','Straight legs','Legs pass through vertical']},
