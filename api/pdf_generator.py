@@ -99,7 +99,7 @@ PROGRAMS = {
             {'event':'VAULT','short':'Run + Hurdle\nto Two-Foot Jump',  'criteria':['Runs into hurdle, no stutter-step','Hurdles off 1 foot, lands on 2 feet','Arms by ears in jump']},
             {'event':'BARS', 'short':'Front Support\nFWD Roll\n(with spot)',   'criteria':['Unassisted front support for 3 sec','Looks at belly while rolling','Hands stay on bar until roll is done']},
             {'event':'BARS', 'short':'Tuck Hang',    'criteria':['Holds for 3 sec','Knees above belly button','Arms by ears']},
-            {'event':'BEAM', 'short':'Walk Across\nLow Beam\n(Unassisted)',    'criteria':['Chest up with arms out to the side','One foot in front, no shuffling','Walks across beam without wobbles']},
+            {'event':'BEAM', 'short':'Walk Across\nLow Beam\n(Unassisted)',    'criteria':['Chest up with arms out to the side','Places one foot directly in front of the other (straight)','Walks across beam without wobbles']},
             {'event':'BEAM', 'short':'Bear Crawl\non Line',   'criteria':['Hands on the line','Feet on the line','Straight legs']},
             {'event':'BEAM', 'short':'Backward Walk\nwith Coach',     'criteria':['Chest up with arms out to the side','Heel-to-toe steps backward','Eyes forward while walking back']},
             {'event':'FLOOR','short':'Monkey Jump\nOver Panel Mat',  'criteria':['Turns hands towards "favorite foot"','Jumps over panel mat without touch','Starts and finishes with arms up']},
