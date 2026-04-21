@@ -6,7 +6,7 @@ from http.server import BaseHTTPRequestHandler
 import json, io, traceback
 import os, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from pdf_generator import generate_pdf, generate_multi_pdf
+from pdf_generator import generate_pdf, generate_multi_pdf, generate_split_pdf
 
 
 class handler(BaseHTTPRequestHandler):
@@ -20,13 +20,19 @@ class handler(BaseHTTPRequestHandler):
                 self._error(400, 'No data received')
                 return
 
-            gym_code = data.get('gymCode', 'CCP')
-            mode     = data.get('mode', 'eval')
-            classes  = data.get('classes', [])
+            gym_code    = data.get('gymCode', 'CCP')
+            mode        = data.get('mode', 'eval')
+            classes     = data.get('classes', [])
+            page_events = data.get('pageEvents')  # e.g. [['VAULT','BARS'],['BEAM','FLOOR']]
 
             if classes:
                 # Multi-class: one page per class
-                pdf_bytes = generate_multi_pdf(gym_code, classes, mode)
+                # If pageEvents is provided, use the split renderer so each class
+                # gets N pages (one per event grouping in pageEvents).
+                if page_events and isinstance(page_events, list) and len(page_events) > 0:
+                    pdf_bytes = generate_split_pdf(gym_code, classes, page_events, mode)
+                else:
+                    pdf_bytes = generate_multi_pdf(gym_code, classes, mode)
                 first_date = classes[0].get('date', '').replace('/', '')
                 filename = f"{gym_code}_Evals_{first_date}.pdf"
             else:
@@ -56,7 +62,8 @@ class handler(BaseHTTPRequestHandler):
 
             self.send_response(200)
             self.send_header('Content-Type', 'application/pdf')
-            self.send_header('Content-Disposition', f'attachment; filename="{filename}"')
+            # Inline so the JS download-attribute controls save (avoids Edge save dialog)
+            self.send_header('Content-Disposition', f'inline; filename="{filename}"')
             self.send_header('Content-Length', str(len(pdf_bytes)))
             self.end_headers()
             self.wfile.write(pdf_bytes)

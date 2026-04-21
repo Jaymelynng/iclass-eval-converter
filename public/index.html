@@ -550,7 +550,428 @@ span.s.fd:hover{color:#e8e8e8}
       </div>
     </div>
 
-    <div class="modal-columns">
+    <!-- ═══════════════════════════════════════════════════════════════
+         WIZARD — stepped flow: entry → path → steps → download
+         ═══════════════════════════════════════════════════════════════ -->
+    <style>
+      .wiz { padding:4px 0 0; }
+      .wiz-progress-row { display:flex; align-items:center; gap:10px; margin-bottom:20px; }
+      /* Step label uses c2 (secondary/contrast) so it's always visible vs c1 progress bar */
+      .wiz-step-label { font-size:12px; font-weight:900; color:var(--c2,#fff); letter-spacing:1.2px; flex-shrink:0; text-shadow:0 0 6px rgba(0,0,0,0.6); }
+      .wiz-bar { flex:1; display:flex; gap:4px; padding:2px; background:#1a1a1a; border-radius:5px; box-shadow:inset 0 1px 3px rgba(0,0,0,0.6); }
+      .wiz-bar-seg { height:8px; flex:1; background:#555; border-radius:3px; transition:background .2s; }
+      .wiz-bar-seg.done { background:var(--c1,#1f53a3); box-shadow:0 0 10px var(--c1-shadow,rgba(31,83,163,0.8)), inset 0 1px 0 rgba(255,255,255,0.3); }
+      .wiz-question { font-size:20px; font-weight:900; color:#fff; margin-bottom:16px; letter-spacing:.3px; }
+      .wiz-help { font-size:12px; color:#bbb; margin-top:-12px; margin-bottom:14px; }
+      .wiz-footer { display:flex; justify-content:space-between; align-items:center; margin-top:22px; padding-top:16px; border-top:1px solid #2a2a2a; }
+      /* BACK BUTTON = c2 brand. Real 3D pop with layered shadows + inset highlight. */
+      .wiz-back {
+        background:linear-gradient(180deg, var(--c2-light,#888) 0%, var(--c2,#444) 50%, var(--c2-dark,#222) 100%);
+        color:var(--c2-text,#fff);
+        border:none;
+        font-size:14px; font-weight:900; cursor:pointer;
+        padding:14px 26px; border-radius:10px;
+        transition:all .12s; letter-spacing:.8px;
+        text-transform:uppercase;
+        box-shadow:
+          0 6px 0 var(--c2-dark,#222),
+          0 8px 16px rgba(0,0,0,0.5),
+          inset 0 1px 0 rgba(255,255,255,0.35);
+        position:relative;
+        top:0;
+      }
+      .wiz-back:hover {
+        filter:brightness(1.1);
+        top:-2px;
+        box-shadow:
+          0 8px 0 var(--c2-dark,#222),
+          0 12px 20px rgba(0,0,0,0.6),
+          inset 0 1px 0 rgba(255,255,255,0.4);
+      }
+      .wiz-back:active {
+        top:4px;
+        box-shadow:
+          0 2px 0 var(--c2-dark,#222),
+          0 3px 6px rgba(0,0,0,0.5),
+          inset 0 1px 0 rgba(255,255,255,0.3);
+      }
+      /* NEXT BUTTON = c1 brand. Same 3D treatment. */
+      .wiz-next {
+        background:linear-gradient(180deg, var(--c1-light,#5a84d0) 0%, var(--c1,#1f53a3) 50%, var(--c1-dark,#12345f) 100%);
+        color:var(--c1-text,#fff);
+        border:none; padding:14px 34px; border-radius:10px;
+        font-size:15px; font-weight:900; cursor:pointer;
+        letter-spacing:.8px; transition:all .12s;
+        text-transform:uppercase;
+        box-shadow:
+          0 6px 0 var(--c1-dark,#12345f),
+          0 10px 24px var(--c1-shadow,rgba(31,83,163,0.55)),
+          inset 0 1px 0 rgba(255,255,255,0.4);
+        position:relative;
+        top:0;
+      }
+      .wiz-next:hover {
+        filter:brightness(1.1);
+        top:-2px;
+        box-shadow:
+          0 8px 0 var(--c1-dark,#12345f),
+          0 14px 28px var(--c1-shadow,rgba(31,83,163,0.7)),
+          inset 0 1px 0 rgba(255,255,255,0.45);
+      }
+      .wiz-next:active {
+        top:4px;
+        box-shadow:
+          0 2px 0 var(--c1-dark,#12345f),
+          0 3px 8px var(--c1-shadow,rgba(31,83,163,0.5)),
+          inset 0 1px 0 rgba(255,255,255,0.3);
+      }
+      .wiz-next[disabled] { opacity:.4; cursor:not-allowed; top:0; }
+
+      /* Entry picker — SIDE BY SIDE, BIG visual preview on each card */
+      .wiz-entry-choices {
+        display:grid; grid-template-columns:1fr 1fr; gap:16px;
+      }
+      .wiz-entry-card {
+        background:linear-gradient(135deg, var(--c1,#1f53a3) 0%, var(--c1-dark,#17407d) 100%);
+        border:none; border-radius:14px; padding:22px 18px 18px; cursor:pointer;
+        transition:all .2s ease; text-align:center; color:var(--c1-text,#fff);
+        font-family:inherit; width:100%; position:relative; overflow:hidden;
+        box-shadow:0 8px 24px rgba(0,0,0,0.4);
+        display:flex; flex-direction:column; gap:14px;
+        min-height:230px;
+      }
+      .wiz-entry-card.alt {
+        background:linear-gradient(135deg, var(--c2,#bf0a30) 0%, var(--c2-dark,#8a0722) 100%);
+        color:var(--c2-text,#fff);
+      }
+      .wiz-entry-card:hover {
+        transform:translateY(-4px);
+        box-shadow:0 14px 36px rgba(0,0,0,0.55);
+        filter:brightness(1.1);
+      }
+      .wiz-entry-card-title {
+        font-size:17px; font-weight:900; letter-spacing:.4px;
+        text-transform:uppercase;
+      }
+      .wiz-entry-card-sub { font-size:12px; font-weight:600; opacity:.92; line-height:1.4; margin-top:4px; }
+      /* Mini preview inside entry card */
+      .wiz-entry-preview {
+        flex:1; background:rgba(255,255,255,0.15);
+        border:2px dashed rgba(255,255,255,0.5);
+        border-radius:10px; display:flex; align-items:center; justify-content:center;
+        flex-direction:column; gap:4px; padding:10px;
+        min-height:90px;
+      }
+      .wiz-entry-preview-icon { font-size:44px; opacity:.95; line-height:1; }
+      .wiz-entry-preview-text {
+        font-size:10px; font-weight:800; letter-spacing:1px;
+        text-transform:uppercase; opacity:.85;
+      }
+      /* Simulated tiny grid for Blank Sheets preview */
+      .wiz-mini-grid {
+        width:100%; height:64px;
+        background:
+          linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px) 0 0 / 25% 100%,
+          linear-gradient(0deg,  rgba(255,255,255,0.5) 1px, transparent 1px) 0 0 / 100% 20%,
+          rgba(255,255,255,0.1);
+        border-radius:6px;
+        border:1px solid rgba(255,255,255,0.4);
+      }
+
+      /* Inner step choice cards — SOLID LIGHT FILL with 3D button feel.
+         Selected = brand color + highlighted. Unselected = gray but clearly raised. */
+      .wiz-choices { display:flex; flex-direction:column; gap:10px; }
+      .wiz-choice {
+        background:linear-gradient(180deg, #5a5a5a 0%, #3a3a3a 50%, #2a2a2a 100%);
+        border:none;
+        border-radius:10px;
+        padding:18px 16px; cursor:pointer; transition:all .12s ease;
+        text-align:center; color:#fff; font-family:inherit; width:100%;
+        position:relative;
+        top:0;
+        box-shadow:
+          0 5px 0 #1a1a1a,
+          0 8px 16px rgba(0,0,0,0.5),
+          inset 0 1px 0 rgba(255,255,255,0.2);
+      }
+      .wiz-choice:hover {
+        top:-2px;
+        background:linear-gradient(180deg, #6a6a6a 0%, #4a4a4a 50%, #3a3a3a 100%);
+        box-shadow:
+          0 7px 0 #1a1a1a,
+          0 10px 20px var(--c1-shadow,rgba(31,83,163,0.55)),
+          inset 0 1px 0 rgba(255,255,255,0.25);
+      }
+      .wiz-choice.selected {
+        background:linear-gradient(180deg, var(--c1-light,#5a84d0) 0%, var(--c1,#1f53a3) 50%, var(--c1-dark,#12345f) 100%);
+        color:var(--c1-text,#fff);
+        top:-2px;
+        box-shadow:
+          0 7px 0 var(--c1-dark,#12345f),
+          0 12px 24px var(--c1-shadow,rgba(31,83,163,0.6)),
+          inset 0 1px 0 rgba(255,255,255,0.4);
+      }
+      .wiz-choice:active, .wiz-choice.selected:active {
+        top:2px;
+        box-shadow:
+          0 2px 0 #1a1a1a,
+          0 3px 6px rgba(0,0,0,0.5),
+          inset 0 1px 0 rgba(255,255,255,0.2);
+      }
+      .wiz-choice.selected::before {
+        content:'✓'; position:absolute; top:6px; right:10px;
+        font-size:16px; font-weight:900; opacity:.9;
+      }
+      .wiz-choice-title { font-size:14px; font-weight:900; letter-spacing:.5px; line-height:1.25; }
+      .wiz-choice-sub { font-size:11px; opacity:.85; margin-top:5px; font-weight:600; }
+      .wiz-choice-default {
+        display:inline-block; font-size:9px; font-weight:900;
+        background:rgba(255,255,255,.22); color:inherit;
+        padding:2px 8px; border-radius:10px; margin-left:6px;
+        letter-spacing:.5px; vertical-align:middle;
+      }
+      .wiz-choices-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; }
+
+      /* Program picker rows — light gray fill, ALWAYS white text (no brand color text) */
+      .wiz-prog-row {
+        display:flex; align-items:center; gap:14px; padding:14px 18px;
+        background:#3a3a3a;
+        border:2px solid #555;
+        border-radius:10px; cursor:pointer; transition:all .15s;
+      }
+      .wiz-prog-row:hover {
+        background:#4a4a4a;
+        border-color:#888;
+      }
+      .wiz-prog-row:has(input:checked) {
+        background:var(--c1,#1f53a3);
+        border-color:var(--c1-light,#5a84d0);
+        box-shadow:0 0 0 2px var(--c1-shadow,rgba(31,83,163,0.4));
+      }
+      .wiz-prog-row input[type=checkbox] {
+        width:22px; height:22px;
+        accent-color:#fff;
+        cursor:pointer;
+      }
+      .wiz-prog-row span {
+        flex:1; font-size:14px; font-weight:800;
+        color:#fff !important;  /* FORCE white — never brand color (invisible on dark) */
+      }
+      .wiz-prog-row input[type=number] {
+        width:60px; background:#1a1a1a; border:2px solid #666; border-radius:6px;
+        color:#fff; text-align:center; font-size:15px; font-weight:900; padding:7px;
+      }
+      .wiz-prog-row:has(input:checked) input[type=number] {
+        background:#fff; color:#1a1a1a; border-color:#fff;
+      }
+
+      .wiz-select-row { display:flex; gap:8px; margin-bottom:12px; }
+      .wiz-select-row button {
+        flex:1; background:var(--c1,#1f53a3); color:var(--c1-text,#fff);
+        border:none; border-radius:8px;
+        padding:12px; font-size:11px; font-weight:900; cursor:pointer; letter-spacing:1px;
+        transition:all .15s;
+        box-shadow:0 3px 0 var(--c1-dark,#17407d), 0 5px 12px rgba(0,0,0,0.3);
+        position:relative; top:0;
+      }
+      .wiz-select-row button:hover {
+        filter:brightness(1.15); top:-2px;
+        box-shadow:0 5px 0 var(--c1-dark,#17407d), 0 8px 16px rgba(0,0,0,0.4);
+      }
+      .wiz-select-row button:active {
+        top:2px; box-shadow:0 1px 0 var(--c1-dark,#17407d), 0 2px 6px rgba(0,0,0,0.3);
+      }
+
+      /* Drop zone — BRAND colored border, obvious */
+      .wiz-drop {
+        border:3px dashed var(--c1,#1f53a3); border-radius:12px;
+        padding:36px 20px; text-align:center; transition:all .2s ease; cursor:pointer;
+        background:var(--c1-faint,rgba(31,83,163,0.08));
+      }
+      .wiz-drop:hover, .wiz-drop.dragover {
+        background:var(--c1-faint2,rgba(31,83,163,0.18));
+        border-style:solid;
+        transform:scale(1.01);
+      }
+      .wiz-drop.loaded {
+        border-color:#4caf50; background:rgba(76,175,80,0.12); border-style:solid;
+      }
+      .wiz-drop-title { font-size:16px; font-weight:800; color:#fff; }
+      .wiz-drop-here {
+        font-size:34px; font-weight:900; color:var(--c1,#1f53a3);
+        margin:10px 0; letter-spacing:3px;
+        text-shadow:0 2px 10px var(--c1-shadow,rgba(31,83,163,0.4));
+      }
+      .wiz-drop-sub { font-size:11px; color:#888; margin-top:6px; }
+      .wiz-drop-file { font-size:13px; color:#4caf50; font-weight:800; margin-top:12px; word-break:break-all; }
+
+      /* Confirm summary */
+      .wiz-class-item {
+        background:linear-gradient(180deg, #4a4a4a 0%, #333 100%);
+        border-radius:10px; padding:12px 16px;
+        display:flex; flex-direction:column; align-items:flex-start;
+        border-left:5px solid var(--c1,#1f53a3);
+        box-shadow:
+          0 3px 0 #1a1a1a,
+          0 5px 10px rgba(0,0,0,0.4),
+          inset 0 1px 0 rgba(255,255,255,0.2);
+      }
+      .wiz-class-item .name { font-size:14px; font-weight:800; color:#fff; }
+      .wiz-class-item .meta { font-size:11px; color:#ccc; margin-top:4px; }
+      .wiz-class-list {
+        display:flex; flex-direction:column; gap:10px;
+        max-height:240px; overflow-y:auto; padding:4px 8px 4px 4px;
+      }
+      .wiz-class-list::-webkit-scrollbar { width:8px; }
+      .wiz-class-list::-webkit-scrollbar-track { background:#1a1a1a; border-radius:4px; }
+      .wiz-class-list::-webkit-scrollbar-thumb { background:var(--c1,#1f53a3); border-radius:4px; }
+      .wiz-skip-box {
+        background:rgba(220,50,50,.12); border:2px solid rgba(220,50,50,.5);
+        border-radius:10px; padding:12px 16px; color:#ffaaaa; font-size:12px;
+        margin-top:12px; font-weight:600;
+      }
+    </style>
+
+    <!-- WIZARD ENTRY: "What do you need?" — SIDE BY SIDE with visual previews -->
+    <div class="wiz" id="wizEntry" style="display:block">
+      <div class="wiz-question">What do you need?</div>
+      <div class="wiz-entry-choices">
+        <button type="button" class="wiz-entry-card" onclick="wizStart('convert')">
+          <div class="wiz-entry-card-title">Convert Eval Scores</div>
+          <div class="wiz-entry-card-sub">Drop an iClassPro XLS &mdash; get a branded PDF with scores filled in.</div>
+          <div class="wiz-entry-preview">
+            <div class="wiz-entry-preview-icon">&#128196;</div>
+            <div class="wiz-entry-preview-text">Drop XLS &rarr; PDF</div>
+          </div>
+        </button>
+        <button type="button" class="wiz-entry-card alt" onclick="wizStart('blank')">
+          <div class="wiz-entry-card-title">Print Blank Score Sheets</div>
+          <div class="wiz-entry-card-sub">Clean blank grids for coaches to fill by hand.</div>
+          <div class="wiz-entry-preview">
+            <div class="wiz-mini-grid"></div>
+            <div class="wiz-entry-preview-text">Blank grids</div>
+          </div>
+        </button>
+      </div>
+    </div>
+
+    <!-- WIZARD: CONVERT PATH -->
+    <div class="wiz" id="wizConvert" style="display:none">
+      <div class="wiz-progress-row">
+        <div class="wiz-step-label" id="wizConvertStepLbl">STEP 1 OF 3</div>
+        <div class="wiz-bar" id="wizConvertBar">
+          <div class="wiz-bar-seg done"></div>
+          <div class="wiz-bar-seg"></div>
+          <div class="wiz-bar-seg"></div>
+        </div>
+      </div>
+
+      <!-- C-Step 1: Upload XLS -->
+      <div id="wizC1" class="wiz-step">
+        <div class="wiz-question">Drop your Skill Evaluation XLS</div>
+        <div class="wiz-drop" id="dzAll">
+          <div style="font-size:42px;opacity:.5">&#128196;</div>
+          <div class="wiz-drop-title">Drop Skill Evaluation XLS</div>
+          <div class="wiz-drop-here">HERE</div>
+          <div class="wiz-drop-sub">iClassPro: Classes &rarr; Report &rarr; Class Evaluation Report &rarr; XLS</div>
+          <div class="wiz-drop-file" id="dzAllFiles"></div>
+          <input type="file" accept=".xlsx,.xls" id="allInput" style="display:none">
+        </div>
+        <div class="error-msg" id="errorMsg"></div>
+      </div>
+
+      <!-- C-Step 2: Layout -->
+      <div id="wizC2" class="wiz-step" style="display:none">
+        <div class="wiz-question">Which events go on the PDF?</div>
+        <div class="wiz-help">Always 1 page per class. Pick fewer events for bigger text.</div>
+        <div class="wiz-choices-grid">
+          <button type="button" class="wiz-choice selected" data-layout="all4" onclick="setLayout('all4')">
+            <div class="wiz-choice-title">ALL 4 EVENTS<span class="wiz-choice-default">DEFAULT</span></div>
+            <div class="wiz-choice-sub">Vault, Bars, Beam, Floor</div>
+          </button>
+          <button type="button" class="wiz-choice" data-layout="vb" onclick="setLayout('vb')">
+            <div class="wiz-choice-title">VAULT + BARS</div>
+            <div class="wiz-choice-sub">bigger text</div>
+          </button>
+          <button type="button" class="wiz-choice" data-layout="bf" onclick="setLayout('bf')">
+            <div class="wiz-choice-title">BEAM + FLOOR</div>
+            <div class="wiz-choice-sub">bigger text</div>
+          </button>
+        </div>
+      </div>
+
+      <!-- C-Step 3: Review & Download -->
+      <div id="wizC3" class="wiz-step" style="display:none">
+        <div class="wiz-question">Ready to download?</div>
+        <div id="wizConfirmSummary"></div>
+      </div>
+
+      <div class="wiz-footer">
+        <button class="wiz-back" onclick="wizBack()">&larr; Back</button>
+        <button class="wiz-next" id="wizConvertNext" onclick="wizNext()">Next &rarr;</button>
+      </div>
+    </div>
+
+    <!-- WIZARD: BLANK PATH -->
+    <div class="wiz" id="wizBlank" style="display:none">
+      <div class="wiz-progress-row">
+        <div class="wiz-step-label" id="wizBlankStepLbl">STEP 1 OF 2</div>
+        <div class="wiz-bar" id="wizBlankBar">
+          <div class="wiz-bar-seg done"></div>
+          <div class="wiz-bar-seg"></div>
+        </div>
+      </div>
+
+      <!-- B-Step 1: Layout -->
+      <div id="wizB1" class="wiz-step">
+        <div class="wiz-question">Which events go on the PDF?</div>
+        <div class="wiz-help">Always 1 page per class. Pick fewer events for bigger text.</div>
+        <div class="wiz-choices-grid">
+          <button type="button" class="wiz-choice selected" data-layout="all4" onclick="setLayout('all4')">
+            <div class="wiz-choice-title">ALL 4 EVENTS<span class="wiz-choice-default">DEFAULT</span></div>
+            <div class="wiz-choice-sub">Vault, Bars, Beam, Floor</div>
+          </button>
+          <button type="button" class="wiz-choice" data-layout="vb" onclick="setLayout('vb')">
+            <div class="wiz-choice-title">VAULT + BARS</div>
+            <div class="wiz-choice-sub">bigger text</div>
+          </button>
+          <button type="button" class="wiz-choice" data-layout="bf" onclick="setLayout('bf')">
+            <div class="wiz-choice-title">BEAM + FLOOR</div>
+            <div class="wiz-choice-sub">bigger text</div>
+          </button>
+        </div>
+      </div>
+
+      <!-- B-Step 2: Programs -->
+      <div id="wizB2" class="wiz-step" style="display:none">
+        <div class="wiz-question">Which programs and how many copies?</div>
+        <div class="wiz-select-row">
+          <button type="button" onclick="toggleAllBlankPrograms(true)">SELECT ALL</button>
+          <button type="button" onclick="toggleAllBlankPrograms(false)">CLEAR ALL</button>
+        </div>
+        <div id="blankProgramList" style="display:flex;flex-direction:column;gap:6px">
+          <label class="wiz-prog-row"><input type="checkbox" value="Preschool" class="blank-prog-cb"><span>Preschool</span><input type="number" min="1" max="20" value="1" class="blank-prog-qty"></label>
+          <label class="wiz-prog-row"><input type="checkbox" value="Junior" class="blank-prog-cb"><span>Junior</span><input type="number" min="1" max="20" value="1" class="blank-prog-qty"></label>
+          <label class="wiz-prog-row"><input type="checkbox" value="Advanced Junior" class="blank-prog-cb"><span>Advanced Junior</span><input type="number" min="1" max="20" value="1" class="blank-prog-qty"></label>
+          <label class="wiz-prog-row"><input type="checkbox" value="Level 1" class="blank-prog-cb"><span>Level 1</span><input type="number" min="1" max="20" value="1" class="blank-prog-qty"></label>
+          <label class="wiz-prog-row"><input type="checkbox" value="Level 2" class="blank-prog-cb"><span>Level 2</span><input type="number" min="1" max="20" value="1" class="blank-prog-qty"></label>
+          <label class="wiz-prog-row"><input type="checkbox" value="Level 3" class="blank-prog-cb"><span>Level 3</span><input type="number" min="1" max="20" value="1" class="blank-prog-qty"></label>
+        </div>
+      </div>
+
+      <div class="wiz-footer">
+        <button class="wiz-back" onclick="wizBack()">&larr; Back</button>
+        <button class="wiz-next" id="wizBlankNext" onclick="wizNext()">Next &rarr;</button>
+      </div>
+    </div>
+
+    <!-- Hidden placeholders retained so existing JS that reads them doesn't error -->
+    <div style="display:none">
+      <div class="summary" id="summary"><div class="summary-text" id="summaryText"></div><div class="badges" id="summaryBadges"></div></div>
+      <div id="printSection"></div>
+    </div>
+
+    <div class="modal-columns" style="display:none">
 
       <!-- LEFT: CONVERT EVAL SCORES -->
       <div style="display:flex;flex-direction:column">
@@ -586,6 +1007,10 @@ span.s.fd:hover{color:#e8e8e8}
           <div style="font-size:11px;color:var(--c2-text-sub,rgba(255,255,255,.85));margin-top:4px;font-weight:500">Select programs and number of copies. No upload needed.</div>
         </div>
         <div style="background:#1a1a1a;border-radius:0 0 8px 8px;padding:16px;flex:1;display:flex;flex-direction:column;border:1px solid #333;border-top:none">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;gap:8px">
+            <button type="button" onclick="toggleAllBlankPrograms(true)" style="flex:1;background:#2a2a2a;color:#fff;border:1px solid #444;border-radius:6px;padding:7px 10px;font-size:11px;font-weight:700;cursor:pointer;letter-spacing:.5px" onmouseover="this.style.background='#3a3a3a'" onmouseout="this.style.background='#2a2a2a'">SELECT ALL</button>
+            <button type="button" onclick="toggleAllBlankPrograms(false)" style="flex:1;background:#2a2a2a;color:#fff;border:1px solid #444;border-radius:6px;padding:7px 10px;font-size:11px;font-weight:700;cursor:pointer;letter-spacing:.5px" onmouseover="this.style.background='#3a3a3a'" onmouseout="this.style.background='#2a2a2a'">CLEAR ALL</button>
+          </div>
           <div style="display:flex;flex-direction:column;gap:5px;flex:1" id="blankProgramList">
             <label style="display:flex;align-items:center;gap:10px;padding:9px 12px;background:#2a2a2a;border-radius:6px;cursor:pointer;transition:background .15s" onmouseover="this.style.background='#333'" onmouseout="this.style.background='#2a2a2a'">
               <input type="checkbox" value="Preschool" class="blank-prog-cb" style="width:18px;height:18px;accent-color:var(--c1,#1f53a3)">
@@ -624,15 +1049,16 @@ span.s.fd:hover{color:#e8e8e8}
         </div>
       </div>
 
-    </div><!-- /modal-columns -->
+    </div><!-- /modal-columns (hidden legacy) -->
 
-    <div style="margin-top:16px;text-align:center">
+    <div style="margin-top:14px;text-align:center">
       <button onclick="closeModal()" style="
-        background:none;border:none;color:#888;padding:10px 24px;
-        font-size:12px;font-weight:600;cursor:pointer;transition:color .15s;
-      " onmouseover="this.style.color='#fff'"
-         onmouseout="this.style.color='#888'"
-      >&#8592; Back to Gym Selection</button>
+        background:none;border:none;color:#ccc;padding:10px 24px;
+        font-size:12px;font-weight:700;cursor:pointer;transition:color .15s;
+        text-decoration:underline; text-decoration-color:#555;
+      " onmouseover="this.style.color='#fff'; this.style.textDecorationColor='#fff'"
+         onmouseout="this.style.color='#ccc'; this.style.textDecorationColor='#555'"
+      >Cancel &mdash; back to gym selection</button>
     </div>
   </div>
 </div>
@@ -828,16 +1254,23 @@ function openGymModal(code) {
   document.documentElement.style.setProperty('--c2-text-sub', c2Bright > 160 ? 'rgba(0,0,0,.7)' : 'rgba(255,255,255,.85)');
   document.getElementById('modalLogo').src = gym.logo;
   document.getElementById('modalGymName').textContent = gym.name;
-  document.getElementById('dzAll').classList.remove('loaded');
-  document.getElementById('dzAllFiles').textContent = '';
-  document.getElementById('summary').classList.remove('show');
-  document.getElementById('printSection').style.display = 'none';
-  document.getElementById('errorMsg').classList.remove('show');
+  const dzAll = document.getElementById('dzAll');
+  if (dzAll) dzAll.classList.remove('loaded');
+  const dzFiles = document.getElementById('dzAllFiles');
+  if (dzFiles) dzFiles.textContent = '';
+  const summary = document.getElementById('summary');
+  if (summary) summary.classList.remove('show');
+  const printSec = document.getElementById('printSection');
+  if (printSec) printSec.style.display = 'none';
+  const err = document.getElementById('errorMsg');
+  if (err) err.classList.remove('show');
   parsedEvalData = null;
   parsedClasses = [];
   modal.style.borderTop = `3px solid ${gym.c1}`;
   setTimeout(() => applyGymColors(code), 0);
   modalOverlay.classList.add('open');
+  // Reset wizard to entry each time a gym is opened
+  if (typeof wizReset === 'function') wizReset();
 }
 
 function closeModal() {
@@ -1104,6 +1537,37 @@ function applyGymColors(code) {
   r.style.setProperty('--c1', g.c1);
   r.style.setProperty('--c2', g.c2);
   r.style.setProperty('--bd', g.c3);
+
+  // Derive darker/lighter/faint shades for wizard UI
+  const darken = (hex, amt) => {
+    const R = parseInt(hex.slice(1,3),16), G = parseInt(hex.slice(3,5),16), B = parseInt(hex.slice(5,7),16);
+    return `rgb(${Math.round(R*(1-amt))},${Math.round(G*(1-amt))},${Math.round(B*(1-amt))})`;
+  };
+  const lighten = (hex, amt) => {
+    const R = parseInt(hex.slice(1,3),16), G = parseInt(hex.slice(3,5),16), B = parseInt(hex.slice(5,7),16);
+    return `rgb(${Math.round(R+(255-R)*amt)},${Math.round(G+(255-G)*amt)},${Math.round(B+(255-B)*amt)})`;
+  };
+  const brightness = (hex) => {
+    const R = parseInt(hex.slice(1,3),16), G = parseInt(hex.slice(3,5),16), B = parseInt(hex.slice(5,7),16);
+    return (R*299 + G*587 + B*114) / 1000;
+  };
+  const rgba = (hex, a) => {
+    const R = parseInt(hex.slice(1,3),16), G = parseInt(hex.slice(3,5),16), B = parseInt(hex.slice(5,7),16);
+    return `rgba(${R},${G},${B},${a})`;
+  };
+
+  r.style.setProperty('--c1-dark',   darken(g.c1, 0.25));
+  r.style.setProperty('--c1-light',  lighten(g.c1, 0.35));
+  r.style.setProperty('--c1-shadow', rgba(g.c1, 0.45));
+  r.style.setProperty('--c1-faint',  rgba(g.c1, 0.10));
+  r.style.setProperty('--c1-faint2', rgba(g.c1, 0.22));
+  r.style.setProperty('--c1-text',   brightness(g.c1) > 160 ? '#1a1a1a' : '#ffffff');
+
+  r.style.setProperty('--c2-dark',   darken(g.c2, 0.25));
+  r.style.setProperty('--c2-light',  lighten(g.c2, 0.35));
+  r.style.setProperty('--c2-shadow', rgba(g.c2, 0.45));
+  r.style.setProperty('--c2-text',   brightness(g.c2) > 160 ? '#1a1a1a' : '#ffffff');
+
   // Update any buttons that need gym accent colors
   document.querySelectorAll('.print-btn').forEach(b => b.style.background = g.c1);
 }
@@ -1123,6 +1587,12 @@ dzAll.addEventListener('dragleave', () => dzAll.classList.remove('dragover'));
 dzAll.addEventListener('drop', e => {
   e.preventDefault(); dzAll.classList.remove('dragover');
   handleFiles(e.dataTransfer.files);
+});
+// Click anywhere on the drop zone to open the file picker
+dzAll.addEventListener('click', (e) => {
+  // Don't recurse if the input itself was clicked
+  if (e.target.id === 'allInput') return;
+  document.getElementById('allInput').click();
 });
 document.getElementById('allInput').addEventListener('change', function() {
   if (this.files.length) handleFiles(this.files);
@@ -1465,8 +1935,12 @@ async function parseEvalXLS(file) {
 
     updateUI();
 
-    // Show confirm overlay before downloading
-    showConfirm('eval');
+    // In wizard flow: auto-advance from Step 1 (upload) to Step 2 (layout)
+    if (_wizPath === 'convert' && _wizStep === 1) {
+      _wizStep = 2;
+      wizShowStep('wizC', 2);
+      wizUpdateProgress();
+    }
 
   } catch(e) {
     errEl.innerHTML = '<strong>Excel parsing failed.</strong> ' + esc(e.message);
@@ -1503,6 +1977,200 @@ function updateUI() {
 
   summary.classList.add('show');
   document.getElementById('printSection').style.display = 'block';
+}
+
+/* ═══════════════════════════════════════════
+   PRINT BLANK — Select All / Clear All
+   ═══════════════════════════════════════════ */
+function toggleAllBlankPrograms(checked) {
+  document.querySelectorAll('.blank-prog-cb').forEach(cb => { cb.checked = checked; });
+}
+
+/* ═══════════════════════════════════════════
+   PAGE LAYOUT PICKER — 3 options, each = 1 page per class
+   ═══════════════════════════════════════════ */
+let _currentLayout = 'all4';
+function setLayout(layoutId) {
+  _currentLayout = layoutId;
+  // Update all layout choice buttons across all wizard steps
+  document.querySelectorAll('[data-layout]').forEach(b => {
+    b.classList.toggle('selected', b.dataset.layout === layoutId);
+  });
+}
+
+// Each layout = single page with subset of events (ALL 4 means no filter)
+const LAYOUT_PRESETS = {
+  'all4': null,                          // all 4 events, single page per class
+  'vb':   [['VAULT', 'BARS']],           // vault + bars only, single page per class
+  'bf':   [['BEAM',  'FLOOR']],          // beam + floor only, single page per class
+};
+
+function getPageEventsFromUI() {
+  return LAYOUT_PRESETS[_currentLayout] || null;
+}
+
+/* ═══════════════════════════════════════════
+   WIZARD — stepped flow inside the modal
+   ═══════════════════════════════════════════ */
+let _wizPath = null;       // 'convert' | 'blank' | null
+let _wizStep = 1;          // current step within the chosen path
+
+function wizReset() {
+  _wizPath = null;
+  _wizStep = 1;
+  _currentLayout = 'all4';
+  // Show entry, hide both paths
+  document.getElementById('wizEntry').style.display = 'block';
+  document.getElementById('wizConvert').style.display = 'none';
+  document.getElementById('wizBlank').style.display = 'none';
+  // Clear any state from a prior session
+  parsedEvalData = null;
+  selectedGym = selectedGym; // preserve
+  const input = document.getElementById('allInput');
+  if (input) input.value = '';
+  const dzFiles = document.getElementById('dzAllFiles');
+  if (dzFiles) dzFiles.textContent = '';
+  const dz = document.getElementById('dzAll');
+  if (dz) dz.classList.remove('loaded','dragover');
+  const errMsg = document.getElementById('errorMsg');
+  if (errMsg) errMsg.textContent = '';
+  // Reset layout defaults
+  setLayout('all4');
+  // Reset all steps to hidden except step 1
+  wizShowStep('wizC', 1);
+  wizShowStep('wizB', 1);
+}
+
+function wizShowStep(prefix, stepNum) {
+  // Hide all step containers with this prefix, show only stepNum
+  document.querySelectorAll(`[id^="${prefix}"]`).forEach(el => {
+    if (/^wiz[CB]\d+$/.test(el.id)) {
+      el.style.display = (el.id === `${prefix}${stepNum}`) ? 'block' : 'none';
+    }
+  });
+}
+
+function wizStart(path) {
+  _wizPath = path;
+  _wizStep = 1;
+  document.getElementById('wizEntry').style.display = 'none';
+  if (path === 'convert') {
+    document.getElementById('wizConvert').style.display = 'block';
+    document.getElementById('wizBlank').style.display = 'none';
+    wizShowStep('wizC', 1);
+    wizUpdateProgress();
+  } else if (path === 'blank') {
+    document.getElementById('wizBlank').style.display = 'block';
+    document.getElementById('wizConvert').style.display = 'none';
+    wizShowStep('wizB', 1);
+    wizUpdateProgress();
+  }
+}
+
+function wizUpdateProgress() {
+  if (_wizPath === 'convert') {
+    const total = 3;
+    document.getElementById('wizConvertStepLbl').textContent = `STEP ${_wizStep} OF ${total}`;
+    const segs = document.querySelectorAll('#wizConvertBar .wiz-bar-seg');
+    segs.forEach((s, i) => s.classList.toggle('done', i < _wizStep));
+    // Next button text on final step
+    const next = document.getElementById('wizConvertNext');
+    next.textContent = (_wizStep === total) ? 'Download PDF' : 'Next →';
+  } else if (_wizPath === 'blank') {
+    const total = 2;
+    document.getElementById('wizBlankStepLbl').textContent = `STEP ${_wizStep} OF ${total}`;
+    const segs = document.querySelectorAll('#wizBlankBar .wiz-bar-seg');
+    segs.forEach((s, i) => s.classList.toggle('done', i < _wizStep));
+    const next = document.getElementById('wizBlankNext');
+    next.textContent = (_wizStep === total) ? 'Download PDF' : 'Next →';
+  }
+}
+
+function wizBack() {
+  if (_wizStep === 1) {
+    // Back to entry picker
+    wizReset();
+    return;
+  }
+  _wizStep--;
+  if (_wizPath === 'convert') wizShowStep('wizC', _wizStep);
+  else if (_wizPath === 'blank') wizShowStep('wizB', _wizStep);
+  wizUpdateProgress();
+}
+
+function wizNext() {
+  if (_wizPath === 'convert') {
+    const total = 3;
+    // Step 1: need an uploaded file
+    if (_wizStep === 1) {
+      if (!parsedEvalData || parsedEvalData.length === 0) {
+        const err = document.getElementById('errorMsg');
+        if (err) err.textContent = 'Drop an XLS file first.';
+        return;
+      }
+    }
+    // Step 2 → 3: render confirm summary
+    if (_wizStep === 2) {
+      renderConfirmSummary();
+    }
+    if (_wizStep === total) {
+      // Last step — download
+      generatePages('eval');
+      return;
+    }
+    _wizStep++;
+    wizShowStep('wizC', _wizStep);
+    wizUpdateProgress();
+  } else if (_wizPath === 'blank') {
+    const total = 2;
+    if (_wizStep === total) {
+      // Final step — trigger blank download
+      generateBlankMulti();
+      return;
+    }
+    _wizStep++;
+    wizShowStep('wizB', _wizStep);
+    wizUpdateProgress();
+  }
+}
+
+// Render class list summary on Convert Step 3
+function renderConfirmSummary() {
+  const container = document.getElementById('wizConfirmSummary');
+  if (!container) return;
+  if (!parsedEvalData || !parsedEvalData.length) {
+    container.innerHTML = '<div class="wiz-skip-box">No classes parsed.</div>';
+    return;
+  }
+  const recognized = [];
+  const skipped = [];
+  parsedEvalData.forEach(evalData => {
+    const upper = (evalData.className + ' ' + (evalData.tabName||'')).toUpperCase();
+    let program = 'Unknown';
+    for (const [key, val] of Object.entries(PROGRAM_MAP)) {
+      if (upper.includes(key)) { program = val; break; }
+    }
+    if (program === 'Unknown') skipped.push(evalData.className);
+    else recognized.push({
+      className: evalData.className,
+      program,
+      day: evalData.tabInfo?.day || '',
+      time: evalData.tabInfo?.time || '',
+      ages: evalData.tabInfo?.age || '',
+      students: evalData.students.filter(s => s).length,
+    });
+  });
+  let html = `<div style="font-size:12px;color:#bbb;margin-bottom:10px"><strong>${recognized.length}</strong> of <strong>${parsedEvalData.length}</strong> classes ready${skipped.length ? ` — ${skipped.length} unrecognized` : ''}</div>`;
+  html += '<div class="wiz-class-list">';
+  recognized.forEach(c => {
+    const meta = [c.day, c.time, c.ages ? 'Ages '+c.ages : ''].filter(Boolean).join('  |  ');
+    html += `<div class="wiz-class-item" style="flex-direction:column;align-items:flex-start"><div class="name">${esc(c.className)}</div>${meta ? `<div class="meta">${meta}  &middot;  ${c.students} student${c.students===1?'':'s'}  &middot;  ${esc(c.program)}</div>` : ''}</div>`;
+  });
+  html += '</div>';
+  if (skipped.length) {
+    html += `<div class="wiz-skip-box"><strong>Skipped (unrecognized program):</strong><br>${skipped.map(esc).join(', ')}</div>`;
+  }
+  container.innerHTML = html;
 }
 
 /* ═══════════════════════════════════════════
@@ -1550,6 +2218,8 @@ async function generateBlankMulti() {
       classes: classes,
       mode: 'blank',
     };
+    const _pe = getPageEventsFromUI();
+    if (_pe) payload.pageEvents = _pe;
 
     const resp = await fetch('/generate-pdf', {
       method: 'POST',
@@ -1562,14 +2232,21 @@ async function generateBlankMulti() {
       throw new Error(err.error || 'Server error');
     }
 
+    // Append <a> to DOM before click — required for reliable auto-download
+    // in Edge/Chrome (avoids fallback to "where to save" dialog).
     const blob = await resp.blob();
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
+    a.style.display = 'none';
     const names = [...new Set(classes.map(c => c.program))].join('_').replace(/ /g,'');
     a.download = `${selectedGym}_Blank_${names}.pdf`;
+    document.body.appendChild(a);
     a.click();
-    URL.revokeObjectURL(url);
+    setTimeout(() => {
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }, 100);
 
   } catch(e) {
     alert('PDF generation failed: ' + e.message);
@@ -1721,6 +2398,8 @@ async function generatePages(mode) {
       classes: classes,
       mode:    mode,
     };
+    const _pe = getPageEventsFromUI();
+    if (_pe) payload.pageEvents = _pe;
 
     const resp = await fetch('/generate-pdf', {
       method:  'POST',
@@ -1733,15 +2412,22 @@ async function generatePages(mode) {
       throw new Error(err.error || 'Server error');
     }
 
-    // Download single multi-page PDF
+    // Download single multi-page PDF — append <a> to body so click event
+    // propagates properly and browser doesn't fall back to its native save
+    // dialog (Edge/Chrome respect the download attribute only when in DOM).
     const blob = await resp.blob();
     const url  = URL.createObjectURL(blob);
     const a    = document.createElement('a');
     a.href     = url;
+    a.style.display = 'none';
     const firstDate = classes[0].date || 'eval';
     a.download = `${selectedGym}_Evals_${firstDate.replace(/\//g,'')}.pdf`;
+    document.body.appendChild(a);
     a.click();
-    URL.revokeObjectURL(url);
+    setTimeout(() => {
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }, 100);
 
   } catch(e) {
     alert('PDF generation failed: ' + e.message);

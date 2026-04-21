@@ -17,79 +17,71 @@ USABLE_H   = H - 2*MARGIN
 # NUM_ROWS is now per-program — defined in PROGRAMS dict below
 
 # ── Gym configuration ───────────────────────────────────────────────
+# v0-style scheme: each gym uses ONE 'brand' color for ALL event/skill/program/safety
+# blocks. Top bar is a neutral dark charcoal; criteria rotated text sits on a light
+# gray stripe with black text. Distinction between events comes from whitespace +
+# skill-name typography, not color variety.
 GYMS = {
     'CCP': {
-        'name':   'CAPITAL GYMNASTICS — Cedar Park',
-        'logo':   'logos/CCP_logo_transparent.png',
-        'blue':   '#1f53a3',
-        'red':    '#bf0a30',
-        'gray':   '#d8d8d8',
+        'name': 'CAPITAL GYMNASTICS — Cedar Park', 'logo': 'logos/CCP_logo_transparent.png',
+        'blue': '#1f53a3', 'red': '#bf0a30', 'gray': '#d8d8d8',
+        'brand': '#bf0a30',
     },
     'CPF': {
-        'name':   'CAPITAL GYMNASTICS — Pflugerville',
-        'logo':   'logos/CCP_logo_transparent.png',
-        'blue':   '#1f53a3',
-        'red':    '#bf0a30',
-        'gray':   '#d8d8d8',
+        'name': 'CAPITAL GYMNASTICS — Pflugerville', 'logo': 'logos/CCP_logo_transparent.png',
+        'blue': '#1f53a3', 'red': '#bf0a30', 'gray': '#d8d8d8',
+        'brand': '#bf0a30',
     },
     'CRR': {
-        'name':        'CAPITAL GYMNASTICS — Round Rock',
-        'logo':        'logos/crr_logo.png',
-        'blue':        '#4a4a4b',   # top bar
-        'red':         '#ff1493',   # accent
-        'gray':        '#3c3939',
-        'event_dark':  '#111111',   # event headers (VAULT/BARS/BEAM/FLOOR) → black
-        'skill_mid':   '#ff1493',   # skill sub-headers → hot pink
+        'name': 'CAPITAL GYMNASTICS — Round Rock', 'logo': 'logos/crr_logo.png',
+        'blue': '#4a4a4b', 'red': '#ff1493', 'gray': '#3c3939',
+        # Full hot pink #ff1493 is 3.64:1 on white — borderline fail on event strip.
+        # Darkened 25% to #bf0f6e (6.0:1) keeps the hot pink identity while
+        # making white text on event/skill/program blocks clearly readable.
+        'brand': '#bf0f6e',
+        'top_bar_h': 64, 'logo_size': 60,
     },
     'EST': {
-        'name':   'Estrella Gymnastics',
-        'logo':   'logos/est_logo.png',
-        'blue':   '#011837',
-        'red':    '#666666',
-        'gray':   '#d8d8d8',
+        'name': 'Estrella Gymnastics', 'logo': 'logos/est_logo.png',
+        'blue': '#011837', 'red': '#666666', 'gray': '#d8d8d8',
+        # Deep navy #011837 passes white text (17.7:1) but is nearly indistinguishable
+        # from the charcoal #252626 top bar — the whole header reads as one flat dark
+        # block. Using a lighter navy #1a4a7a (9.1:1 on white) for the event/skill
+        # strips makes them visually distinct from the top bar while still on-brand.
+        'brand': '#1a4a7a',
     },
     'HGA': {
-        'name':   'Houston Gymnastics Academy',
-        'logo':   'logos/hga with shadow.png',
-        'blue':   '#262626',
-        'red':    '#c91724',
-        'gray':   '#d0d0d8',
+        'name': 'Houston Gymnastics Academy', 'logo': 'logos/hga with shadow.png',
+        'blue': '#262626', 'red': '#c91724', 'gray': '#d0d0d8',
+        'brand': '#c91724',
     },
     'OAS': {
-        'name':      'Oasis Gymnastics',
-        'logo':      'logos/oasis circle logo.png',
-        'blue':      '#3e266b',
-        'red':       '#3eb29f',
-        'gray':      '#e7e6f0',
-        'skill_text': '#3e266b',  # dark purple on light teal headers
+        'name': 'Oasis Gymnastics', 'logo': 'logos/oasis circle logo.png',
+        'blue': '#3e266b', 'red': '#3eb29f', 'gray': '#e7e6f0',
+        'brand': '#3eb29f',
     },
     'RBA': {
-        'name':   'Rowland Ballard — Atascocita',
-        'logo':   'logos/rba_logo.png',
-        'blue':   '#1a3c66',
-        'red':    '#c52928',
-        'gray':   '#739ab9',
+        'name': 'Rowland Ballard — Atascocita', 'logo': 'logos/rba_logo.png',
+        'blue': '#1a3c66', 'red': '#c52928', 'gray': '#739ab9',
+        'brand': '#c52928',
     },
     'RBK': {
-        'name':   'Rowland Ballard — Kingwood',
-        'logo':   'logos/rbk_logo.png',
-        'blue':   '#1a3c66',
-        'red':    '#c52928',
-        'gray':   '#739ab9',
+        'name': 'Rowland Ballard — Kingwood', 'logo': 'logos/rbk_logo.png',
+        'blue': '#1a3c66', 'red': '#c52928', 'gray': '#739ab9',
+        'brand': '#c52928',
     },
     'SGT': {
-        'name':   'Scottsdale Gymnastics',
-        'logo':   'logos/sgt_logo.png',
-        'blue':   '#000000',
-        'red':    '#c72b12',
-        'gray':   '#e6e6e6',
+        'name': 'Scottsdale Gymnastics', 'logo': 'logos/sgt_logo.png',
+        'blue': '#000000', 'red': '#c72b12', 'gray': '#e6e6e6',
+        'brand': '#c72b12',
     },
     'TIG': {
-        'name':   'Tigar Gymnastics',
-        'logo':   'logos/tig_logo.png',
-        'blue':   '#0a3651',
-        'red':    '#f57f20',
-        'gray':   '#7fc4e0',
+        'name': 'Tigar Gymnastics', 'logo': 'logos/tig_logo.png',
+        'blue': '#0a3651', 'red': '#f57f20', 'gray': '#7fc4e0',
+        # orange #f57f20 is only 2.65:1 on white — FAILS on event strip.
+        # Navy #0a3651 (12.7:1) becomes brand for event/skill headers.
+        # Orange survives where it's darkened (skill strip) and in the logo.
+        'brand': '#0a3651',
     },
 }
 
@@ -265,6 +257,9 @@ PROGRAMS = {
 }
 
 # Alias mapping — iClassPro discipline text → program key
+# Only full-form program names are accepted. Short abbreviations like
+# "L1", "GL1", "LVL 1", "LEV1" are intentionally NOT matched — managers
+# must use the full program name as documented in the SOP format guide.
 PROGRAM_ALIASES = {
     'preschool': 'Preschool',
     'new preschool': 'Preschool',
@@ -272,29 +267,17 @@ PROGRAM_ALIASES = {
     'new junior': 'Junior',
     'advanced junior': 'Advanced Junior',
     'adv junior': 'Advanced Junior',
-    'adv jr': 'Advanced Junior',
     'new advanced junior': 'Advanced Junior',
     'girls level 1': 'Level 1',
     'level 1': 'Level 1',
-    'girls l1': 'Level 1',
-    'gl1': 'Level 1',
-    'lev1': 'Level 1',
     'girls level 2': 'Level 2',
     'level 2': 'Level 2',
-    'girls l2': 'Level 2',
-    'gl2': 'Level 2',
-    'lev2': 'Level 2',
     'girls level 3': 'Level 3',
     'level 3': 'Level 3',
-    'girls l3': 'Level 3',
-    'gl3': 'Level 3',
-    'lev3': 'Level 3',
     'boys level 1': 'Boys Level 1',
-    'boys l1': 'Boys Level 1',
     'boys level 2': 'Boys Level 2',
-    'boys l2': 'Boys Level 2',
     'boys level 3': 'Boys Level 3',
-    'boys l3': 'Boys Level 3',
+    # iClass HTML-encodes apostrophes (Boy's → Boy039s) — must match
     'boy039s level 1': 'Boys Level 1',
     'boy039s level 2': 'Boys Level 2',
     'boy039s level 3': 'Boys Level 3',
@@ -321,58 +304,37 @@ GOLD       = hex_color('#C9A43C')
 GOLD_LIGHT = hex_color('#FFF8DC')
 WHITE      = hex_color('#ffffff')
 
-def _build_event_colors(blue_hex, red_hex, event_dark_hex=None, skill_mid_hex=None):
-    """Build event color palettes from a gym's brand colors.
-    Optional overrides:
-      event_dark_hex — explicit color for all event band headers (VAULT/BARS/BEAM/FLOOR)
-      skill_mid_hex  — explicit color for all skill sub-headers
+def _build_event_colors(gym):
+    """A-B-A-B alternation per the spec:
+      VAULT + BEAM  → event strip = gym['ev_brand'] if set, else gym['brand']
+      BARS  + FLOOR → event strip = #646262 (medium gray), skill strip = #1a1a1a
+    Each gym uses its own brand color for VAULT/BEAM — only BARS/FLOOR are shared grays.
     """
-    dark_blue  = event_dark_hex or _darken(blue_hex, 0.20)
-    dark_red   = event_dark_hex or _darken(red_hex, 0.20)
-    med_blue   = skill_mid_hex  or _lighten(blue_hex, 0.30)
-    med_red    = skill_mid_hex  or _lighten(red_hex, 0.30)
-    STRIPE     = '#f0f0f0'
-
+    brand = hex_color(gym.get('ev_brand', gym.get('brand', gym['red'])))
+    dark  = hex_color('#646262')
+    stripe = hex_color('#e8e8e8')
     ev_dark = {
-        'VAULT':  hex_color(dark_red),
-        'BARS':   hex_color(dark_blue),
-        'BEAM':   hex_color(blue_hex if not event_dark_hex else dark_blue),
-        'FLOOR':  hex_color(dark_red),
-        'SAFETY': hex_color(dark_blue),
-        # Boys apparatus
-        'MUSHROOM': hex_color(dark_blue),
-        'POMMEL':   hex_color(dark_blue),
-        'P BARS':   hex_color(dark_red),
-        'H BARS':   hex_color(dark_red),
-        'RINGS':    hex_color(dark_blue),
+        'VAULT': brand, 'BEAM': brand,
+        'BARS': dark,   'FLOOR': dark,
+        'SAFETY': brand,
+        'MUSHROOM': dark, 'POMMEL': dark,
+        'P BARS': brand,  'H BARS': brand,
+        'RINGS': dark,
     }
-    ev_med = {
-        'VAULT':  hex_color(med_red),
-        'BARS':   hex_color(med_blue),
-        'BEAM':   hex_color(med_blue),
-        'FLOOR':  hex_color(med_red),
-        'SAFETY': hex_color(med_blue),
-        # Boys apparatus
-        'MUSHROOM': hex_color(med_blue),
-        'POMMEL':   hex_color(med_blue),
-        'P BARS':   hex_color(med_red),
-        'H BARS':   hex_color(med_red),
-        'RINGS':    hex_color(med_blue),
-    }
-    ev_light = {
-        'VAULT':  hex_color(STRIPE),
-        'BARS':   hex_color(STRIPE),
-        'BEAM':   hex_color(STRIPE),
-        'FLOOR':  hex_color(STRIPE),
-        'SAFETY': hex_color(STRIPE),
-        # Boys apparatus
-        'MUSHROOM': hex_color(STRIPE),
-        'POMMEL':   hex_color(STRIPE),
-        'P BARS':   hex_color(STRIPE),
-        'H BARS':   hex_color(STRIPE),
-        'RINGS':    hex_color(STRIPE),
-    }
+    ev_med   = {k: hex_color('#ffffff') for k in ev_dark}
+    ev_light = {k: stripe for k in ev_dark}
     return ev_dark, ev_med, ev_light
+
+
+# ── Apparatus icon PNGs (white linework on transparent — placed in colored bands)
+import os as _os
+_ICON_DIR = _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), 'icons')
+APPARATUS_ICON = {
+    'VAULT': _os.path.join(_ICON_DIR, 'vault_solid.png'),
+    'BARS':  _os.path.join(_ICON_DIR, 'bars_solid.png'),
+    'BEAM':  _os.path.join(_ICON_DIR, 'beam_solid.png'),
+    'FLOOR': _os.path.join(_ICON_DIR, 'floor_solid.png'),
+}
 
 
 # ── Star drawing ─────────────────────────────────────────────────────
@@ -444,10 +406,15 @@ def build_score_lookup(score_map, students, skills, has_mastery=True):
 # MAIN GENERATOR
 # ════════════════════════════════════════════════════════════════════
 def generate_pdf(gym_code, class_name, date, day, time,
-                 students, program, score_map, mode='eval', _canvas=None, ages=''):
+                 students, program, score_map, mode='eval', _canvas=None, ages='',
+                 events_filter=None, criteria_orientation='auto'):
     """
     Returns PDF as bytes (single-page), or draws onto _canvas if provided (multi-page).
     mode: 'eval' = pre-fill scores | 'blank' = all empty
+    events_filter: list of event names (e.g. ['VAULT','BARS']) — only those skills render.
+                   None = all events (legacy behavior).
+    criteria_orientation: 'rotated' | 'horizontal' | 'auto' (auto picks horizontal if
+                          NUM_COLS small enough to fit text without wrapping pain).
     """
 
     # Resolve gym and program
@@ -466,36 +433,55 @@ def generate_pdf(gym_code, class_name, date, day, time,
     CCP_GRAY_MID = hex_color('#b0b0b0')
     CCP_GRAY_DK  = hex_color('#555566')
 
-    # Build event colors from this gym's brand
-    EV_DARK, EV_MED, EV_LIGHT = _build_event_colors(
-        gym['blue'], gym['red'],
-        event_dark_hex = gym.get('event_dark'),
-        skill_mid_hex  = gym.get('skill_mid'),
-    )
+    # v0-style unified palette
+    BRAND       = hex_color(gym.get('brand', gym['red']))
+    CHARCOAL    = hex_color('#262626')
+    LIGHT_BG    = hex_color('#e8e8e8')
+    TEXT_DARK   = hex_color('#1a1a1a')
+
+    # Build event colors from this gym's brand (v0-style: single brand for all events)
+    EV_DARK, EV_MED, EV_LIGHT = _build_event_colors(gym)
 
     SKILLS      = prog['skills']
+    if events_filter:
+        SKILLS = [sk for sk in SKILLS if sk['event'] in events_filter]
+        if not SKILLS:
+            raise ValueError(f"events_filter {events_filter} matched no skills in {prog_key}")
     HAS_SAF     = prog.get('has_safety', False)
     HAS_MASTERY = prog.get('has_mastery', True)  # default True for girls programs
     FOOTER_H    = prog.get('footer_h', 18)
     NUM_ROWS    = prog.get('num_rows', 6)
-    SKILL_TEXT  = hex_color(gym.get('skill_text', '#ffffff'))
+    SKILL_TEXT  = WHITE  # always white on the brand-colored skill header
     MAST        = 1 if HAS_MASTERY else 0  # extra column per skill for mastery star
 
     NUM_SKILLS = len(SKILLS)
     NUM_COLS   = sum(len(sk['criteria'])+MAST for sk in SKILLS)
 
+    # Decide criteria orientation early so layout can adapt.
+    if criteria_orientation == 'horizontal':
+        USE_HORIZONTAL = True
+    elif criteria_orientation == 'rotated':
+        USE_HORIZONTAL = False
+    else:  # auto
+        USE_HORIZONTAL = (NUM_COLS <= 16)
+
     # Layout
     TOP_BAR_H  = 48
-    EV_HDR_H   = 15
-    SK_HDR_H   = 26
-    STAR_LBL_H = 11
-    CRIT_H     = 150 if HAS_SAF else 175
+    EV_HDR_H   = 44   # event name (14) + skill name (30) — no icon
+    SK_HDR_H   = 0
+    STAR_LBL_H = 16 if USE_HORIZONTAL else 11  # taller label row when horizontal
+    # Horizontal criteria text only needs ~50pt; rotated needs ~115-130pt.
+    if USE_HORIZONTAL:
+        CRIT_H = 50
+    else:
+        CRIT_H = 115 if HAS_SAF else 130
 
     CONTENT_TOP  = H - MARGIN - TOP_BAR_H
     CONTENT_BOT  = MARGIN + FOOTER_H
     HEADER_H     = EV_HDR_H + SK_HDR_H + CRIT_H + STAR_LBL_H
     DATA_TOP     = CONTENT_TOP - HEADER_H
-    DATA_H       = DATA_TOP - CONTENT_BOT
+    DATA_BOT     = CONTENT_BOT
+    DATA_H       = DATA_TOP - DATA_BOT
     ROW_H        = DATA_H / NUM_ROWS
     NAME_ZONE_H  = 8
     NAME_W       = 68
@@ -544,12 +530,19 @@ def generate_pdf(gym_code, class_name, date, day, time,
 
     # ── TOP BAR ───────────────────────────────────────────────────────
     bar_y = H - MARGIN - TOP_BAR_H
-    c.setFillColor(CCP_BLUE)
+    # OAS: purple top bar so the teal brand reads distinctly against it
+    _top_bar_hex = gym.get('top_bar', '#252626')
+    c.setFillColor(hex_color(_top_bar_hex))
     c.rect(MARGIN, bar_y, USABLE_W, TOP_BAR_H, fill=1, stroke=0)
-    c.setFillColor(CCP_RED)
-    c.rect(MARGIN, bar_y+TOP_BAR_H-3, USABLE_W, 3, fill=1, stroke=0)
-    c.setFillColor(CCP_GRAY)
-    c.rect(MARGIN, bar_y, USABLE_W, 2, fill=1, stroke=0)
+    # Divider line separating header from the event blocks below
+    # Use gold for gyms with warm/neutral brands; use brand color for others
+    _warm_gyms = {'RBA', 'RBK', 'CCP', 'CPF', 'SGT', 'HGA'}
+    _divider_hex = '#c9a43c' if gym_code in _warm_gyms else gym.get('brand', gym['red'])
+    # For OAS specifically use the full teal (not the darkened ev_brand) for the divider
+    if gym_code == 'OAS':
+        _divider_hex = '#3eb29f'
+    c.setFillColor(hex_color(_divider_hex))
+    c.rect(MARGIN, bar_y - 3, USABLE_W, 3, fill=1, stroke=0)
 
     # Logo — check multiple paths for Vercel compatibility
     import os
@@ -559,6 +552,7 @@ def generate_pdf(gym_code, class_name, date, day, time,
         os.path.join(_here, 'public', gym['logo']),
         os.path.join(_here, '..', 'public', gym['logo']),
         os.path.join(_here, '..', gym['logo']),
+        os.path.join(_here, '..', '..', gym['logo']),
     ]
     logo_path = next((p for p in logo_candidates if os.path.exists(p)), None)
     logo_size = 42
@@ -577,24 +571,28 @@ def generate_pdf(gym_code, class_name, date, day, time,
 
     c.setFillColor(WHITE)
     c.setFont('Helvetica-Bold', 15)
-    c.drawString(text_x, bar_y + 28, gym['name'])
-    parts = [class_name]
-    if day:  parts.append(day)
-    if time: parts.append(time)
-    # Ages intentionally excluded — truncation at 31 chars turns "Ages" to "Ag"
-    class_line = '  |  '.join(parts)
-    c.setFont('Helvetica', 8)
-    c.drawString(text_x, bar_y + 14, class_line)
+    # Vertically center the gym name in the top bar (single-line layout)
+    c.drawString(text_x, bar_y + TOP_BAR_H/2 - 5, gym['name'])
+
+    # ── CLASS INFO (date / day / time / ages) — right-aligned in header ──
+    # Build info string from whatever fields are present
+    _info_parts = [p for p in [date, day, time, ages] if p and str(p).strip()]
+    _info_str = '   |   '.join(_info_parts)
+    if _info_str:
+        # Draw below gym name, slightly smaller, light gray so it reads as secondary
+        c.setFillColor(hex_color('#cccccc'))
+        c.setFont('Helvetica', 8)
+        c.drawString(text_x, bar_y + TOP_BAR_H/2 - 17, _info_str)
 
     # ── SCORE KEY (top-right of header bar) ──────────────────────────
     key_w, key_h = 108, 38
     key_x = W - MARGIN - key_w - 4
     key_y = bar_y + (TOP_BAR_H - key_h) / 2
     c.setFillColor(WHITE)
-    c.setStrokeColor(CCP_BLUE); c.setLineWidth(1.2)
+    c.setStrokeColor(CHARCOAL); c.setLineWidth(1.2)
     c.roundRect(key_x, key_y, key_w, key_h, 3, fill=1, stroke=1)
     # "Key:" label
-    c.setFillColor(CCP_BLUE); c.setFont('Helvetica-Bold', 6.5)
+    c.setFillColor(CHARCOAL); c.setFont('Helvetica-Bold', 6.5)
     c.drawCentredString(key_x + key_w/2, key_y + key_h - 9, 'SCORE KEY')
     # Three items evenly spaced
     item_cx = [key_x + key_w*0.18, key_x + key_w*0.50, key_x + key_w*0.82]
@@ -604,35 +602,137 @@ def generate_pdf(gym_code, class_name, date, day, time,
     # Circle (Not Yet)
     c.setFillColor(WHITE); c.setStrokeColor(hex_color('#aaaaaa')); c.setLineWidth(1.4)
     c.circle(item_cx[0], sym_y, sym_r, fill=1, stroke=1)
-    # Red star (Earned)
-    draw_star(c, item_cx[1], sym_y, sym_r*1.15, CCP_RED, CCP_RED, lw=0)
+    # Brand star (Earned)
+    draw_star(c, item_cx[1], sym_y, sym_r*1.15, BRAND, BRAND, lw=0)
     # Gold star (Skill Complete)
     draw_star(c, item_cx[2], sym_y, sym_r*1.15, GOLD, hex_color('#8a6a00'), lw=0.5)
     # Labels
-    c.setFillColor(CCP_BLUE); c.setFont('Helvetica', 5.2)
+    c.setFillColor(CHARCOAL); c.setFont('Helvetica', 5.2)
     c.drawCentredString(item_cx[0], lbl_y, 'Not Yet')
     c.drawCentredString(item_cx[1], lbl_y, 'Earned')
     c.drawCentredString(item_cx[2], lbl_y, 'Skill Complete')
 
     # ── HEADER: EVENT BANDS ───────────────────────────────────────────
-    ev_top = CONTENT_TOP
-    for ev, (sc, ec) in ev_spans.items():
-        x = ev_x(sc); w = (ec-sc+1)*COL_W
-        c.setFillColor(EV_DARK.get(ev, CCP_BLUE))
-        c.rect(x, ev_top-EV_HDR_H, w, EV_HDR_H, fill=1, stroke=0)
-        c.setFillColor(WHITE); c.setFont('Helvetica-Bold', 7.5)
-        c.drawCentredString(x+w/2, ev_top-EV_HDR_H+5, ev)
+    # Two stacked zones inside EV_HDR_H, both on same colored bg:
+    #   • event-name zone (top, 14pt): VAULT/BARS/BEAM/FLOOR — per skill block
+    #   • skill-name zone (bottom, 30pt): per-skill name, bold white text
+    # Mastery cols stay colored in the header; black "3 ★ in a row" treatment
+    # only kicks in in the criteria zone below.
+    ev_top        = CONTENT_TOP
+    ev_name_h     = 14
+    skill_name_h  = EV_HDR_H - ev_name_h
+    icon_zone_h   = 0  # no icons in this concept
+    BLACK_BG      = hex_color('#1a1a1a')
 
-    # Event band row — navy
-    c.setFillColor(CCP_BLUE)
-    c.rect(MARGIN, ev_top-EV_HDR_H, NAME_W, EV_HDR_H, fill=1, stroke=0)
+    # Three zones, all on same colored bg per skill:
+    #   y range [ev_top-ev_name_h, ev_top]                       -> event name
+    #   y range [ev_top-ev_name_h-icon_zone_h, ...]              -> icon
+    #   y range [ev_top-EV_HDR_H, ev_top-ev_name_h-icon_zone_h]  -> skill name
+    # Mastery columns: solid black full-height with rotated '3 ★ in a row'.
 
-    # Program label block — accent color, full criteria height
-    prog_block_h = HEADER_H - EV_HDR_H
-    c.setFillColor(CCP_RED)
+    ev_name_y_bottom    = ev_top - ev_name_h
+    icon_y_bottom       = ev_name_y_bottom - icon_zone_h
+    skill_name_y_bottom = icon_y_bottom - skill_name_h  # == ev_top - EV_HDR_H
+
+    # Pass 1: for each skill, paint a colored block covering ALL its columns
+    # (criteria + mastery), then place icon + skill name on that block.
+    # The mastery column stays colored here in the header zone — the black
+    # "3★ in a row" treatment only starts in the criteria zone below.
+    FONT_SKILL = 'Helvetica-Bold'
+    SIZE_SKILL = 8.5
+    LINE_SKILL = 9.5
+    for i, sk in enumerate(SKILLS):
+        ev = sk['event']
+        ev_color = EV_DARK.get(ev, BRAND)
+        icon_path = APPARATUS_ICON.get(ev)
+        n_crit = len(sk['criteria'])
+        total_cols = n_crit + MAST
+        block_start_x = ev_x(skill_col_start[i])
+        block_w = total_cols * COL_W
+
+        # Fill event-name zone (top) with full brand or charcoal color
+        c.setFillColor(ev_color)
+        c.rect(block_start_x, ev_name_y_bottom, block_w, ev_name_h, fill=1, stroke=0)
+        # Skill-name zone (bottom) — per-gym pattern:
+        #   VAULT/BEAM  → 30% darker shade of gym's brand color (same family as event)
+        #   BARS/FLOOR  → #1a1a1a near-black (against the #646262 gray event strip)
+        # White text on both.
+        is_bright_event = ev in ('VAULT', 'BEAM', 'SAFETY', 'P BARS', 'H BARS')
+        if is_bright_event:
+            skill_bg_hex = _darken(gym.get('ev_brand', gym.get('brand', gym['red'])), 0.40)
+        else:
+            skill_bg_hex = '#1a1a1a'
+        skill_fg_hex = '#ffffff'
+        c.setFillColor(hex_color(skill_bg_hex))
+        c.rect(block_start_x, skill_name_y_bottom, block_w, skill_name_h, fill=1, stroke=0)
+
+        name = sk['short']
+        lines = name.split('\n') if '\n' in name else [name]
+        max_w_available = block_w - 3
+        # 1. Shrink font progressively down to 5.5pt to fit the widest line
+        size = SIZE_SKILL
+        while size > 5.5 and any(c.stringWidth(ln, FONT_SKILL, size) > max_w_available for ln in lines):
+            size -= 0.5
+        # 2. If any line still overflows at min font, wrap that line in half
+        def _wrap(ln, size):
+            if c.stringWidth(ln, FONT_SKILL, size) <= max_w_available:
+                return [ln]
+            words = ln.split()
+            if len(words) < 2:
+                return [ln]
+            mid = max(1, len(words)//2)
+            return [' '.join(words[:mid]), ' '.join(words[mid:])]
+        wrapped = []
+        for ln in lines:
+            wrapped.extend(_wrap(ln, size))
+        lines = wrapped[:4]  # hard cap at 4 lines
+
+        line_h = size + 1.0  # tight line spacing to fit multi-line
+        # total text block height
+        total_h = len(lines) * line_h
+        # if total text block exceeds the strip, shrink size further and retry line_h
+        while total_h > skill_name_h - 2 and size > 5.0:
+            size -= 0.5
+            line_h = size + 1.0
+            total_h = len(lines) * line_h
+
+        cx = block_start_x + block_w/2
+        strip_cy = skill_name_y_bottom + skill_name_h/2
+        start_y = strip_cy + (len(lines)-1)*line_h/2 - size/3
+        # Text color = opposite of skill strip bg (set above)
+        c.setFillColor(hex_color(skill_fg_hex))
+        c.setFont(FONT_SKILL, size)
+        for li, ln in enumerate(lines):
+            c.drawCentredString(cx, start_y - li*line_h, ln)
+
+    # Pass 2: event-name TEXT centered in its zone per skill block
+    # (fill already drawn in Pass 1)
+    for i, sk in enumerate(SKILLS):
+        ev = sk['event']
+        n_crit = len(sk['criteria'])
+        total_cols = n_crit + MAST
+        block_start_x = ev_x(skill_col_start[i])
+        block_w = total_cols * COL_W
+        c.setFillColor(WHITE); c.setFont('Helvetica-Bold', 9.5)
+        c.drawCentredString(block_start_x + block_w/2, ev_name_y_bottom + 4, ev)
+
+    # Thin white vertical dividers between adjacent same-event skill blocks
+    # so two pink bars icons (or two charcoal floor icons) don't blur together.
+    c.setStrokeColor(hex_color('#ffffff')); c.setLineWidth(0.7)
+    for i in range(1, len(SKILLS)):
+        if SKILLS[i]['event'] == SKILLS[i-1]['event']:
+            dx = ev_x(skill_col_start[i])
+            c.line(dx, skill_name_y_bottom, dx, ev_top)
+
+    # Program label block — BRAND color, extends from event-header top all the way
+    # to data area bottom (replaces the old charcoal strip above NAME). Gives the
+    # program name maximum vertical breathing room and creates a continuous brand
+    # strip down the left side instead of a cramped label in the middle.
+    prog_block_h = HEADER_H  # full height (was HEADER_H - EV_HDR_H before)
+    c.setFillColor(BRAND)
     c.rect(MARGIN, DATA_TOP, NAME_W, prog_block_h, fill=1, stroke=0)
 
-    # Large rotated program name in the block
+    # Large rotated program name in the block — BIGGER because we have more room now
     label_parts = prog_key.upper().split()
     prog_cx = MARGIN + NAME_W / 2
     prog_cy = DATA_TOP + prog_block_h / 2
@@ -641,42 +741,21 @@ def generate_pdf(gym_code, class_name, date, day, time,
     c.rotate(90)
     c.setFillColor(WHITE)
     if len(label_parts) == 2:
-        c.setFont('Helvetica-Bold', 18)
-        c.drawCentredString(0,  10, label_parts[0])
-        c.drawCentredString(0, -12, label_parts[1])
+        # "ADVANCED JUNIOR", "BOYS LEVEL 1" — 2 lines, bigger now
+        c.setFont('Helvetica-Bold', 22)
+        c.drawCentredString(0,  13, label_parts[0])
+        c.drawCentredString(0, -15, label_parts[1])
     else:
-        c.setFont('Helvetica-Bold', 14)
-        c.drawCentredString(0, 0, label_parts[0])
+        # "PRESCHOOL", "JUNIOR" — single line, much bigger
+        c.setFont('Helvetica-Bold', 26)
+        c.drawCentredString(0, -8, label_parts[0])
     c.restoreState()
 
-    # ── HEADER: SKILL NAMES ───────────────────────────────────────────
+    # Skill names are now drawn inside the colored EV_HDR block above.
     sk_top = ev_top - EV_HDR_H
-    for i, sk in enumerate(SKILLS):
-        ev = sk['event']
-        x  = ev_x(skill_col_start[i])
-        w  = (len(sk['criteria'])+MAST)*COL_W
-        c.setFillColor(EV_MED.get(ev, CCP_BLUE_MID))
-        c.rect(x, sk_top-SK_HDR_H, w, SK_HDR_H, fill=1, stroke=0)
-        c.setFillColor(SKILL_TEXT); c.setFont('Helvetica-Bold', 6)
-        name = sk['short']
-        cx   = x + w/2
-        # Split on explicit \n, or auto-wrap if too wide
-        if '\n' in name:
-            lines = name.split('\n')
-        else:
-            lines = [name]
-        if len(lines) == 1 and c.stringWidth(lines[0], 'Helvetica-Bold', 6) > w - 4:
-            words = lines[0].split()
-            mid   = max(1, len(words)//2)
-            lines = [' '.join(words[:mid]), ' '.join(words[mid:])]
-        # Draw lines centered vertically in SK_HDR_H
-        n      = len(lines)
-        line_h = 8
-        start_y = sk_top - SK_HDR_H/2 + (n-1)*line_h/2
-        for li, ln in enumerate(lines):
-            c.drawCentredString(cx, start_y - li*line_h, ln)
 
-    # ── HEADER: CRITERIA (rotated) ────────────────────────────────────
+    # ── HEADER: CRITERIA (rotated OR horizontal) ─────────────────────
+    # USE_HORIZONTAL was decided earlier so layout could adapt CRIT_H.
     crit_top = sk_top - SK_HDR_H
     for i, sk in enumerate(SKILLS):
         ev = sk['event']
@@ -685,43 +764,108 @@ def generate_pdf(gym_code, class_name, date, day, time,
         for j, (star, crit) in enumerate(zip(star_labels, crits_all)):
             col_x    = ev_x(skill_col_start[i]+j)
             is_final = (j == len(sk['criteria']))
-            bg = EV_DARK.get(ev, CCP_BLUE) if is_final else EV_LIGHT.get(ev, CCP_BLUE_XLT)
+            bg = EV_DARK.get(ev, BRAND) if is_final else LIGHT_BG
             c.setFillColor(bg)
             c.rect(col_x, crit_top-CRIT_H, COL_W, CRIT_H, fill=1, stroke=0)
-            c.setStrokeColor(hex_color('#cccccc') if not is_final else EV_MED.get(ev, CCP_BLUE_MID))
+            c.setStrokeColor(hex_color('#cccccc'))
             c.setLineWidth(0.3)
             c.line(col_x, crit_top-CRIT_H, col_x, crit_top)
-            c.saveState()
-            c.translate(col_x+COL_W/2, crit_top-CRIT_H/2)
-            c.rotate(90)
-            fg   = WHITE if is_final else EV_DARK.get(ev, CCP_BLUE)
-            font = 'Helvetica-Bold'
-            size = 8.0
-            c.setFillColor(fg); c.setFont(font, size)
-            # Truncate by pixel width, not character count
-            # CRIT_H is the available space (text is rotated 90°)
-            max_text_w = CRIT_H - 8  # 4pt padding each side
-            display = _truncate_to_width(c, crit, font, size, max_text_w)
-            c.drawCentredString(0, -size/3, display)
-            c.restoreState()
+            fg = WHITE if is_final else TEXT_DARK
+
+            if USE_HORIZONTAL:
+                # Word-wrap the criteria text horizontally inside the cell.
+                _font = 'Helvetica-Bold'
+                _size = 9.0
+                _max_w = COL_W - 4
+                _max_h = CRIT_H - 6
+
+                def _wrap_horiz(text, font, size, max_w, canvas_obj):
+                    words = text.split()
+                    lines, current = [], ''
+                    for w in words:
+                        trial = (current + ' ' + w).strip()
+                        if canvas_obj.stringWidth(trial, font, size) <= max_w:
+                            current = trial
+                        else:
+                            if current:
+                                lines.append(current)
+                            current = w
+                    if current:
+                        lines.append(current)
+                    return lines
+
+                # Shrink font until wrapped block fits vertically
+                _lines = _wrap_horiz(crit, _font, _size, _max_w, c)
+                while (len(_lines) * (_size + 2) > _max_h or
+                       any(c.stringWidth(ln, _font, _size) > _max_w for ln in _lines)) \
+                      and _size > 6.5:
+                    _size -= 0.5
+                    _lines = _wrap_horiz(crit, _font, _size, _max_w, c)
+
+                _lh = _size + 2
+                _total_h = len(_lines) * _lh
+                _cy = crit_top - CRIT_H/2
+                _cx = col_x + COL_W/2
+                _start_y = _cy + _total_h/2 - _size
+                c.setFillColor(fg); c.setFont(_font, _size)
+                for _li, _ln in enumerate(_lines):
+                    c.drawCentredString(_cx, _start_y - _li * _lh, _ln)
+            else:
+                # Rotated path (Page 2 / Beam+Floor)
+                c.saveState()
+                c.translate(col_x+COL_W/2, crit_top-CRIT_H/2)
+                c.rotate(90)
+                _crit_max_w = CRIT_H - 10
+                _font = 'Helvetica-Bold'
+                _size = 7.5
+                def _split_crit(text, font, size, max_w, canvas_obj):
+                    while size >= 5.5 and canvas_obj.stringWidth(text, font, size) > max_w:
+                        size -= 0.5
+                    if canvas_obj.stringWidth(text, font, size) <= max_w:
+                        return [text], size
+                    words = text.split()
+                    best = None
+                    for split in range(1, len(words)):
+                        l1 = ' '.join(words[:split])
+                        l2 = ' '.join(words[split:])
+                        if canvas_obj.stringWidth(l1, font, size) <= max_w and \
+                           canvas_obj.stringWidth(l2, font, size) <= max_w:
+                            best = ([l1, l2], size)
+                            break
+                    if best:
+                        return best
+                    return [_truncate_to_width(canvas_obj, text, font, size, max_w)], size
+                _lines, _size = _split_crit(crit, _font, _size, _crit_max_w, c)
+                c.setFillColor(fg); c.setFont(_font, _size)
+                _lh = _size + 1.5
+                _total_h = len(_lines) * _lh
+                _start_y = _total_h / 2 - _size / 3
+                for _li, _ln in enumerate(_lines):
+                    c.drawCentredString(0, _start_y - _li * _lh, _ln)
+                c.restoreState()
 
     # ── HEADER: STAR LABELS ───────────────────────────────────────────
     starlbl_top = crit_top - CRIT_H
+    _lbl_font_sz  = 10 if USE_HORIZONTAL else 6.5
+    _lbl_gold_r   = 8.5 if USE_HORIZONTAL else 5.5
     for i, sk in enumerate(SKILLS):
         ev = sk['event']
         star_labels = [f'★{j+1}' for j in range(len(sk['criteria']))] + (['★F'] if HAS_MASTERY else [])
         for j, star in enumerate(star_labels):
             col_x    = ev_x(skill_col_start[i]+j)
             is_final = HAS_MASTERY and (j == len(sk['criteria']))
-            c.setFillColor(GOLD if is_final else EV_LIGHT.get(ev, CCP_BLUE_XLT))
+            c.setFillColor(GOLD if is_final else WHITE)
             c.setStrokeColor(hex_color('#cccccc')); c.setLineWidth(0.3)
             c.rect(col_x, starlbl_top-STAR_LBL_H, COL_W, STAR_LBL_H, fill=1, stroke=1)
             if is_final:
-                draw_star(c, col_x+COL_W/2, starlbl_top-STAR_LBL_H/2+0.5, 5.5, WHITE, WHITE, lw=0)
+                draw_star(c, col_x+COL_W/2, starlbl_top-STAR_LBL_H/2+0.5,
+                          _lbl_gold_r, WHITE, WHITE, lw=0)
             else:
-                c.setFillColor(EV_DARK.get(ev, CCP_BLUE))
-                c.setFont('Helvetica-Bold', 6.5)
-                c.drawCentredString(col_x+COL_W/2, starlbl_top-STAR_LBL_H+3.5, star)
+                c.setFillColor(BRAND)
+                c.setFont('Helvetica-Bold', _lbl_font_sz)
+                c.drawCentredString(col_x+COL_W/2,
+                                    starlbl_top-STAR_LBL_H/2 - _lbl_font_sz/3,
+                                    star)
 
     # "NAME" label in navy block
     c.setFillColor(WHITE); c.setFont('Helvetica-Bold', 7)
@@ -731,7 +875,7 @@ def generate_pdf(gym_code, class_name, date, day, time,
     # ── STUDENT ROWS ──────────────────────────────────────────────────
     for row in range(NUM_ROWS):
         ry = row_y(row)
-        c.setFillColor(WHITE if row%2==0 else hex_color('#f7f8fa'))
+        c.setFillColor(WHITE if row%2==0 else hex_color('#edf0f4'))
         c.rect(MARGIN, ry, USABLE_W, ROW_H, fill=1, stroke=0)
 
         # Student name
@@ -747,7 +891,7 @@ def generate_pdf(gym_code, class_name, date, day, time,
             c.setFont('Helvetica-Bold', 10)
             c.drawCentredString(MARGIN+NAME_W/2, ry+ROW_H/2-4, display)
 
-        # Bubbles
+        # Bubbles centered in the row
         bubble_zone_top    = ry + ROW_H
         bubble_zone_bottom = ry + NAME_ZONE_H
         bubble_cy = (bubble_zone_top + bubble_zone_bottom) / 2
@@ -758,7 +902,9 @@ def generate_pdf(gym_code, class_name, date, day, time,
             for j in range(n_crit+MAST):
                 col_x    = ev_x(skill_col_start[i]+j)
                 cx       = col_x + COL_W/2
-                r_bub    = min(COL_W*0.31, (ROW_H-NAME_ZONE_H)*0.35)
+                _bub_factor_w = 0.26 if USE_HORIZONTAL else 0.36
+                _bub_factor_h = 0.32 if USE_HORIZONTAL else 0.38
+                r_bub    = min(COL_W*_bub_factor_w, (ROW_H-NAME_ZONE_H)*_bub_factor_h)
                 is_final = HAS_MASTERY and (j == n_crit)
 
                 # Get earned state
@@ -779,7 +925,7 @@ def generate_pdf(gym_code, class_name, date, day, time,
                         draw_star(c, cx, bubble_cy, r_bub*1.2, WHITE, CCP_GRAY_MID, lw=1.2)
                 else:
                     if earned:
-                        draw_star(c, cx, bubble_cy, r_bub*1.2, CCP_RED, CCP_RED, lw=0)
+                        draw_star(c, cx, bubble_cy, r_bub*1.2, BRAND, BRAND, lw=0)
                     else:
                         c.setFillColor(WHITE); c.setStrokeColor(CCP_GRAY_MID); c.setLineWidth(1.2)
                         c.circle(cx, bubble_cy, r_bub, fill=1, stroke=1)
@@ -788,8 +934,8 @@ def generate_pdf(gym_code, class_name, date, day, time,
     for i, sk in enumerate(SKILLS):
         x = ev_x(skill_col_start[i])
         c.setStrokeColor(CCP_GRAY_MID); c.setLineWidth(0.7)
-        c.line(x, CONTENT_BOT, x, DATA_TOP)
-    c.line(ev_x(NUM_COLS), CONTENT_BOT, ev_x(NUM_COLS), DATA_TOP)
+        c.line(x, DATA_BOT, x, DATA_TOP)
+    c.line(ev_x(NUM_COLS), DATA_BOT, ev_x(NUM_COLS), DATA_TOP)
 
     for i, sk in enumerate(SKILLS):
         x = ev_x(skill_col_start[i])
@@ -800,24 +946,24 @@ def generate_pdf(gym_code, class_name, date, day, time,
     for i, sk in enumerate(SKILLS):
         for j in range(1, len(sk['criteria'])+MAST):
             x = ev_x(skill_col_start[i]+j)
-            c.setStrokeColor(CCP_GRAY); c.setLineWidth(0.18)
+            c.setStrokeColor(CCP_GRAY_MID); c.setLineWidth(0.4)
             c.line(x, starlbl_top-STAR_LBL_H, x, sk_top-SK_HDR_H)
 
-    c.setStrokeColor(CCP_GRAY); c.setLineWidth(0.3)
+    c.setStrokeColor(CCP_GRAY_MID); c.setLineWidth(0.5)
     for row in range(NUM_ROWS+1):
         y = DATA_TOP - row*ROW_H
         c.line(MARGIN, y, W-MARGIN, y)
 
-    c.setStrokeColor(CCP_BLUE); c.setLineWidth(1.4)
+    c.setStrokeColor(CHARCOAL); c.setLineWidth(1.0)
     c.line(MARGIN+NAME_W, CONTENT_BOT, MARGIN+NAME_W, CONTENT_TOP)
     c.line(MARGIN, DATA_TOP, W-MARGIN, DATA_TOP)
 
-    c.setStrokeColor(CCP_GRAY_MID); c.setLineWidth(0.5)
-    c.line(MARGIN, sk_top,      W-MARGIN, sk_top)
-    c.line(MARGIN, crit_top,    W-MARGIN, crit_top)
-    c.line(MARGIN, starlbl_top, W-MARGIN, starlbl_top)
+    # Clean charcoal divider between data area and safety footer.
+    # Drawn here AND re-drawn after safety fills so it can't be painted over.
+    c.setStrokeColor(CHARCOAL); c.setLineWidth(1.0)
+    c.line(MARGIN, CONTENT_BOT, W-MARGIN, CONTENT_BOT)
 
-    c.setStrokeColor(CCP_BLUE_MID); c.setLineWidth(1.0)
+    c.setStrokeColor(CHARCOAL); c.setLineWidth(0.8)
     c.line(MARGIN, CONTENT_TOP, W-MARGIN, CONTENT_TOP)
 
     # ── SAFETY FOOTER ─────────────────────────────────────────────────
@@ -829,20 +975,17 @@ def generate_pdf(gym_code, class_name, date, day, time,
         SAF_BG = hex_color('#eeeeee')
         c.setFillColor(SAF_BG)
         c.rect(MARGIN, ft_y, USABLE_W, ft_h, fill=1, stroke=0)
-        # Bold brand-color border around the entire safety section
-        c.setStrokeColor(CCP_RED); c.setLineWidth(2.5)
-        c.rect(MARGIN, ft_y, USABLE_W, ft_h, fill=0, stroke=1)
+        # NOTE: safety border is drawn at the END of this block so the per-column
+        # fills below cannot paint over the top edge.
 
         SAF_LBL_W = 52
-        c.setFillColor(CCP_BLUE)
+        c.setFillColor(BRAND)
         c.rect(MARGIN, ft_y, SAF_LBL_W, ft_h, fill=1, stroke=0)
         c.setFillColor(WHITE); c.setFont('Helvetica-Bold', 8)
         c.drawCentredString(MARGIN+SAF_LBL_W/2, ft_y+ft_h-13, 'SAFETY')
-        c.setFillColor(CCP_GRAY); c.setFont('Helvetica', 4.8)
+        c.setFillColor(WHITE); c.setFont('Helvetica-Oblique', 4.8)
         c.drawCentredString(MARGIN+SAF_LBL_W/2, ft_y+ft_h-22, 'assessed')
         c.drawCentredString(MARGIN+SAF_LBL_W/2, ft_y+ft_h-29, 'each class')
-        c.setStrokeColor(CCP_RED); c.setLineWidth(1.2)
-        c.line(MARGIN+SAF_LBL_W, ft_y, MARGIN+SAF_LBL_W, ft_y+ft_h)
 
         SAF_KEY_W = 146
         key_x = MARGIN + SAF_LBL_W + 5
@@ -855,10 +998,10 @@ def generate_pdf(gym_code, class_name, date, day, time,
                 # Draw solid gold star instead of ★F text
                 draw_star(c, key_x+5, ky+row_h_key/2, 5, GOLD, GOLD, lw=0)
             else:
-                c.setFillColor(CCP_BLUE)
+                c.setFillColor(BRAND)
                 c.setFont('Helvetica-Bold', 7)
                 c.drawString(key_x, ky+row_h_key/2-2, star)
-            c.setFillColor(CCP_RED if is_f else CCP_GRAY_DK)
+            c.setFillColor(BRAND if is_f else CCP_GRAY_DK)
             c.setFont('Helvetica-Bold' if is_f else 'Helvetica', 6.5)
             c.drawString(key_x+18, ky+row_h_key/2-2, crit_txt)
 
@@ -908,7 +1051,7 @@ def generate_pdf(gym_code, class_name, date, day, time,
                 if j == len(SAF_CRIT):
                     draw_star(c, bx, star_label_y+4, 4.5, GOLD, GOLD, lw=0)
                 else:
-                    c.setFillColor(CCP_BLUE); c.setFont('Helvetica-Bold', 6)
+                    c.setFillColor(BRAND); c.setFont('Helvetica-Bold', 6)
                     c.drawCentredString(bx, star_label_y+1, lbl)
 
             bub_r  = min(sub_w*0.30, BUB_H_SAF*0.40)
@@ -924,21 +1067,22 @@ def generate_pdf(gym_code, class_name, date, day, time,
                         draw_star(c, bx, bub_cy, bub_r*1.15, WHITE, CCP_GRAY_MID, lw=1.0)
                 else:
                     if earned_s:
-                        draw_star(c, bx, bub_cy, bub_r*1.15, CCP_RED, CCP_RED, lw=0)
+                        draw_star(c, bx, bub_cy, bub_r*1.15, BRAND, BRAND, lw=0)
                     else:
                         c.setFillColor(WHITE); c.setStrokeColor(CCP_GRAY_MID); c.setLineWidth(0.8)
                         c.circle(bx, bub_cy, bub_r, fill=1, stroke=1)
 
             if col > 0:
-                c.setStrokeColor(CCP_GRAY); c.setLineWidth(0.4)
+                c.setStrokeColor(CCP_GRAY_MID); c.setLineWidth(0.5)
                 c.line(sx, ft_y+3, sx, ft_y+ft_h-3)
 
+        # Border drawn LAST so per-column fills can't paint over the top edge.
+        c.setStrokeColor(CHARCOAL); c.setLineWidth(1.2)
+        c.rect(MARGIN, ft_y, USABLE_W, ft_h, fill=0, stroke=1)
+
     # ── OUTER BORDER ──────────────────────────────────────────────────
-    c.setStrokeColor(CCP_BLUE); c.setLineWidth(2.0)
+    c.setStrokeColor(CHARCOAL); c.setLineWidth(0.8)
     c.rect(MARGIN, MARGIN, USABLE_W, USABLE_H, fill=0, stroke=1)
-    c.setFillColor(CCP_RED)
-    c.rect(MARGIN, H-MARGIN-3, USABLE_W, 3, fill=1, stroke=0)
-    c.rect(MARGIN, MARGIN, USABLE_W, 3, fill=1, stroke=0)
 
     if buf is not None:
         # Single-page mode: finalize and return bytes
@@ -1006,6 +1150,79 @@ def generate_multi_pdf(gym_code, classes, mode='eval'):
                 mode       = mode,
                 _canvas    = c,
             )
+
+    c.save()
+    return buf.getvalue()
+
+
+# ════════════════════════════════════════════════════════════════════
+# SPLIT GENERATOR — each class becomes N pages grouped by event-set
+# ════════════════════════════════════════════════════════════════════
+def generate_split_pdf(gym_code, classes, page_events, mode='eval'):
+    """
+    Like generate_multi_pdf but each class is split across multiple pages based
+    on page_events — a list of event-name lists, one per page.
+
+    Example — two pages, Vault+Bars on p1, Beam+Floor on p2:
+        page_events = [['VAULT','BARS'], ['BEAM','FLOOR']]
+
+    Each page uses only those events (via events_filter on generate_pdf).
+    The criteria orientation auto-picks (horizontal for ≤16 columns, rotated otherwise).
+    Page 1 of Vault+Bars typically gets horizontal text = much more readable.
+    """
+    buf = io.BytesIO()
+    c   = canvas.Canvas(buf, pagesize=landscape(letter))
+    first_page = True
+
+    for cls in classes:
+        program   = cls.get('program', '')
+        students  = cls.get('students', [])
+        score_map = cls.get('scoreMap', {})
+
+        prog_key = resolve_program(program)
+        prog     = PROGRAMS.get(prog_key)
+        if not prog:
+            continue
+        capacity = prog.get('num_rows', 6)
+
+        if len(students) == 0:
+            chunks = [[]]
+        else:
+            chunks = [students[i:i+capacity] for i in range(0, len(students), capacity)]
+
+        total_student_pages = len(chunks)
+
+        for chunk_idx, chunk in enumerate(chunks):
+            for page_idx, ev_list in enumerate(page_events):
+                if not first_page:
+                    c.showPage()
+                first_page = False
+
+                class_name = cls.get('className', 'Class')
+                label_parts = []
+                if total_student_pages > 1:
+                    label_parts.append(f"pg {chunk_idx+1}/{total_student_pages}")
+                if len(page_events) > 1:
+                    label_parts.append(' + '.join(ev_list))
+                if label_parts:
+                    class_name = f"{class_name}  ({'  |  '.join(label_parts)})"
+
+                chunk_score_map = _slice_score_map(score_map, chunk_idx * capacity, capacity)
+
+                generate_pdf(
+                    gym_code      = gym_code,
+                    class_name    = class_name,
+                    date          = cls.get('date', ''),
+                    day           = cls.get('day', ''),
+                    time          = cls.get('time', ''),
+                    ages          = cls.get('ages', ''),
+                    students      = chunk,
+                    program       = program,
+                    score_map     = chunk_score_map,
+                    mode          = mode,
+                    _canvas       = c,
+                    events_filter = ev_list,
+                )
 
     c.save()
     return buf.getvalue()
