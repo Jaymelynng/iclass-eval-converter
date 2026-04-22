@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  /* ── STICKY NAV ── */
+  .sticky-nav {
+    position: fixed;
+    top: 50%;
+    right: 20px;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    z-index: 999;
+  }
+  .sticky-nav a {
+    display: block;
+    background: #1a1a2e;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    text-decoration: none;
+    padding: 8px 12px;
+    border-radius: 8px;
+    text-align: center;
+    letter-spacing: 1px;
+    opacity: 0.85;
+    transition: opacity 0.2s, background 0.2s;
+  }
+  .sticky-nav a:hover { opacity: 1; background: #1a7a3c; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #f2f2f6;
+    padding: 40px 48px;
+    color: #222;
+    max-width: 860px;
+    margin: 0 auto;
+  }
+
+  .test-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: #999;
+    margin-bottom: 4px;
+  }
+  h1 {
+    font-size: 28px;
+    font-weight: 800;
+    color: #1a1a2e;
+    margin-bottom: 28px;
+    border-bottom: 2px solid #1a1a2e;
+    padding-bottom: 12px;
+  }
+
+  .section-label {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2.5px;
+    color: #888;
+    margin-bottom: 6px;
+  }
+  .section-value {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1a1a2e;
+    margin-bottom: 24px;
+  }
+
+  h2 {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #555;
+    margin-bottom: 10px;
+    margin-top: 28px;
+  }
+
+  p {
+    font-size: 13.5px;
+    line-height: 1.75;
+    color: #444;
+    margin-bottom: 20px;
+  }
+
+  /* ── FLOWCHART ── */
+  .flow {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    margin: 24px 0;
+  }
+  .flow-step {
+    flex: 1;
+    background: #fff;
+    border: 1.5px solid #ddd;
+    border-radius: 10px;
+    padding: 16px 14px;
+    position: relative;
+  }
+  .flow-step .step-num {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #aaa;
+    margin-bottom: 6px;
+  }
+  .flow-step .step-title {
+    font-size: 12.5px;
+    font-weight: 700;
+    color: #1e40af;
+    margin-bottom: 6px;
+    line-height: 1.4;
+  }
+  .flow-step .step-detail {
+    font-size: 11.5px;
+    color: #666;
+    line-height: 1.5;
+  }
+  .flow-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 10px;
+    color: #bbb;
+    font-size: 22px;
+    flex-shrink: 0;
+    padding-top: 16px;
+  }
+
+  /* ── TWO-PART ── */
+  .two-part {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin: 20px 0;
+  }
+  .part-box {
+    border-radius: 10px;
+    padding: 16px 18px;
+  }
+  .part-box.js  { background: #eff6ff; border: 1.5px solid #1e40af; }
+  .part-box.py  { background: #e8f5ed; border: 1.5px solid #1a7a3c; }
+  .part-box .part-tag {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 4px;
+  }
+  .part-box.js .part-tag { color: #1e40af; }
+  .part-box.py .part-tag { color: #1a7a3c; }
+  .part-box .part-title {
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .part-box.js .part-title { color: #1e3a8a; }
+  .part-box.py .part-title { color: #14532d; }
+  .part-box .part-desc {
+    font-size: 12px;
+    line-height: 1.6;
+    color: #555;
+  }
+
+  /* ── CIRCLE VS STAR ── */
+  .symbol-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0 28px;
+    background: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid #e5e7eb;
+    font-size: 13px;
+  }
+  .symbol-table th {
+    background: #2d2d44;
+    color: #fff;
+    padding: 10px 16px;
+    text-align: left;
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-weight: 700;
+  }
+  .symbol-table td {
+    padding: 11px 16px;
+    border-bottom: 1px solid #f0f0f5;
+    color: #333;
+    vertical-align: middle;
+  }
+  .symbol-table tr:last-child td { border-bottom: none; }
+  .symbol-table tr:nth-child(even) td { background: #f8f8fb; }
+  .symbol-table td.val { font-weight: 700; }
+  .dot-empty {
+    display: inline-block;
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    border: 2.5px solid #aaa;
+    vertical-align: middle;
+    margin-right: 6px;
+  }
+  .star-brand { color: #c8102e; font-size: 20px; vertical-align: middle; margin-right: 6px; }
+  .star-gold  { color: #c9a43c; font-size: 20px; vertical-align: middle; margin-right: 6px; }
+
+  /* ── RESULTS TABLE ── */
+  .result-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0 28px;
+    background: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid #e5e7eb;
+    font-size: 13px;
+  }
+  .result-table th {
+    background: #2d2d44;
+    color: #fff;
+    padding: 10px 16px;
+    text-align: left;
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-weight: 700;
+  }
+  .result-table td {
+    padding: 11px 16px;
+    border-bottom: 1px solid #f0f0f5;
+    color: #333;
+  }
+  .result-table tr:last-child td { border-bottom: none; }
+  .result-table tr:nth-child(even) td { background: #f8f8fb; }
+  .pass { color: #1a7a3c; font-weight: 700; }
+
+  /* ── BANNER ── */
+  .banner {
+    background: #e8f5ed;
+    border: 2px solid #1a7a3c;
+    border-radius: 10px;
+    padding: 16px 24px;
+    text-align: center;
+    font-size: 13.5px;
+    font-weight: 700;
+    color: #1a7a3c;
+    margin-top: 8px;
+  }
+</style>
+</head>
+<body>
+
+<!-- STICKY NAV -->
+<nav class="sticky-nav">
+  <a href="#current">Current Status</a>
+  <a href="#test1">Test 1</a>
+  <a href="#test2">Test 2</a>
+  <a href="#test3">Test 3</a>
+  <a href="#keywords">Keywords</a>
+  <a href="#v2">V2 Plan</a>
+  <a href="incident-log.html" style="background:#e74c3c;">Incidents</a>
+  <a href="#top">↑ Top</a>
+</nav>
+
+<div id="top"></div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- CURRENT STATUS — v2.2 (Apr 22, 2026) -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div id="current"></div>
+<div class="test-label">Current Status &mdash; v2.2</div>
+<h1>April 22, 2026 Snapshot</h1>
+
+<div class="section-label">Production state</div>
+<div class="section-value">Live at evalconvert.com &middot; all 10 gyms verified &middot; 797 classes renamed &middot; 11,132+ data points stress-tested.</div>
+
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px;">
+  <span style="display:inline-block;background:#4caf50;color:#fff;font-size:11.5px;font-weight:700;padding:5px 14px;border-radius:20px;">All 10 gyms live</span>
+  <span style="display:inline-block;background:#2196f3;color:#fff;font-size:11.5px;font-weight:700;padding:5px 14px;border-radius:20px;">Wizard UI</span>
+  <span style="display:inline-block;background:#2196f3;color:#fff;font-size:11.5px;font-weight:700;padding:5px 14px;border-radius:20px;">Layout picker</span>
+  <span style="display:inline-block;background:#2196f3;color:#fff;font-size:11.5px;font-weight:700;padding:5px 14px;border-radius:20px;">Help &amp; Updates panel</span>
+</div>
+
+<h2>What shipped since launch (v1.0 &rarr; v2.2)</h2>
+<p style="font-size:13px;line-height:1.75;">
+  <strong>v2.0 &middot; Apr 16, 2026</strong> &mdash; PDF generator rewritten. Embedded base64 logos. Brand-unified color system with per-gym WCAG contrast math (CRR pink darkened, EST navy lightened, TIG brand flipped to navy). Multi-line criteria text wrapping at larger fonts. Per-gym <code>top_bar_h</code> and <code>logo_size</code> overrides.
+</p>
+<p style="font-size:13px;line-height:1.75;">
+  <strong>v2.1 &middot; Apr 21, 2026</strong> &mdash; Step-by-step wizards for Convert + Print Blank. Event-split layout picker. Select All / Clear All for blank sheets. Bigger, readable criteria text. Rebuilt SOP guide with side nav. BEAM criterion fixes on Preschool + Junior (source-of-truth audit).
+</p>
+<p style="font-size:13px;line-height:1.75;">
+  <strong>v2.2 &middot; Apr 22, 2026</strong> &mdash; Multi-select layout picker (any combination of ALL 4 / VAULT+BARS / BEAM+FLOOR). Convert Another success button. Alternating event colors across the sheet. Help &amp; Updates panel with 5 FAQ cards + What's New timeline. Cleaner CRR logo swapped in. CCP + CPF Bars/Floor restored to blue via <code>ev_cool</code> override. White 3D Generate Another button (fixes invisible-button bug on dark-brand gyms). Auto-fit program label (PRESCHOOL / JUNIOR no longer crash into NAME row). Panel pushes page content left instead of overlaying.
+</p>
+
+<h2>Source of truth references</h2>
+<p style="font-size:13px;line-height:1.75;">
+  All future criterion changes must diff against both reference files in <code>auditing tools source of truth and results/</code>:
+</p>
+<ul style="font-size:13px;line-height:1.8;margin-left:20px;">
+  <li><code>Skills_Stars_Audit_Reference (1).xlsx</code> &mdash; full skill tree (events, skills, order)</li>
+  <li><code>approved shorthand criteria for star chart.xlsx</code> &mdash; approved PDF wording per criterion (Same / Abbreviated / Wrong status flag)</li>
+</ul>
+
+<p style="font-size:13px;line-height:1.75;">
+  Known rule: Advanced Junior = copy Level 1 verbatim. Advanced Junior lives UNDER the Junior category in iClass &mdash; do NOT create a separate category.
+</p>
+
+<hr style="border:none;border-top:1px solid #ddd;margin:40px 0;">
+
+<div id="test1"></div>
+<div class="test-label">Stress Test Documentation</div>
+<h1>Test 1</h1>
+
+<div class="section-label">What was tested</div>
+<div class="section-value">Layout and mapping — how data moves from the spreadsheet to the PDF.</div>
+<div style="display:inline-block;background:#1a1a2e;color:#fff;font-size:11.5px;font-weight:700;padding:5px 14px;border-radius:20px;margin-bottom:24px;">120 pages manually verified</div>
+
+<h2>How it works</h2>
+
+<p>SheetJS reads the file in the browser and converts every tab into a JavaScript object — basically a grid of rows and columns in memory. That's the parse step.</p>
+
+<p>The code then walks through that grid:</p>
+
+<!-- FLOWCHART -->
+<div class="flow">
+  <div class="flow-step">
+    <div class="step-num">Step 1</div>
+    <div class="step-title">Read the tab name</div>
+    <div class="step-detail">Identifies which program this class belongs to — Preschool, Level 1, Junior, etc.</div>
+  </div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-step">
+    <div class="step-num">Step 2</div>
+    <div class="step-title">Scan the rows</div>
+    <div class="step-detail">Locates student names, skill names, and exactly where the score data starts in the grid.</div>
+  </div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-step">
+    <div class="step-num">Step 3</div>
+    <div class="step-title">Read every cell</div>
+    <div class="step-detail">Each cell is either a 1 or blank. That value gets stored as the score for that student at that skill position.</div>
+  </div>
+</div>
+
+<p>That data gets sent to the Python backend, which takes the score data and program name, pulls the matching skill template, and builds the PDF using ReportLab — placing each star or circle at the exact x/y coordinate for that student column and skill row.</p>
+
+<h2>Two-part process</h2>
+
+<div class="two-part">
+  <div class="part-box js">
+    <div class="part-tag">Frontend · JavaScript</div>
+    <div class="part-title">SheetJS Parser</div>
+    <div class="part-desc">Reads the XLS, finds students and scores, identifies the program from the tab name.</div>
+  </div>
+  <div class="part-box py">
+    <div class="part-tag">Backend · Python</div>
+    <div class="part-title">ReportLab Renderer</div>
+    <div class="part-desc">Takes the parsed data and draws the PDF — placing every symbol at the exact correct position.</div>
+  </div>
+</div>
+
+<h2>The circle vs. star — decided in Python</h2>
+
+<table class="symbol-table">
+  <tr>
+    <th>Spreadsheet value</th>
+    <th>What shows on the PDF</th>
+  </tr>
+  <tr>
+    <td class="val">Score of 1</td>
+    <td><span class="star-brand">★</span> Filled star in the gym's brand color</td>
+  </tr>
+  <tr>
+    <td class="val">Blank cell</td>
+    <td><span class="dot-empty"></span> Empty circle — not yet earned</td>
+  </tr>
+  <tr>
+    <td class="val">1 in the mastery row</td>
+    <td><span class="star-gold">★</span> Gold star — skill fully complete</td>
+  </tr>
+  <tr>
+    <td class="val">Blank in the mastery row</td>
+    <td><span class="dot-empty"></span> Empty circle — not yet mastered</td>
+  </tr>
+</table>
+
+<h2>Verified</h2>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0 28px;">
+  <div style="background:#e8f5ed;border:1.5px solid #1a7a3c;border-radius:8px;padding:13px 16px;font-size:12.5px;font-weight:600;color:#14532d;display:flex;gap:10px;align-items:flex-start;">
+    <span style="font-size:15px;flex-shrink:0;">☑</span> PDF layout is correct — each skill lands in the right column and row
+  </div>
+  <div style="background:#e8f5ed;border:1.5px solid #1a7a3c;border-radius:8px;padding:13px 16px;font-size:12.5px;font-weight:600;color:#14532d;display:flex;gap:10px;align-items:flex-start;">
+    <span style="font-size:15px;flex-shrink:0;">☑</span> Every skill from the spreadsheet appears on the PDF in the correct order
+  </div>
+  <div style="background:#e8f5ed;border:1.5px solid #1a7a3c;border-radius:8px;padding:13px 16px;font-size:12.5px;font-weight:600;color:#14532d;display:flex;gap:10px;align-items:flex-start;">
+    <span style="font-size:15px;flex-shrink:0;">☑</span> Every student appears on the correct page in the correct order
+  </div>
+  <div style="background:#e8f5ed;border:1.5px solid #1a7a3c;border-radius:8px;padding:13px 16px;font-size:12.5px;font-weight:600;color:#14532d;display:flex;gap:10px;align-items:flex-start;">
+    <span style="font-size:15px;flex-shrink:0;">☑</span> Scores render correctly — a blank cell shows as ○, a score of 1 shows as ★ in the gym's brand color
+  </div>
+</div>
+
+<h2>Results</h2>
+
+<table class="result-table">
+  <tr>
+    <th>Program</th>
+    <th>Single-Class Export (All 10 Gyms)</th>
+    <th>Bulk Export: 10+ Classes per Gym (All 10 Gyms)</th>
+  </tr>
+  <tr><td>Preschool</td>       <td class="pass">✓ Passed (10/10 gyms)</td><td class="pass">✓ Passed (10/10 gyms)</td></tr>
+  <tr><td>Junior</td>          <td class="pass">✓ Passed (10/10 gyms)</td><td class="pass">✓ Passed (10/10 gyms)</td></tr>
+  <tr><td>Advanced Junior</td> <td class="pass">✓ Passed (10/10 gyms)</td><td class="pass">✓ Passed (10/10 gyms)</td></tr>
+  <tr><td>Level 1</td>         <td class="pass">✓ Passed (10/10 gyms)</td><td class="pass">✓ Passed (10/10 gyms)</td></tr>
+  <tr><td>Level 2</td>         <td class="pass">✓ Passed (10/10 gyms)</td><td class="pass">✓ Passed (10/10 gyms)</td></tr>
+  <tr><td>Level 3</td>         <td class="pass">✓ Passed (10/10 gyms)</td><td class="pass">✓ Passed (10/10 gyms)</td></tr>
+</table>
+
+<div class="banner">✓ TEST 1 RESULT: PASSED — All 6 programs · single and bulk · all 10 gyms</div>
+
+
+<!-- ════════════════════════════════════════ -->
+<!-- TEST 2                                   -->
+<!-- ════════════════════════════════════════ -->
+<div style="margin-top:60px;border-top:2px solid #1a1a2e;padding-top:40px;">
+
+<div id="test2"></div>
+<div class="test-label">Stress Test Documentation</div>
+<h1>Test 2</h1>
+
+<div class="section-label">What was tested</div>
+<div class="section-value">Score accuracy across all program layouts</div>
+<div style="display:inline-block;background:#1a1a2e;color:#fff;font-size:11.5px;font-weight:700;padding:5px 14px;border-radius:20px;margin-bottom:24px;">4 fill levels · 10 gyms · 18,560+ individual score checks</div>
+
+<h2>What was verified</h2>
+<p>Every score from the spreadsheet maps to the correct symbol on the PDF across every program.</p>
+<p>Scores were filled at multiple combinations and densities — 20%, 50%, 80%, and 100% — to confirm each program's layout maps accurately to its own skill set across all 10 gyms.</p>
+
+<h2>Results</h2>
+<table class="result-table">
+  <tr>
+    <th>Fill Level</th>
+    <th>CCP</th><th>CPF</th><th>CRR</th><th>RBA</th><th>RBK</th>
+    <th>HGA</th><th>EST</th><th>OAS</th><th>SGT</th><th>TIG</th>
+    <th>Result</th>
+  </tr>
+  <tr>
+    <td>20%</td>
+    <td class="pass">✓</td><td class="pass">✓</td><td class="pass">✓</td><td class="pass">✓</td><td class="pass">✓</td>
+    <td class="pass">✓</td><td class="pass">✓</td><td class="pass">✓</td><td class="pass">✓</td><td class="pass">✓</td>
+    <td class="pass">✓ All 10 Passed</td>
+  </tr>
+  <tr>
+    <td>50%</td>
+    <td class="pass">✓</td><td class="pass">✓</td><td class="pass">✓</td><td class="pass">✓</td><td class="pass">✓</td>
+    <td class="pass">✓</td><td class="pass">✓</td><td class="pass">✓</td><td class="pass">✓</td><td class="pass">✓</td>
+    <td class="pass">✓ All 10 Passed</td>
+  </tr>
+  <tr>
+    <td>80%</td>
+    <td class="pass">✓</td><td class="pass">✓</td><td class="pass">✓</td><td class="pass">✓</td><td class="pass">✓</td>
+    <td class="pass">✓</td><td class="pass">✓</td><td class="pass">✓</td><td class="pass">✓</td><td class="pass">✓</td>
+    <td class="pass">✓ All 10 Passed</td>
+  </tr>
+  <tr>
+    <td>100%</td>
+    <td class="pass">✓</td><td class="pass">✓</td><td class="pass">✓</td><td class="pass">✓</td><td class="pass">✓</td>
+    <td class="pass">✓</td><td class="pass">✓</td><td class="pass">✓</td><td class="pass">✓</td><td class="pass">✓</td>
+    <td class="pass">✓ All 10 Passed</td>
+  </tr>
+</table>
+
+<div class="banner">✓ TEST 2 RESULT: PASSED — All programs · all fill levels · all 10 gyms</div>
+
+</div>
+
+<!-- ════════════════════════════════════════ -->
+<!-- TEST 3                                   -->
+<!-- ════════════════════════════════════════ -->
+<div style="margin-top:60px;border-top:2px solid #1a1a2e;padding-top:40px;">
+
+<div id="test3"></div>
+<div class="test-label">Stress Test Documentation</div>
+<h1>Test 3 — Full Stress Test</h1>
+
+<div class="section-label">What was tested</div>
+<div style="display:inline-block;background:#1a1a2e;color:#fff;font-size:11.5px;font-weight:700;padding:5px 14px;border-radius:20px;margin-bottom:16px;">470 pages manually verified</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:28px;">
+  <div style="background:#e8f5ed;border:1.5px solid #1a7a3c;border-radius:8px;padding:12px 16px;font-size:13px;font-weight:600;color:#14532d;display:flex;gap:10px;align-items:center;"><span>☑</span> Classes at the same time</div>
+  <div style="background:#e8f5ed;border:1.5px solid #1a7a3c;border-radius:8px;padding:12px 16px;font-size:13px;font-weight:600;color:#14532d;display:flex;gap:10px;align-items:center;"><span>☑</span> Classes over capacity</div>
+  <div style="background:#e8f5ed;border:1.5px solid #1a7a3c;border-radius:8px;padding:12px 16px;font-size:13px;font-weight:600;color:#14532d;display:flex;gap:10px;align-items:center;"><span>☑</span> All programs at once</div>
+  <div style="background:#e8f5ed;border:1.5px solid #1a7a3c;border-radius:8px;padding:12px 16px;font-size:13px;font-weight:600;color:#14532d;display:flex;gap:10px;align-items:center;"><span>☑</span> Major score variety</div>
+</div>
+
+<!-- SUB: Classes at same time -->
+<div style="background:#fff;border-radius:10px;border:1px solid #e5e7eb;margin-bottom:20px;overflow:hidden;">
+  <div style="background:#2d2d44;padding:12px 18px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:#fff;">Classes at the Same Time</div>
+  <div style="padding:20px 22px;">
+    <p>When a time slot has too many students, the class gets split in iClassPro — Level 1 A, Level 1 B, Level 1 C — each a completely different group, all at the same time. The converter has to recognize each tab as its own class and render it on its own separate page.</p>
+
+    <!-- VISUAL: A/B/C naming example -->
+    <div style="margin:20px 0;background:#eff6ff;border:1.5px solid #1e40af;border-radius:8px;padding:16px 20px;">
+      <div style="display:flex;gap:40px;">
+        <div>
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:#1e40af;margin-bottom:8px;">Example</div>
+          <div style="font-family:monospace;font-size:13px;color:#1e293b;line-height:2;">
+            Preschool A | Monday | 3:30pm<br>
+            Preschool B | Monday | 3:30pm<br>
+            Preschool C | Monday | 3:30pm
+          </div>
+        </div>
+        <div style="border-left:1px solid #bfdbfe;"></div>
+        <div>
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:#1e40af;margin-bottom:8px;">Template</div>
+          <div style="font-family:monospace;font-size:13px;color:#64748b;line-height:2;">
+            Preschool A | Day | #:##pm<br>
+            Preschool B | Day | #:##pm<br>
+            Preschool C | Day | #:##pm
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin:16px 0;padding:14px 16px;background:#fff7ed;border:1.5px solid #c2410c;border-radius:8px;font-size:12.5px;color:#7c2d12;">
+      <strong>Hiccup:</strong> When two classes run at the same time with no differentiator in the name, the system puts them on the same roll sheet. It uses the tab name as the unique ID for each page — so if two tabs have the exact same name, it treats them as one class.
+    </div>
+    <div style="padding:14px 16px;background:#e8f5ed;border:1.5px solid #1a7a3c;border-radius:8px;font-size:12.5px;color:#14532d;">
+      <strong>Solution:</strong> Rename the classes in iClassPro with an A and B format — Preschool A, Preschool B — so each tab has a unique name. The code reads the full tab name as the page key, so A and B become two separate pages automatically.
+    </div>
+
+    <div style="margin-top:10px;padding:14px 16px;background:#1e1e2e;border-radius:8px;font-size:12px;color:#cdd6f4;">
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:#89b4fa;margin-bottom:8px;">How</div>
+      <div style="margin-bottom:8px;font-size:11px;color:#a6adc8;">File: <code style="background:#313244;padding:2px 6px;border-radius:4px;color:#cba6f7;">public/index.html</code> &nbsp;·&nbsp; JavaScript &nbsp;·&nbsp; SheetJS</div>
+      <code style="display:block;background:#313244;padding:8px 12px;border-radius:6px;color:#a6e3a1;font-size:12px;margin-bottom:10px;">wb.SheetNames.forEach(sheetName =&gt; { ... })</code>
+      <p style="color:#cdd6f4;line-height:1.7;margin:0;">SheetJS reads every tab in the spreadsheet as a separate sheet. The code loops through every tab name and creates one page entry per tab — <strong style="color:#fff;">one tab = one PDF page.</strong> When you name them Preschool A and Preschool B in iClassPro, they export as two separate tabs. SheetJS hits Preschool A → creates page 1. Hits Preschool B → creates page 2. Done.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SUB: Over capacity -->
+<div style="background:#fff;border-radius:10px;border:1px solid #e5e7eb;margin-bottom:20px;overflow:hidden;">
+  <div style="background:#2d2d44;padding:12px 18px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:#fff;">Class Being Over Capacity</div>
+  <div style="padding:20px 22px;">
+    <p>When a class is booked over capacity, the PDF has to split across two pages. The cap is 6 students per page for Junior and Preschool, and 8 for Rec levels. If a class exceeds that, the converter automatically creates a second page and labels them Page 1 of 2 and Page 2 of 2.</p>
+
+    <!-- VISUAL: pg 1/2 and pg 2/2 combined screenshot -->
+    <div style="margin:20px 0;border-radius:8px;border:1.5px solid #ddd;overflow:hidden;">
+      <img src="pg_split_example.png" style="width:100%;display:block;">
+    </div>
+
+    <div style="margin-top:16px;padding:14px 16px;background:#fff7ed;border:1.5px solid #c2410c;border-radius:8px;font-size:12.5px;color:#7c2d12;">
+      <strong>Hiccup:</strong> There's no way to know how many students will push a class over capacity until the file is actually uploaded — so the overflow count isn't always predictable going in.
+    </div>
+    <div style="margin-top:10px;padding:14px 16px;background:#e8f5ed;border:1.5px solid #1a7a3c;border-radius:8px;font-size:12.5px;color:#14532d;">
+      <strong>Solution:</strong> The system now knows the capacity per program and handles the split automatically — no manual intervention needed.
+    </div>
+
+    <div style="margin-top:10px;padding:14px 16px;background:#1e1e2e;border-radius:8px;font-size:12px;color:#cdd6f4;">
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:#89b4fa;margin-bottom:8px;">How</div>
+      <div style="margin-bottom:8px;font-size:11px;color:#a6adc8;">File: <code style="background:#313244;padding:2px 6px;border-radius:4px;color:#cba6f7;">api/pdf_generator.py</code> &nbsp;·&nbsp; Python</div>
+      <code style="display:block;background:#313244;padding:8px 12px;border-radius:6px;color:#a6e3a1;font-size:11.5px;margin-bottom:10px;line-height:1.8;">capacity = prog.get('num_rows', 6)<br>chunks = [students[i:i+capacity] for i in range(0, len(students), capacity)]<br>if total_pages &gt; 1:<br>&nbsp;&nbsp;&nbsp;&nbsp;class_name = f"{class_name}  (pg {chunk_idx+1}/{total_pages})"</code>
+      <p style="color:#cdd6f4;line-height:1.7;margin:0;">The Python backend knows the max students per page for each program — 6 for Preschool and Junior, 8 for everything else. When it gets a class with more students than that, it slices them into chunks and generates one page per chunk. If there's more than one chunk, it automatically adds the <strong style="color:#fff;">(pg 1/2)</strong> and <strong style="color:#fff;">(pg 2/2)</strong> label to the class name. No manual setup required — it just handles it.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SUB: All programs at once -->
+<div style="background:#fff;border-radius:10px;border:1px solid #e5e7eb;margin-bottom:20px;overflow:hidden;">
+  <div style="background:#2d2d44;padding:12px 18px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:#fff;">All Programs at Once</div>
+  <div style="padding:20px 22px;">
+    <p>All 7 programs were run simultaneously in a single bulk export to confirm everything processes correctly at the same time — not just one program in isolation.</p>
+    <table class="result-table" style="margin-top:16px;margin-bottom:0;">
+      <tr>
+        <th>Program</th><th>Classes</th><th>Pages</th><th>Students</th><th>Skills / Student</th><th>Over-Capacity</th><th>Errors</th>
+      </tr>
+      <tr><td>Preschool</td>       <td>5</td><td>7</td><td>26</td><td>44</td><td>2</td><td class="pass">0</td></tr>
+      <tr><td>Junior A</td>        <td>4</td><td>6</td><td>28</td><td>48</td><td>2</td><td class="pass">0</td></tr>
+      <tr><td>Junior B</td>        <td>4</td><td>6</td><td>23</td><td>48</td><td>2</td><td class="pass">0</td></tr>
+      <tr><td>Advanced Junior</td> <td>2</td><td>2</td><td>5</td> <td>58</td><td>—</td><td class="pass">0</td></tr>
+      <tr><td>Level 1</td>         <td>5</td><td>7</td><td>47</td><td>58</td><td>1</td><td class="pass">0</td></tr>
+      <tr><td>Level 2</td>         <td>5</td><td>9</td><td>40</td><td>52</td><td>1</td><td class="pass">0</td></tr>
+      <tr><td>Level 3</td>         <td>5</td><td>10</td><td>47</td><td>52</td><td>1</td><td class="pass">0</td></tr>
+      <tr style="background:#f0f0f5;font-weight:700;">
+        <td>TOTAL</td><td>30</td><td>47</td><td>216</td><td>—</td><td>9</td><td class="pass">0</td>
+      </tr>
+    </table>
+  </div>
+</div>
+
+<!-- SUB: Major score variety -->
+<div style="background:#fff;border-radius:10px;border:1px solid #e5e7eb;margin-bottom:24px;overflow:hidden;">
+  <div style="background:#2d2d44;padding:12px 18px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:#fff;">Major Score Variety</div>
+  <div style="padding:20px 22px;">
+    <p>The over-capacity classes were intentionally loaded with mixed scores — students at 50%, 80%, and 100% completion on the same page — to stress-test how the converter handles varied scoring across a split page. All verified accurate across all 10 gyms.</p>
+    <table class="result-table" style="margin-top:16px;margin-bottom:0;">
+      <tr>
+        <th>Score Level</th>
+        <th>CCP</th><th>CPF</th><th>CRR</th><th>RBA</th><th>RBK</th>
+        <th>HGA</th><th>EST</th><th>OAS</th><th>SGT</th><th>TIG</th>
+        <th>Result</th>
+      </tr>
+      <tr>
+        <td>50%</td>
+        <td class="pass">✓</td><td class="pass">✓</td><td class="pass">✓</td><td class="pass">✓</td><td class="pass">✓</td>
+        <td class="pass">✓</td><td class="pass">✓</td><td class="pass">✓</td><td class="pass">✓</td><td class="pass">✓</td>
+        <td class="pass">✓ All 10 Passed</td>
+      </tr>
+      <tr>
+        <td>80%</td>
+        <td class="pass">✓</td><td class="pass">✓</td><td class="pass">✓</td><td class="pass">✓</td><td class="pass">✓</td>
+        <td class="pass">✓</td><td class="pass">✓</td><td class="pass">✓</td><td class="pass">✓</td><td class="pass">✓</td>
+        <td class="pass">✓ All 10 Passed</td>
+      </tr>
+      <tr>
+        <td>100%</td>
+        <td class="pass">✓</td><td class="pass">✓</td><td class="pass">✓</td><td class="pass">✓</td><td class="pass">✓</td>
+        <td class="pass">✓</td><td class="pass">✓</td><td class="pass">✓</td><td class="pass">✓</td><td class="pass">✓</td>
+        <td class="pass">✓ All 10 Passed</td>
+      </tr>
+    </table>
+  </div>
+</div>
+
+<div class="banner">✓ TEST 3 RESULT: PASSED — All programs · all gyms · all score levels · 11,132+ data points · Zero errors</div>
+
+<div style="margin-top:28px;padding:16px 24px;background:#1a1a2e;border-radius:10px;text-align:center;">
+  <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:3px;color:#888;margin-bottom:6px;">Total Verification</div>
+  <div style="font-size:22px;font-weight:800;color:#fff;">630 pages</div>
+  <div style="font-size:12px;color:#ccc;margin-top:4px;">manually opened, checked, and confirmed across all three tests</div>
+</div>
+
+</div>
+
+<!-- ════════════════════════════════════════ -->
+<!-- KEYWORD REFERENCE                        -->
+<!-- ════════════════════════════════════════ -->
+<div id="keywords" style="margin-top:60px;border-top:2px solid #1a1a2e;padding-top:40px;">
+
+<div class="test-label">Reference</div>
+<h1>Accepted &amp; Rejected Keywords</h1>
+
+<p>The converter reads the class name from the iClassPro tab name. It scans for keywords to figure out which program the class belongs to. If it finds a match — it processes it. If it doesn't — it skips it and shows a red warning.</p>
+<p>Every keyword below is hardcoded in <code style="background:#e8e8f0;padding:2px 6px;border-radius:4px;font-size:12px;">public/index.html</code>. Adding or removing a keyword requires a code change. This is one of the things V2 will fix with the Keyword Manager.</p>
+
+<h2>Accepted — maps to a program</h2>
+<table class="result-table" style="margin-bottom:28px;">
+  <tr><th>Keyword in class name</th><th>Resolves to</th></tr>
+  <tr><td>ADVANCED JUNIOR, ADV JUNIOR, ADV JR, ADVJR</td><td class="pass">Advanced Junior</td></tr>
+  <tr><td>PRESCHOOL, PRE-SCHOOL, PRE SCHOOL</td><td class="pass">Preschool</td></tr>
+  <tr><td>JUNIOR, JR</td><td class="pass">Junior</td></tr>
+  <tr><td>GIRLS JUNIOR</td><td class="pass">Junior</td></tr>
+  <tr><td>BOYS JUNIOR</td><td class="pass">Junior</td></tr>
+  <tr><td>LEVEL 1, LVL 1, LEV1, L1</td><td class="pass">Level 1</td></tr>
+  <tr><td>LEVEL 2, LVL 2, LEV2, L2</td><td class="pass">Level 2</td></tr>
+  <tr><td>LEVEL 3, LVL 3, LEV3, L3</td><td class="pass">Level 3</td></tr>
+  <tr><td>GIRLS LEVEL 1, GIRLS L1, GL1, GIRLS 1</td><td class="pass">Level 1</td></tr>
+  <tr><td>GIRLS LEVEL 2, GIRLS L2, GL2, GIRLS 2</td><td class="pass">Level 2</td></tr>
+  <tr><td>GIRLS LEVEL 3, GIRLS L3, GL3, GIRLS 3</td><td class="pass">Level 3</td></tr>
+  <tr><td>BOYS LEVEL 1</td><td class="pass">Boys Level 1</td></tr>
+  <tr><td>BOYS LEVEL 2</td><td class="pass">Boys Level 2</td></tr>
+  <tr><td>BOYS LEVEL 3</td><td class="pass">Boys Level 3</td></tr>
+</table>
+
+<h2>Rejected — skipped with red warning</h2>
+<table class="result-table" style="margin-bottom:28px;">
+  <tr><th>Class name contains</th><th>Result</th></tr>
+  <tr><td>Ninja, Tumbling, Cheer, Xcel, Open Gym, Parent &amp; Tot, Birthday, Camp — or anything not in the accepted list above</td><td style="color:#c2410c;font-weight:700;">⚠ Skipped — shown in red, not exported</td></tr>
+</table>
+
+<div style="padding:14px 16px;background:#fff7ed;border:1.5px solid #c2410c;border-radius:8px;font-size:12.5px;color:#7c2d12;margin-bottom:12px;">
+  <strong>Why this matters:</strong> If a gym renames a class — say "Recreational Level 1" instead of "Level 1" — it gets rejected. Every new naming format has to be added to the code manually. This is the #1 source of future maintenance work.
+</div>
+<div style="padding:14px 16px;background:#e8f5ed;border:1.5px solid #1a7a3c;border-radius:8px;font-size:12.5px;color:#14532d;">
+  <strong>V2 fix:</strong> The Keyword Manager (Phase 2) moves all of this into a database table. Add a keyword, map it to a program, done — no code change needed.
+</div>
+
+</div>
+
+<!-- ════════════════════════════════════════ -->
+<!-- V2 PLAN                                  -->
+<!-- ════════════════════════════════════════ -->
+<div id="v2" style="margin-top:60px;border-top:2px solid #1a1a2e;padding-top:40px;">
+
+<div class="test-label">Planning</div>
+<h1>V2 Plan</h1>
+
+<p>Remove hardcoded values and add a backend to simplify front-end management and day-to-day changes.</p>
+
+<h2>Tech Stack</h2>
+<table class="result-table" style="margin-bottom:28px;">
+  <tr><th>Layer</th><th>Tool</th><th>Notes</th></tr>
+  <tr><td>Frontend</td><td>HTML / JS</td><td>Same as V1 — no change needed</td></tr>
+  <tr><td>Backend</td><td>Python / Flask</td><td>Same as V1 — no change needed</td></tr>
+  <tr><td>Hosting</td><td>Vercel</td><td>Same as V1 — new repo, when V2 is ready the existing domain just points over</td></tr>
+  <tr><td>Database</td><td>Supabase</td><td>Free tier, built-in dashboard, works with Vercel + Python</td></tr>
+  <tr><td>Admin Panel</td><td>New in-app page</td><td>To make and manage changes</td></tr>
+</table>
+
+<h2>Repo Strategy</h2>
+<p>V1 stays live and untouched. V2 gets its own repo and its own Vercel URL. Gyms switch over when V2 is fully built and verified.</p>
+
+<h2>Build Phases</h2>
+<p>Supabase = the database backend that replaces everything hardcoded.</p>
+
+<div style="display:flex;flex-direction:column;gap:12px;margin:16px 0 28px;">
+
+  <div style="background:#fff;border-radius:10px;border:1px solid #e5e7eb;overflow:hidden;">
+    <div style="background:#2d2d44;padding:12px 18px;">
+      <div style="font-size:12px;font-weight:700;color:#fff;">Phase 1</div>
+    </div>
+    <div style="padding:14px 18px;font-size:12.5px;color:#444;line-height:1.7;">
+      Admin area in the UI — add, edit, deactivate gyms myself from the UI, no code.
+    </div>
+  </div>
+
+  <div style="background:#fff;border-radius:10px;border:1px solid #e5e7eb;overflow:hidden;">
+    <div style="background:#2d2d44;padding:12px 18px;">
+      <div style="font-size:12px;font-weight:700;color:#fff;">Phase 2 — Keyword Manager</div>
+    </div>
+    <div style="padding:14px 18px;font-size:12.5px;color:#444;line-height:1.7;">
+      Full control over what gets accepted and rejected.
+    </div>
+  </div>
+
+  <div style="background:#fff;border-radius:10px;border:1px solid #e5e7eb;overflow:hidden;">
+    <div style="background:#2d2d44;padding:12px 18px;">
+      <div style="font-size:12px;font-weight:700;color:#fff;">Phase 3 — Skill Editor</div>
+    </div>
+    <div style="padding:14px 18px;font-size:12.5px;color:#444;line-height:1.7;">
+      Add, reorder, edit skills per program.
+    </div>
+  </div>
+
+  <div style="background:#fff;border-radius:10px;border:1px solid #e5e7eb;overflow:hidden;">
+    <div style="background:#2d2d44;padding:12px 18px;">
+      <div style="font-size:12px;font-weight:700;color:#fff;">Phase 4 — PDF Design Controls</div>
+    </div>
+    <div style="padding:14px 18px;font-size:12.5px;color:#444;line-height:1.7;">
+      Branding per gym.
+    </div>
+  </div>
+
+  <div style="background:#fff;border-radius:10px;border:1px solid #e5e7eb;overflow:hidden;">
+    <div style="background:#2d2d44;padding:12px 18px;">
+      <div style="font-size:12px;font-weight:700;color:#fff;">Phase 5 — Individual Student Star Chart</div>
+    </div>
+    <div style="padding:14px 18px;font-size:12.5px;color:#444;line-height:1.7;">
+      One page per kid, designed for parents.
+    </div>
+  </div>
+
+</div>
+
+
+</div>
+
+
+</div>
+
+</body>
+</html>

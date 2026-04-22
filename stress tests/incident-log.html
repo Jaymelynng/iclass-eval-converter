@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #f2f2f6;
+    padding: 40px 48px;
+    color: #222;
+    max-width: 860px;
+    margin: 0 auto;
+  }
+  .page-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: #999;
+    margin-bottom: 4px;
+  }
+  h1 {
+    font-size: 28px;
+    font-weight: 800;
+    color: #1a1a2e;
+    margin-bottom: 8px;
+    border-bottom: 2px solid #1a1a2e;
+    padding-bottom: 12px;
+  }
+  .page-sub {
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 36px;
+    line-height: 1.6;
+  }
+
+  .incident {
+    background: #fff;
+    border-radius: 14px;
+    border: 1px solid #e0e0e0;
+    overflow: hidden;
+    margin-bottom: 32px;
+  }
+  .incident-header {
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .incident-header.critical { background: #fde8e8; border-bottom: 2px solid #e74c3c; }
+  .incident-header.warning { background: #fff8e1; border-bottom: 2px solid #f9a825; }
+  .incident-header.resolved { background: #e8f5e9; border-bottom: 2px solid #4caf50; }
+
+  .severity {
+    font-size: 9px;
+    font-weight: 800;
+    padding: 3px 10px;
+    border-radius: 99px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #fff;
+  }
+  .severity.critical { background: #e74c3c; }
+  .severity.warning { background: #f9a825; color: #333; }
+  .severity.resolved { background: #4caf50; }
+
+  .incident-title {
+    font-size: 15px;
+    font-weight: 800;
+    color: #1a1a2e;
+  }
+  .incident-date {
+    font-size: 11px;
+    font-weight: 600;
+    color: #888;
+    margin-left: auto;
+  }
+
+  .incident-body { padding: 20px 24px; }
+
+  .field {
+    margin-bottom: 16px;
+  }
+  .field-label {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #999;
+    margin-bottom: 4px;
+  }
+  .field-value {
+    font-size: 13px;
+    color: #333;
+    line-height: 1.7;
+  }
+
+  .error-block {
+    background: #fef2f2;
+    border: 1px solid #fca5a5;
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin: 8px 0;
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+    color: #991b1b;
+    line-height: 1.6;
+    overflow-x: auto;
+  }
+
+  .fix-block {
+    background: #f0fdf4;
+    border: 1px solid #86efac;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin: 8px 0;
+    font-size: 12px;
+    color: #166534;
+    line-height: 1.7;
+  }
+  .fix-block code {
+    background: #dcfce7;
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-size: 11px;
+  }
+
+  .prevention-block {
+    background: #fffbeb;
+    border: 1px solid #fcd34d;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin: 8px 0;
+    font-size: 12px;
+    color: #92400e;
+    line-height: 1.8;
+  }
+
+  .timeline {
+    border-left: 3px solid #e0e0e0;
+    margin: 12px 0 12px 8px;
+    padding-left: 20px;
+  }
+  .timeline-item {
+    position: relative;
+    margin-bottom: 14px;
+  }
+  .timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -26px;
+    top: 6px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #cbd5e1;
+    border: 2px solid #fff;
+  }
+  .timeline-item.error::before { background: #e74c3c; }
+  .timeline-item.fix::before { background: #4caf50; }
+  .timeline-item.test::before { background: #3b82f6; }
+
+  .timeline-time {
+    font-size: 10px;
+    font-weight: 700;
+    color: #999;
+    letter-spacing: 0.5px;
+  }
+  .timeline-text {
+    font-size: 12px;
+    color: #333;
+    line-height: 1.5;
+  }
+
+  .status-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    background: #f8fafc;
+    border-top: 1px solid #e0e0e0;
+    font-size: 11px;
+    font-weight: 600;
+    color: #64748b;
+  }
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+  .status-dot.green { background: #4caf50; }
+  .status-dot.red { background: #e74c3c; }
+</style>
+</head>
+<body>
+
+<div style="margin-bottom:16px;">
+  <a href="stress-test-notes.html" style="font-size:12px;font-weight:700;color:#666;text-decoration:none;">&larr; Back to Stress Test Notes</a>
+</div>
+<div class="page-label">Star Chart Converter</div>
+<h1>Incident Log</h1>
+<p class="page-sub">
+  Production issues, timeline notes, program rollout status, and prevention rules.<br>
+  Everything that happens with the live tool at evalconvert.com gets documented here.
+</p>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- APRIL 22, 2026 STATUS SNAPSHOT -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="incident">
+  <div class="incident-header resolved">
+    <span class="severity resolved">Live</span>
+    <span class="incident-title">Status — All 10 Gyms Live & Verified (v2.2)</span>
+    <span class="incident-date">April 22, 2026</span>
+  </div>
+  <div class="incident-body">
+    <div class="field">
+      <div class="field-label">Current State</div>
+      <div class="field-value">
+        Tool is deployed at evalconvert.com across all 10 gyms. 797 classes renamed. 11,132+ data points stress-tested. Every gym verified on both Convert and Print Blank flows.
+      </div>
+    </div>
+    <div class="field">
+      <div class="field-label">Shipped in this session (v2.0 &rarr; v2.2)</div>
+      <div class="field-value">
+        <ul style="margin:4px 0 4px 20px;">
+          <li><strong>Wizard flow</strong> for Convert + Print Blank — stepped UI instead of one form</li>
+          <li><strong>Layout picker</strong> — ALL 4 EVENTS / VAULT+BARS / BEAM+FLOOR, fully multi-selectable for multi-page sets</li>
+          <li><strong>Brand-unified color system</strong> with WCAG contrast math per gym</li>
+          <li><strong>A-B-A-B event alternation</strong> (Vault+Beam = brand, Bars+Floor = gray by default; CCP + CPF overridden to blue via <code>ev_cool</code>)</li>
+          <li><strong>Logos embedded / fixed</strong> — CRR logo replaced with cleaner variant; white plate fix for transparent interiors</li>
+          <li><strong>Auto-download</strong> — no more save dialog in Edge</li>
+          <li><strong>Convert Another</strong> success button — stay in gym modal, drop next file</li>
+          <li><strong>Help &amp; Updates panel</strong> — 5 FAQ cards + per-version What's New tab; pushes page left when open (no overlay dim)</li>
+          <li><strong>All 10 org codes</strong> listed in the mobile-app Help card for one-click copy</li>
+          <li><strong>Preschool + Junior BEAM criterion</strong> fixed per source-of-truth audit</li>
+          <li><strong>Program label auto-fit</strong> — PRESCHOOL/JUNIOR no longer crash into NAME row</li>
+          <li><strong>Dark-brand contrast fixes</strong> — "HERE" drop zone, "Convert Another" button (white 3D with brand text)</li>
+        </ul>
+      </div>
+    </div>
+    <div class="field">
+      <div class="field-label">Approved-shorthand source of truth</div>
+      <div class="field-value">
+        New reference file checked into <code>auditing tools source of truth and results/approved shorthand criteria for star chart.xlsx</code>. Every future criterion change must diff against this + <code>Skills_Stars_Audit_Reference (1).xlsx</code> before shipping.
+      </div>
+    </div>
+  </div>
+  <div class="status-bar">
+    <span class="status-dot green"></span>
+    Production healthy — last deploy: commit 14173d1 &middot; April 22, 2026
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- INCIDENT: CPF PARENT EMAIL ORG CODE -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="incident">
+  <div class="incident-header warning">
+    <span class="severity warning">Warning</span>
+    <span class="incident-title">CPF Parent Email Contained Wrong iClass Org Code</span>
+    <span class="incident-date">April 21, 2026</span>
+  </div>
+  <div class="incident-body">
+    <div class="field">
+      <div class="field-label">What Megan reported</div>
+      <div class="field-value">
+        Pflugerville parents couldn't see star charts in the iClass app. Kept getting "unavailable" when entering the code from the email sent to families.
+      </div>
+    </div>
+    <div class="field">
+      <div class="field-label">Root cause</div>
+      <div class="field-value">
+        The "Star Chart update — what's changing April 6th" email sent from CPF's ActiveCampaign listed the Organization Name as <code>capgympflug</code>. The correct code (confirmed via <code>app.iclasspro.com/a/</code><strong>capgymhp</strong>) is <code>capgymhp</code>. Parents were typing a code that doesn't resolve to any iClass org &mdash; hence "unavailable."
+      </div>
+    </div>
+    <div class="field">
+      <div class="field-label">Diagnosis path</div>
+      <div class="field-value">
+        Confirmed via iClass Audit Log that Julie Weaver (Quinn's family) successfully logged into the Customer Portal twice the night of 4/21 &mdash; so login wasn't the blocker. Then checked the email itself: it had the wrong code. Bug was in the email content, not the tool.
+      </div>
+    </div>
+    <div class="field">
+      <div class="field-label">Fix</div>
+      <div class="fix-block">
+        Added "Parents using the mobile app" Help card with <strong>all 10 org codes</strong> click-to-copy so managers can self-serve next time. Full list:
+        capgymavery (CCP) &middot; capgymhp (CPF) &middot; capgymroundrock (CRR) &middot; houstongymnastics (HGA) &middot; rbatascocita (RBA) &middot; rbkingwood (RBK) &middot; estrellagymnastics (EST) &middot; oasisgymnastics (OAS) &middot; scottsdalegymnastics (SGT) &middot; tigar (TIG).
+      </div>
+    </div>
+    <div class="field">
+      <div class="field-label">Prevention rule</div>
+      <div class="prevention-block">
+        Any email to parents/families that mentions an org code must have the code copy-pasted from the gym's actual Customer Portal URL &mdash; never typed, never paraphrased. Cross-check against the Help &amp; Updates panel's mobile app card before sending.
+      </div>
+    </div>
+  </div>
+  <div class="status-bar">
+    <span class="status-dot green"></span>
+    Resolved &mdash; Help panel updated with authoritative list &middot; April 21, 2026
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- INCIDENT 1 -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="incident">
+  <div class="incident-header critical">
+    <span class="severity critical">Critical</span>
+    <span class="incident-title">Vercel Deploy Failure — All PDF Generation Down</span>
+    <span class="incident-date">April 5, 2026</span>
+  </div>
+
+  <div class="incident-body">
+
+    <div class="field">
+      <div class="field-label">What the manager saw</div>
+      <div class="field-value">
+        Uploaded XLS file, clicked "Convert Eval Scores." Got this error instead of a PDF:
+      </div>
+      <div class="error-block">PDF generation failed: Unexpected token 'A', "A server e"... is not valid JSON</div>
+    </div>
+
+    <div class="field">
+      <div class="field-label">Impact</div>
+      <div class="field-value">
+        100% of PDF generation blocked. No manager at any gym could generate star charts. The tool appeared completely broken. Locally (localhost:5050) everything worked fine — the issue was only on the live Vercel deployment.
+      </div>
+    </div>
+
+    <div class="field">
+      <div class="field-label">Vercel Error Logs</div>
+      <div class="error-block">
+        POST /generate-pdf → 500<br><br>
+        could not import "api/generate-pdf.py":<br>
+        Traceback (most recent call last):<br>
+        &nbsp;&nbsp;File "/var/task/api/generate-pdf.py", line 7, in &lt;module&gt;<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;from pdf_generator import generate_pdf, generate_multi_pdf<br>
+        ModuleNotFoundError: No module named 'pdf_generator'
+      </div>
+      <div class="error-block">
+        Error: Bundle size (458.66 MB) exceeds Lambda limit (245 MB)
+      </div>
+    </div>
+
+    <div class="field">
+      <div class="field-label">Root Cause 1 — Python Import Path Broke</div>
+      <div class="field-value">
+        Vercel updated their Python runtime. The import statement <code>from pdf_generator import ...</code> in <code>api/generate-pdf.py</code> used to work because Vercel automatically added the <code>api/</code> directory to Python's module search path. After their update, they stopped doing that. The file <code>pdf_generator.py</code> was right next to <code>generate-pdf.py</code> in the same folder — Python just couldn't find it anymore.
+      </div>
+    </div>
+
+    <div class="field">
+      <div class="field-label">Root Cause 2 — Bundle Size Exceeded Limit</div>
+      <div class="field-value">
+        Files accumulated in the repo over weeks of development: <code>node_modules/</code> (SheetJS), <code>stress tests/</code>, <code>CLASS-RENAME-TOOL/</code>, <code>layout-attempts/</code>, <code>auditing tools/</code>. Total: 458MB. Vercel's Lambda limit: 250MB. No <code>.vercelignore</code> file existed to tell Vercel which folders to skip.
+      </div>
+    </div>
+
+    <div class="field">
+      <div class="field-label">Timeline</div>
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="timeline-time">Earlier that day</div>
+          <div class="timeline-text">Multiple commits pushed (walkthrough fixes, format guide updates). Vercel auto-deployed each one.</div>
+        </div>
+        <div class="timeline-item error">
+          <div class="timeline-time">~11:19 AM CT</div>
+          <div class="timeline-text">First failed request logged. POST /generate-pdf returns 500. Manager tries to generate PDF from real HGA data for the first time.</div>
+        </div>
+        <div class="timeline-item error">
+          <div class="timeline-time">~11:21 AM CT</div>
+          <div class="timeline-text">Second failed request. Confirmed: every request fails. Error: ModuleNotFoundError.</div>
+        </div>
+        <div class="timeline-item fix">
+          <div class="timeline-time">~11:25 AM CT</div>
+          <div class="timeline-text">Root cause identified from Vercel runtime logs. Import path broken + bundle oversized.</div>
+        </div>
+        <div class="timeline-item fix">
+          <div class="timeline-time">~11:30 AM CT</div>
+          <div class="timeline-text">Fix deployed: sys.path.insert added to generate-pdf.py. .vercelignore created. Commit 690db5e pushed.</div>
+        </div>
+        <div class="timeline-item test">
+          <div class="timeline-time">~11:32 AM CT</div>
+          <div class="timeline-text">Vercel rebuild triggered. Waiting for deploy to complete.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="field">
+      <div class="field-label">Fix Applied</div>
+      <div class="fix-block">
+        <strong>Fix 1 — Import path:</strong> Added two lines to <code>api/generate-pdf.py</code> before the import:<br>
+        <code>import os, sys</code><br>
+        <code>sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))</code><br>
+        This tells Python exactly where to find pdf_generator.py regardless of what Vercel does with its runtime.<br><br>
+        <strong>Fix 2 — Bundle size:</strong> Created <code>.vercelignore</code> in the repo root listing every large folder that doesn't need to be in the serverless function: node_modules, stress tests, CLASS-RENAME-TOOL, layout-attempts, auditing tools, reference-pdfs, .playwright-mcp.<br><br>
+        <strong>Commit:</strong> 690db5e
+      </div>
+    </div>
+
+    <div class="field">
+      <div class="field-label">Prevention Rules (Added Permanently)</div>
+      <div class="prevention-block">
+        1. After EVERY git push, check Vercel logs within 2 minutes for errors<br>
+        2. Test evalconvert.com after every deploy — localhost working does NOT mean production works<br>
+        3. When adding new folders to the repo, add them to <code>.vercelignore</code> immediately<br>
+        4. Never remove the <code>sys.path.insert</code> line from <code>api/generate-pdf.py</code><br>
+        5. If Vercel updates their Python version, check for import errors in the logs
+      </div>
+    </div>
+
+    <div class="field">
+      <div class="field-label">Files Changed</div>
+      <div class="field-value">
+        <code>api/generate-pdf.py</code> — added sys.path.insert for explicit module path<br>
+        <code>.vercelignore</code> — created, excludes 7 large folders from serverless bundle<br>
+        <code>TECHNICAL_DOCUMENTATION.md</code> — added deployment rules and post-deploy checklist
+      </div>
+    </div>
+
+  </div>
+
+  <div class="status-bar">
+    <span class="status-dot green"></span>
+    Resolved — Commit 690db5e — April 5, 2026
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- TIMELINE & NOTES -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div style="margin-top:48px;">
+  <div class="page-label" style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:3px;color:#999;margin-bottom:4px;">April 5, 2026</div>
+  <h1 style="font-size:24px;font-weight:800;color:#1a1a2e;margin-bottom:24px;border-bottom:2px solid #1a1a2e;padding-bottom:12px;">Timeline & Notes</h1>
+
+  <!-- FORMAT CHANGE -->
+  <div class="incident" style="margin-bottom:20px;">
+    <div class="incident-header" style="background:#e8f4fd;border-bottom:2px solid #2196f3;padding:14px 20px;">
+      <span class="severity" style="background:#2196f3;font-size:9px;font-weight:800;padding:3px 10px;border-radius:99px;letter-spacing:1.5px;color:#fff;">UPDATE</span>
+      <span class="incident-title" style="font-size:14px;font-weight:800;color:#1a1a2e;">Class Name Format Finalized — No Ages</span>
+    </div>
+    <div class="incident-body" style="padding:16px 20px;font-size:12.5px;color:#444;line-height:1.8;">
+      Format is <code>Program | Day | Time</code>. No ages. For all gyms.<br>
+      Ages caused tab name truncation at 31 characters — "Ages" became "Ag" on the PDF header.<br>
+      Parser still handles ages in old class names but all new names should exclude them.<br>
+      Landing page format guide, rename tools, and memory all updated.
+    </div>
+  </div>
+
+  <!-- BOYS PROGRAMS -->
+  <div class="incident" style="margin-bottom:20px;">
+    <div class="incident-header" style="background:#fff3e0;border-bottom:2px solid #ff9800;padding:14px 20px;">
+      <span class="severity" style="background:#ff9800;font-size:9px;font-weight:800;padding:3px 10px;border-radius:99px;letter-spacing:1.5px;color:#333;">IN PROGRESS</span>
+      <span class="incident-title" style="font-size:14px;font-weight:800;color:#1a1a2e;">Boys Level 1/2/3 Programs Added (HGA Only)</span>
+    </div>
+    <div class="incident-body" style="padding:16px 20px;font-size:12.5px;color:#444;line-height:1.8;">
+      <strong>What:</strong> Boys uses different apparatus than girls (Floor, Mushrooms/Pommel Horse, Vault, P Bars, Bars for L1; adds Rings and H Bars for L2/L3).<br><br>
+      <strong>Scoring:</strong> Old evaluation system — each skill is one bubble (circle or star). No 3-criteria breakdown, no mastery star. <code>has_mastery: False</code> in the code.<br><br>
+      <strong>Status:</strong>
+      <ul style="margin:8px 0 8px 20px;">
+        <li>Boys Level 1 — <strong style="color:#4caf50;">WORKING</strong>. PDF generates correctly. 5 events, 22 columns.</li>
+        <li>Boys Level 2 — Code added. HGA manager needs to assign correct discipline (currently has L1 skills attached to L2 classes).</li>
+        <li>Boys Level 3 — Code added. Same discipline assignment issue.</li>
+      </ul>
+      <strong>Issue found:</strong> HGA's Boys Level 2 classes had Boys Level 1 discipline attached in iClassPro. The converter generates whatever skills are in the data — if the wrong discipline is assigned, wrong skills print with no error. Manager must verify the right skill tree is attached per level.<br><br>
+      <strong>Only HGA has boys level classes currently.</strong> Other gyms don't have this program.
+    </div>
+  </div>
+
+  <!-- GIRLS PROGRAMS -->
+  <div class="incident" style="margin-bottom:20px;">
+    <div class="incident-header" style="background:#e8f5e9;border-bottom:2px solid #4caf50;padding:14px 20px;">
+      <span class="severity" style="background:#4caf50;font-size:9px;font-weight:800;padding:3px 10px;border-radius:99px;letter-spacing:1.5px;color:#fff;">WORKING</span>
+      <span class="incident-title" style="font-size:14px;font-weight:800;color:#1a1a2e;">Girls Programs — All Verified at HGA</span>
+    </div>
+    <div class="incident-body" style="padding:16px 20px;font-size:12.5px;color:#444;line-height:1.8;">
+      <ul style="margin:4px 0 4px 20px;">
+        <li>Girls Level 1 — <strong style="color:#4caf50;">WORKING</strong>. 22 classes tested, scores rendering correctly.</li>
+        <li>Girls Level 2 — <strong style="color:#4caf50;">WORKING</strong>.</li>
+        <li>Girls Level 3 — <strong style="color:#4caf50;">WORKING</strong>.</li>
+        <li>Advanced Junior — <strong style="color:#4caf50;">WORKING</strong>. Same skills as Level 1. Uses GL1 discipline in iClassPro.</li>
+        <li>Junior (Girls + Boys) — Testing for Monday.</li>
+        <li>Preschool — Testing for Monday.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- SKIPPED PROGRAMS -->
+  <div class="incident" style="margin-bottom:20px;">
+    <div class="incident-header" style="background:#f3e5f5;border-bottom:2px solid #9c27b0;padding:14px 20px;">
+      <span class="severity" style="background:#9c27b0;font-size:9px;font-weight:800;padding:3px 10px;border-radius:99px;letter-spacing:1.5px;color:#fff;">NOT COVERED</span>
+      <span class="incident-title" style="font-size:14px;font-weight:800;color:#1a1a2e;">Programs Skipped at Launch</span>
+    </div>
+    <div class="incident-body" style="padding:16px 20px;font-size:12.5px;color:#444;line-height:1.8;">
+      These programs are silently skipped by the converter. Managers will see them listed in the red "Skipped" warning after uploading.<br><br>
+      <ul style="margin:4px 0 4px 20px;">
+        <li><strong>International Gymnastics Team (IGT)</strong> — HGA has 2 levels (45 and 51 skills). Could be added as old-format (has_mastery: False). Not built yet.</li>
+        <li><strong>Specialty Class</strong> — HGA only. 1-3 students. Uses GL1 discipline. Not a standard program. Figure out later.</li>
+        <li><strong>Ninja Kidz</strong> — Exists in iClassPro but has 0 skills attached. Kim said don't touch until Tanise is back from leave.</li>
+        <li><strong>Tumbling</strong> — Kim said "super non-standard, not everybody has levels of tumbling." Not part of this project.</li>
+      </ul>
+      <br>
+      <strong>The plan:</strong> Managers export everything at once. The converter takes what it recognizes and skips what it doesn't. For skipped programs, managers use whatever system they had before (iClassPro PDF or hand-written sheets). As each program gets added to the converter, it stops being skipped automatically.
+    </div>
+  </div>
+
+  <!-- iCLASSPRO ISSUES -->
+  <div class="incident" style="margin-bottom:20px;">
+    <div class="incident-header" style="background:#fce4ec;border-bottom:2px solid #e91e63;padding:14px 20px;">
+      <span class="severity" style="background:#e91e63;font-size:9px;font-weight:800;padding:3px 10px;border-radius:99px;letter-spacing:1.5px;color:#fff;">ICLASSPRO BUG</span>
+      <span class="incident-title" style="font-size:14px;font-weight:800;color:#1a1a2e;">iClassPro Issues Found During HGA Onboarding</span>
+    </div>
+    <div class="incident-body" style="padding:16px 20px;font-size:12.5px;color:#444;line-height:1.8;">
+      <ul style="margin:4px 0 4px 20px;">
+        <li><strong>Bulk discipline assignment duplicated classes.</strong> "Copying classes" function created 7-8 empty copies of every class. Had to manually delete ~100 duplicates. Background tasks showed "Done" but assignment didn't stick.</li>
+        <li><strong>Apostrophes export as "039".</strong> "Boy's" becomes "Boy039s" in XLS tab names. Converter handles this with regex but headers look ugly.</li>
+        <li><strong>504 Gateway Timeout on Skill Ratings save.</strong> Setting 1-star system timed out. Had to retry — unclear if first save took effect.</li>
+        <li><strong>Export takes 15+ minutes for full gym.</strong> 106 classes at HGA took ~15 min to generate XLS. Normal per iClassPro support.</li>
+        <li><strong>Wrong discipline attached silently.</strong> Boys Level 2 classes had Level 1 skills — no warning from iClassPro. Converter generates whatever is in the data.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- GYM STATUS -->
+  <div class="incident" style="margin-bottom:20px;">
+    <div class="incident-header" style="background:#e8eaf6;border-bottom:2px solid #3f51b5;padding:14px 20px;">
+      <span class="severity" style="background:#3f51b5;font-size:9px;font-weight:800;padding:3px 10px;border-radius:99px;letter-spacing:1.5px;color:#fff;">STATUS</span>
+      <span class="incident-title" style="font-size:14px;font-weight:800;color:#1a1a2e;">Gym Rollout Status — April 5, 2026 (superseded — see April 22 snapshot at top)</span>
+    </div>
+    <div class="incident-body" style="padding:16px 20px;font-size:12.5px;color:#444;line-height:1.8;">
+      <table style="width:100%;border-collapse:collapse;font-size:12px;margin-top:8px;">
+        <tr style="background:#f5f5f5;font-weight:700;">
+          <td style="padding:8px;border:1px solid #ddd;">Gym</td>
+          <td style="padding:8px;border:1px solid #ddd;">Rename Tool</td>
+          <td style="padding:8px;border:1px solid #ddd;">Classes Renamed</td>
+          <td style="padding:8px;border:1px solid #ddd;">Skills Verified</td>
+          <td style="padding:8px;border:1px solid #ddd;">Tested</td>
+        </tr>
+        <tr>
+          <td style="padding:6px 8px;border:1px solid #ddd;font-weight:700;">HGA</td>
+          <td style="padding:6px 8px;border:1px solid #ddd;color:#4caf50;">Built</td>
+          <td style="padding:6px 8px;border:1px solid #ddd;color:#4caf50;">Done</td>
+          <td style="padding:6px 8px;border:1px solid #ddd;color:#4caf50;">Verified</td>
+          <td style="padding:6px 8px;border:1px solid #ddd;color:#4caf50;">Girls L1 + Boys L1 working</td>
+        </tr>
+        <tr>
+          <td style="padding:6px 8px;border:1px solid #ddd;font-weight:700;">CCP</td>
+          <td style="padding:6px 8px;border:1px solid #ddd;color:#4caf50;">Built</td>
+          <td style="padding:6px 8px;border:1px solid #ddd;color:#ff9800;">In progress (Naz)</td>
+          <td style="padding:6px 8px;border:1px solid #ddd;">Not yet</td>
+          <td style="padding:6px 8px;border:1px solid #ddd;">No</td>
+        </tr>
+        <tr>
+          <td style="padding:6px 8px;border:1px solid #ddd;font-weight:700;">CPF</td>
+          <td style="padding:6px 8px;border:1px solid #ddd;color:#4caf50;">Built</td>
+          <td style="padding:6px 8px;border:1px solid #ddd;color:#999;">Waiting — unusual ages</td>
+          <td style="padding:6px 8px;border:1px solid #ddd;">Not yet</td>
+          <td style="padding:6px 8px;border:1px solid #ddd;">No</td>
+        </tr>
+        <tr>
+          <td style="padding:6px 8px;border:1px solid #ddd;font-weight:700;">CRR</td>
+          <td style="padding:6px 8px;border:1px solid #ddd;color:#4caf50;">Built</td>
+          <td style="padding:6px 8px;border:1px solid #ddd;color:#999;">Waiting — unusual ages</td>
+          <td style="padding:6px 8px;border:1px solid #ddd;">Not yet</td>
+          <td style="padding:6px 8px;border:1px solid #ddd;">No</td>
+        </tr>
+        <tr>
+          <td style="padding:6px 8px;border:1px solid #ddd;font-weight:700;">EST</td>
+          <td style="padding:6px 8px;border:1px solid #ddd;color:#4caf50;">Built</td>
+          <td style="padding:6px 8px;border:1px solid #ddd;">Not started</td>
+          <td style="padding:6px 8px;border:1px solid #ddd;">Not yet</td>
+          <td style="padding:6px 8px;border:1px solid #ddd;">No</td>
+        </tr>
+        <tr>
+          <td style="padding:6px 8px;border:1px solid #ddd;font-weight:700;">OAS</td>
+          <td style="padding:6px 8px;border:1px solid #ddd;color:#4caf50;">Built</td>
+          <td style="padding:6px 8px;border:1px solid #ddd;">Not started</td>
+          <td style="padding:6px 8px;border:1px solid #ddd;">Not yet</td>
+          <td style="padding:6px 8px;border:1px solid #ddd;">No</td>
+        </tr>
+        <tr>
+          <td style="padding:6px 8px;border:1px solid #ddd;font-weight:700;">RBA</td>
+          <td style="padding:6px 8px;border:1px solid #ddd;color:#4caf50;">Built</td>
+          <td style="padding:6px 8px;border:1px solid #ddd;">Not started</td>
+          <td style="padding:6px 8px;border:1px solid #ddd;">Not yet</td>
+          <td style="padding:6px 8px;border:1px solid #ddd;">No</td>
+        </tr>
+        <tr>
+          <td style="padding:6px 8px;border:1px solid #ddd;font-weight:700;">RBK</td>
+          <td style="padding:6px 8px;border:1px solid #ddd;color:#4caf50;">Built</td>
+          <td style="padding:6px 8px;border:1px solid #ddd;">Not started</td>
+          <td style="padding:6px 8px;border:1px solid #ddd;">Not yet</td>
+          <td style="padding:6px 8px;border:1px solid #ddd;">No</td>
+        </tr>
+        <tr>
+          <td style="padding:6px 8px;border:1px solid #ddd;font-weight:700;">SGT</td>
+          <td style="padding:6px 8px;border:1px solid #ddd;color:#999;">Not built</td>
+          <td style="padding:6px 8px;border:1px solid #ddd;">—</td>
+          <td style="padding:6px 8px;border:1px solid #ddd;">Not yet</td>
+          <td style="padding:6px 8px;border:1px solid #ddd;">No</td>
+        </tr>
+        <tr>
+          <td style="padding:6px 8px;border:1px solid #ddd;font-weight:700;">TIG</td>
+          <td style="padding:6px 8px;border:1px solid #ddd;color:#999;">Not built</td>
+          <td style="padding:6px 8px;border:1px solid #ddd;">—</td>
+          <td style="padding:6px 8px;border:1px solid #ddd;">Not yet</td>
+          <td style="padding:6px 8px;border:1px solid #ddd;">No</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>
