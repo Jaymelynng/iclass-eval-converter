@@ -555,11 +555,18 @@ span.s.fd:hover{color:#e8e8e8}
 @keyframes huPulseBadge{0%,100%{transform:scale(1)}50%{transform:scale(1.14)}}
 @keyframes huPulseRing{0%{transform:scale(1);opacity:.9}100%{transform:scale(2);opacity:0}}
 
-/* Overlay is transparent — panel opens without dimming the page, so
-   managers can read Help & Updates and use the tool at the same time.
-   We keep the element as a no-op so existing JS (click-to-close) stays wired,
-   but we don't route pointer events through it. */
+/* Overlay stays as a no-op so existing JS doesn't break.
+   We don't dim or block — panel and page coexist. */
 .hu-overlay{display:none}
+
+/* Push layout — when panel is open, page content shifts left to make room.
+   Instead of the panel covering the tool, they share the screen side-by-side. */
+.landing{transition:padding-right .35s cubic-bezier(.4,0,.2,1)}
+body.hu-panel-open .landing{padding-right:516px}
+@media (max-width:1100px){
+  /* Too narrow — let the panel overlay so the page doesn't crunch. */
+  body.hu-panel-open .landing{padding-right:40px}
+}
 
 .hu-panel{
   position:fixed;top:0;right:0;height:100vh;width:min(500px,94vw);
@@ -3146,8 +3153,18 @@ function esc(s) {
   const LATEST_VERSION = 'v2.2';
   const STORAGE_KEY = 'evalconvert_seen_version';
 
-  function huOpen(){ panel.classList.add('open'); overlay.classList.add('open'); panel.setAttribute('aria-hidden','false'); }
-  function huClose(){ panel.classList.remove('open'); overlay.classList.remove('open'); panel.setAttribute('aria-hidden','true'); }
+  function huOpen(){
+    panel.classList.add('open');
+    overlay.classList.add('open');
+    document.body.classList.add('hu-panel-open');
+    panel.setAttribute('aria-hidden','false');
+  }
+  function huClose(){
+    panel.classList.remove('open');
+    overlay.classList.remove('open');
+    document.body.classList.remove('hu-panel-open');
+    panel.setAttribute('aria-hidden','true');
+  }
 
   openBtn.addEventListener('click', huOpen);
   closeBtn.addEventListener('click', huClose);
