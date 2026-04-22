@@ -1188,17 +1188,20 @@ span.s.fd:hover{color:#e8e8e8}
         display:flex; gap:12px; justify-content:center; flex-wrap:wrap;
       }
       .wiz-start-over {
-        background:transparent;
-        color:var(--c1,#1f53a3);
-        border:2px solid var(--c1,#1f53a3);
+        /* WHITE text always — brand-color text was invisible on the dark modal
+           for gyms with near-black brand colors (EST, RBK, etc). */
+        background:rgba(255,255,255,0.06);
+        color:#ffffff;
+        border:2px solid rgba(255,255,255,0.45);
         padding:12px 22px; border-radius:10px;
         font-size:13px; font-weight:800; cursor:pointer;
         letter-spacing:.5px; text-transform:uppercase;
         transition:all .15s;
       }
       .wiz-start-over:hover {
-        background:var(--c1,#1f53a3);
-        color:var(--c1-text,#fff);
+        background:rgba(255,255,255,0.14);
+        border-color:rgba(255,255,255,0.75);
+        color:#ffffff;
         transform:translateY(-2px);
       }
       .wiz-close-big {
