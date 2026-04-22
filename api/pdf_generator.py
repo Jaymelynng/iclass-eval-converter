@@ -738,14 +738,18 @@ def generate_pdf(gym_code, class_name, date, day, time,
     c.rect(MARGIN, DATA_TOP, NAME_W, prog_block_h, fill=1, stroke=0)
 
     # Large rotated program name in the block — auto-size so long words (PRESCHOOL)
-    # don't get clipped against the rotated column's vertical edges.
+    # don't get clipped against the rotated column's vertical edges. Center
+    # ABOVE the NAME strip (bottom STAR_LBL_H zone) so the rotated word doesn't
+    # run into "NAME".
     label_parts = prog_key.upper().split()
     prog_cx = MARGIN + NAME_W / 2
-    prog_cy = DATA_TOP + prog_block_h / 2
+    # Shift the text center up by half of STAR_LBL_H so the word sits in the
+    # space above the NAME row.
+    prog_cy = DATA_TOP + (prog_block_h + STAR_LBL_H) / 2
     from reportlab.pdfbase.pdfmetrics import stringWidth as _sw
-    # In the rotated frame, the "width" of the text is the vertical extent
-    # inside the block. Leave a small pad each end.
-    _avail_w = prog_block_h - 16
+    # Available vertical extent for the rotated word: full block minus the
+    # NAME strip minus a little padding.
+    _avail_w = prog_block_h - STAR_LBL_H - 16
     c.saveState()
     c.translate(prog_cx, prog_cy)
     c.rotate(90)
