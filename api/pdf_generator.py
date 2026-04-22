@@ -737,23 +737,36 @@ def generate_pdf(gym_code, class_name, date, day, time,
     c.setFillColor(BRAND)
     c.rect(MARGIN, DATA_TOP, NAME_W, prog_block_h, fill=1, stroke=0)
 
-    # Large rotated program name in the block — BIGGER because we have more room now
+    # Large rotated program name in the block — auto-size so long words (PRESCHOOL)
+    # don't get clipped against the rotated column's vertical edges.
     label_parts = prog_key.upper().split()
     prog_cx = MARGIN + NAME_W / 2
     prog_cy = DATA_TOP + prog_block_h / 2
+    from reportlab.pdfbase.pdfmetrics import stringWidth as _sw
+    # In the rotated frame, the "width" of the text is the vertical extent
+    # inside the block. Leave a small pad each end.
+    _avail_w = prog_block_h - 16
     c.saveState()
     c.translate(prog_cx, prog_cy)
     c.rotate(90)
     c.setFillColor(WHITE)
     if len(label_parts) == 2:
-        # "ADVANCED JUNIOR", "BOYS LEVEL 1" — 2 lines, bigger now
-        c.setFont('Helvetica-Bold', 22)
-        c.drawCentredString(0,  13, label_parts[0])
-        c.drawCentredString(0, -15, label_parts[1])
+        # "ADVANCED JUNIOR", "BOYS LEVEL 1" — 2 lines
+        _size2 = 22
+        _longest = max(label_parts, key=len)
+        while _size2 >= 14 and _sw(_longest, 'Helvetica-Bold', _size2) > _avail_w:
+            _size2 -= 1
+        c.setFont('Helvetica-Bold', _size2)
+        c.drawCentredString(0,  _size2 * 0.55, label_parts[0])
+        c.drawCentredString(0, -_size2 * 0.75, label_parts[1])
     else:
-        # "PRESCHOOL", "JUNIOR" — single line, much bigger
-        c.setFont('Helvetica-Bold', 26)
-        c.drawCentredString(0, -8, label_parts[0])
+        # "PRESCHOOL", "JUNIOR" — single line. Auto-shrink to fit.
+        _word = label_parts[0]
+        _size1 = 26
+        while _size1 >= 14 and _sw(_word, 'Helvetica-Bold', _size1) > _avail_w:
+            _size1 -= 1
+        c.setFont('Helvetica-Bold', _size1)
+        c.drawCentredString(0, -_size1 / 3, _word)
     c.restoreState()
 
     # Skill names are now drawn inside the colored EV_HDR block above.

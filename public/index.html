@@ -1188,21 +1188,26 @@ span.s.fd:hover{color:#e8e8e8}
         display:flex; gap:12px; justify-content:center; flex-wrap:wrap;
       }
       .wiz-start-over {
-        /* WHITE text always — brand-color text was invisible on the dark modal
-           for gyms with near-black brand colors (EST, RBK, etc). */
-        background:rgba(255,255,255,0.06);
-        color:#ffffff;
-        border:2px solid rgba(255,255,255,0.45);
-        padding:12px 22px; border-radius:10px;
-        font-size:13px; font-weight:800; cursor:pointer;
-        letter-spacing:.5px; text-transform:uppercase;
-        transition:all .15s;
+        /* White 3D filled button — brand-color text stays readable because
+           it's on white, even for gyms with near-black brand colors.
+           Mirror image of .wiz-close-big (which is brand-filled + white text). */
+        background:linear-gradient(180deg, #ffffff 0%, #f3f4f6 50%, #d9dce1 100%);
+        color:var(--c1, #1f53a3);
+        border:1px solid rgba(0,0,0,0.08);
+        padding:14px 32px; border-radius:10px;
+        font-size:14px; font-weight:900; cursor:pointer;
+        letter-spacing:.8px; text-transform:uppercase;
+        box-shadow:0 4px 14px rgba(0,0,0,0.35),
+                   inset 0 1px 0 rgba(255,255,255,0.9),
+                   inset 0 -2px 0 rgba(0,0,0,0.08);
+        transition:all .12s;
       }
       .wiz-start-over:hover {
-        background:rgba(255,255,255,0.14);
-        border-color:rgba(255,255,255,0.75);
-        color:#ffffff;
+        filter:brightness(1.02);
         transform:translateY(-2px);
+        box-shadow:0 6px 18px rgba(0,0,0,0.45),
+                   inset 0 1px 0 rgba(255,255,255,0.95),
+                   inset 0 -2px 0 rgba(0,0,0,0.08);
       }
       .wiz-close-big {
         background:linear-gradient(180deg, var(--c1-light,#5a84d0) 0%, var(--c1,#1f53a3) 50%, var(--c1-dark,#12345f) 100%);
@@ -1272,17 +1277,17 @@ span.s.fd:hover{color:#e8e8e8}
       <!-- C-Step 2: Layout -->
       <div id="wizC2" class="wiz-step" style="display:none">
         <div class="wiz-question">Which events go on the PDF?</div>
-        <div class="wiz-help">Always 1 page per class. Pick fewer events for bigger text.</div>
+        <div class="wiz-help">Pick any combination &mdash; each option adds one page per class.</div>
         <div class="wiz-choices-grid">
-          <button type="button" class="wiz-choice selected" data-layout="all4" onclick="setLayout('all4')">
+          <button type="button" class="wiz-choice selected" data-layout="all4" onclick="toggleLayout('all4')">
             <div class="wiz-choice-title">ALL 4 EVENTS<span class="wiz-choice-default">DEFAULT</span></div>
-            <div class="wiz-choice-sub">Vault, Bars, Beam, Floor</div>
+            <div class="wiz-choice-sub">Vault, Bars, Beam, Floor &middot; 1 page</div>
           </button>
-          <button type="button" class="wiz-choice" data-layout="vb" onclick="setLayout('vb')">
+          <button type="button" class="wiz-choice" data-layout="vb" onclick="toggleLayout('vb')">
             <div class="wiz-choice-title">VAULT + BARS</div>
             <div class="wiz-choice-sub">bigger text</div>
           </button>
-          <button type="button" class="wiz-choice" data-layout="bf" onclick="setLayout('bf')">
+          <button type="button" class="wiz-choice" data-layout="bf" onclick="toggleLayout('bf')">
             <div class="wiz-choice-title">BEAM + FLOOR</div>
             <div class="wiz-choice-sub">bigger text</div>
           </button>
@@ -1325,17 +1330,17 @@ span.s.fd:hover{color:#e8e8e8}
       <!-- B-Step 1: Layout -->
       <div id="wizB1" class="wiz-step">
         <div class="wiz-question">Which events go on the PDF?</div>
-        <div class="wiz-help">Always 1 page per class. Pick fewer events for bigger text.</div>
+        <div class="wiz-help">Pick any combination &mdash; each option adds one page per class.</div>
         <div class="wiz-choices-grid">
-          <button type="button" class="wiz-choice selected" data-layout="all4" onclick="setLayout('all4')">
+          <button type="button" class="wiz-choice selected" data-layout="all4" onclick="toggleLayout('all4')">
             <div class="wiz-choice-title">ALL 4 EVENTS<span class="wiz-choice-default">DEFAULT</span></div>
-            <div class="wiz-choice-sub">Vault, Bars, Beam, Floor</div>
+            <div class="wiz-choice-sub">Vault, Bars, Beam, Floor &middot; 1 page</div>
           </button>
-          <button type="button" class="wiz-choice" data-layout="vb" onclick="setLayout('vb')">
+          <button type="button" class="wiz-choice" data-layout="vb" onclick="toggleLayout('vb')">
             <div class="wiz-choice-title">VAULT + BARS</div>
             <div class="wiz-choice-sub">bigger text</div>
           </button>
-          <button type="button" class="wiz-choice" data-layout="bf" onclick="setLayout('bf')">
+          <button type="button" class="wiz-choice" data-layout="bf" onclick="toggleLayout('bf')">
             <div class="wiz-choice-title">BEAM + FLOOR</div>
             <div class="wiz-choice-sub">bigger text</div>
           </button>
@@ -2325,26 +2330,36 @@ function toggleAllBlankPrograms(checked) {
 }
 
 /* ═══════════════════════════════════════════
-   PAGE LAYOUT PICKER — 3 options, each = 1 page per class
+   PAGE LAYOUT PICKER — fully independent multi-select
+   Any combination. Each selected option = one page per class.
+   Nothing selected → defaults to ALL 4.
    ═══════════════════════════════════════════ */
-let _currentLayout = 'all4';
-function setLayout(layoutId) {
-  _currentLayout = layoutId;
-  // Update all layout choice buttons across all wizard steps
+let _selectedLayouts = new Set(['all4']);
+
+function toggleLayout(layoutId) {
+  if (_selectedLayouts.has(layoutId)) _selectedLayouts.delete(layoutId);
+  else _selectedLayouts.add(layoutId);
+  if (_selectedLayouts.size === 0) _selectedLayouts = new Set(['all4']);
   document.querySelectorAll('[data-layout]').forEach(b => {
-    b.classList.toggle('selected', b.dataset.layout === layoutId);
+    b.classList.toggle('selected', _selectedLayouts.has(b.dataset.layout));
   });
 }
 
-// Each layout = single page with subset of events (ALL 4 means no filter)
-const LAYOUT_PRESETS = {
-  'all4': null,                          // all 4 events, single page per class
-  'vb':   [['VAULT', 'BARS']],           // vault + bars only, single page per class
-  'bf':   [['BEAM',  'FLOOR']],          // beam + floor only, single page per class
-};
+// Back-compat shim — any older code calling setLayout still works
+function setLayout(layoutId) { toggleLayout(layoutId); }
 
 function getPageEventsFromUI() {
-  return LAYOUT_PRESETS[_currentLayout] || null;
+  const hasAll4 = _selectedLayouts.has('all4');
+  const hasVB = _selectedLayouts.has('vb');
+  const hasBF = _selectedLayouts.has('bf');
+  // ONLY all4 selected → null (use generate_multi_pdf, classic single page)
+  if (hasAll4 && !hasVB && !hasBF) return null;
+  // Mixed / split-only → build explicit list of pages
+  const pages = [];
+  if (hasAll4) pages.push(['VAULT','BARS','BEAM','FLOOR']);
+  if (hasVB)   pages.push(['VAULT','BARS']);
+  if (hasBF)   pages.push(['BEAM', 'FLOOR']);
+  return pages.length ? pages : null;
 }
 
 /* ═══════════════════════════════════════════
@@ -2356,7 +2371,7 @@ let _wizStep = 1;          // current step within the chosen path
 function wizReset() {
   _wizPath = null;
   _wizStep = 1;
-  _currentLayout = 'all4';
+  _selectedLayouts = new Set(['all4']);
   // Show entry, hide both paths
   document.getElementById('wizEntry').style.display = 'block';
   document.getElementById('wizConvert').style.display = 'none';
