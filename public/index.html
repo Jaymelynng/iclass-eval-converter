@@ -559,18 +559,19 @@ span.s.fd:hover{color:#e8e8e8}
    We don't dim or block — panel and page coexist. */
 .hu-overlay{display:none}
 
-/* Push layout — when panel is open, page content shifts left to make room.
-   Instead of the panel covering the tool, they share the screen side-by-side. */
-.landing{transition:padding-right .35s cubic-bezier(.4,0,.2,1)}
+/* Push layout — when panel is open, the landing container shifts LEFT
+   (via margin-right) so content keeps its full max-width; nothing gets
+   compressed. Gym modal + walkthrough overlay do the same by insetting
+   their right edge so centered content recenters in the visible area. */
+.landing{transition:margin-right .35s cubic-bezier(.4,0,.2,1)}
 .modal-overlay,.wt-overlay{transition:right .35s cubic-bezier(.4,0,.2,1)}
-body.hu-panel-open .landing{padding-right:516px}
-/* Gym modal + walkthrough overlay also shift so their content recenters
-   in the non-panel area instead of getting covered by the panel. */
+body.hu-panel-open .landing{margin-right:516px}
 body.hu-panel-open .modal-overlay{right:516px}
 body.hu-panel-open .wt-overlay{right:516px}
-@media (max-width:1100px){
-  /* Too narrow — let the panel overlay so the page doesn't crunch. */
-  body.hu-panel-open .landing{padding-right:40px}
+@media (max-width:1400px){
+  /* Viewport too narrow to push the full max-width landing cleanly —
+     let the panel overlay instead so the tool stays full-width. */
+  body.hu-panel-open .landing{margin-right:auto}
   body.hu-panel-open .modal-overlay,
   body.hu-panel-open .wt-overlay{right:0}
 }
