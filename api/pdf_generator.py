@@ -32,6 +32,7 @@ GYMS = {
         'name': 'CAPITAL GYMNASTICS — Pflugerville', 'logo': 'logos/CCP_logo_transparent.png',
         'blue': '#1f53a3', 'red': '#bf0a30', 'gray': '#d8d8d8',
         'brand': '#bf0a30',
+        'ev_cool': '#1f53a3',  # CPF = CCP, Capital blue on Bars/Floor
     },
     'CRR': {
         'name': 'CAPITAL GYMNASTICS — Round Rock', 'logo': 'logos/crr_logo.png',
