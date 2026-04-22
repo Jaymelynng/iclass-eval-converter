@@ -3179,22 +3179,15 @@ function esc(s) {
   overlay.addEventListener('click', huClose);
   document.addEventListener('keydown', e => { if(e.key==='Escape') huClose(); });
 
-  function refreshBadge(){
-    const seen = (() => { try { return localStorage.getItem(STORAGE_KEY); } catch(e) { return null; } })();
-    if (seen === LATEST_VERSION) pill.classList.add('seen');
-    else pill.classList.remove('seen');
-  }
-  refreshBadge();
-
+  // Badge stays visible until Jayme clears it in code (remove the .badge
+  // element or change the count). Managers clicking What's New does NOT hide
+  // the badge on their device — it's a global "new stuff" signal, not a
+  // personal read receipt.
   document.querySelectorAll('.hu-tab').forEach(tab => {
     tab.addEventListener('click', () => {
       const key = tab.dataset.tab;
       document.querySelectorAll('.hu-tab').forEach(t => t.classList.toggle('active', t === tab));
       document.querySelectorAll('.hu-pane').forEach(p => p.classList.toggle('active', p.id === 'hu-pane-' + key));
-      if (key === 'updates') {
-        try { localStorage.setItem(STORAGE_KEY, LATEST_VERSION); } catch(e) {}
-        refreshBadge();
-      }
     });
   });
 
