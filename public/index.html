@@ -555,8 +555,11 @@ span.s.fd:hover{color:#e8e8e8}
 @keyframes huPulseBadge{0%,100%{transform:scale(1)}50%{transform:scale(1.14)}}
 @keyframes huPulseRing{0%{transform:scale(1);opacity:.9}100%{transform:scale(2);opacity:0}}
 
-.hu-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(4px);opacity:0;pointer-events:none;transition:opacity .3s;z-index:2400}
-.hu-overlay.open{opacity:1;pointer-events:auto}
+/* Overlay is transparent — panel opens without dimming the page, so
+   managers can read Help & Updates and use the tool at the same time.
+   We keep the element as a no-op so existing JS (click-to-close) stays wired,
+   but we don't route pointer events through it. */
+.hu-overlay{display:none}
 
 .hu-panel{
   position:fixed;top:0;right:0;height:100vh;width:min(500px,94vw);
