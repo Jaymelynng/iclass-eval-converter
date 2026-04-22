@@ -470,94 +470,122 @@ span.s.fd:hover{color:#e8e8e8}
 .fg-body{display:none;padding:20px 24px 24px}
 .fg-body.open{display:block}
 
-/* ── WHAT'S NEW PILL + PANEL ── */
-/* LIGHT panel on dark page: white bg, dark text, pink accent. Matches inspo photos. */
+/* ── WHAT'S NEW PILL + PANEL (matches inspo: light panel, colored timeline) ── */
+
+/* Pill: semi-transparent dark with pink gradient glow border */
 .wn-pill{
-  position:fixed;top:20px;right:20px;z-index:100;
-  display:inline-flex;align-items:center;gap:8px;
-  background:#ffffff;
-  border:1px solid #e5e5e5;
-  color:#1a1a1a;padding:10px 18px 10px 16px;border-radius:999px;
-  font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;
-  box-shadow:0 4px 20px rgba(0,0,0,.25);
-  transition:all .2s;
+  position:fixed;top:22px;right:22px;z-index:100;
+  display:inline-flex;align-items:center;gap:10px;
+  background:rgba(20,20,24,.85);
+  border:2px solid transparent;
+  background-image:
+    linear-gradient(rgba(20,20,24,.88), rgba(20,20,24,.88)),
+    linear-gradient(135deg, #818cf8 0%, #a78bfa 100%);
+  background-origin:border-box;
+  background-clip:padding-box, border-box;
+  color:#fff;padding:11px 20px 11px 18px;border-radius:999px;
+  font-size:13.5px;font-weight:700;cursor:pointer;font-family:inherit;
+  box-shadow:0 0 24px rgba(129,140,248,.25), 0 4px 16px rgba(0,0,0,.4);
+  transition:all .2s;backdrop-filter:blur(12px);
 }
-.wn-pill:hover{transform:translateY(-1px);box-shadow:0 8px 28px rgba(0,0,0,.35);border-color:#f472b6}
-.wn-pill .wn-sparkle{font-size:15px;background:linear-gradient(135deg,#f472b6,#a78bfa);-webkit-background-clip:text;background-clip:text;color:transparent;font-weight:900}
-.wn-pill .wn-version{color:#888;font-size:11px;margin-left:2px;font-weight:700}
-.wn-pill .wn-dot{width:9px;height:9px;border-radius:50%;background:#f472b6;box-shadow:0 0 0 0 rgba(244,114,182,.7);animation:wnPulse 1.8s infinite;display:none}
-.wn-pill.has-new .wn-dot{display:block}
+.wn-pill:hover{transform:translateY(-2px);box-shadow:0 0 36px rgba(129,140,248,.45), 0 8px 24px rgba(0,0,0,.5)}
+.wn-pill .wn-sparkle{font-size:16px;background:linear-gradient(135deg,#818cf8,#a78bfa);-webkit-background-clip:text;background-clip:text;color:transparent;font-weight:900}
+.wn-pill .wn-sep{color:#888;font-weight:400;margin:0 -2px}
+.wn-pill .wn-version{color:#cfcfcf;font-weight:600}
+.wn-pill .wn-count{
+  position:absolute;top:-6px;right:-6px;
+  min-width:22px;height:22px;padding:0 6px;
+  background:linear-gradient(135deg,#818cf8,#6366f1);
+  color:#fff;border-radius:999px;
+  font-size:11px;font-weight:800;
+  display:none;align-items:center;justify-content:center;
+  box-shadow:0 2px 8px rgba(129,140,248,.5), 0 0 0 2px rgba(20,20,24,.9);
+}
+.wn-pill.has-new .wn-count{display:flex;animation:wnPulse 1.8s infinite}
 @keyframes wnPulse{
-  0%{box-shadow:0 0 0 0 rgba(244,114,182,.6)}
-  70%{box-shadow:0 0 0 10px rgba(244,114,182,0)}
-  100%{box-shadow:0 0 0 0 rgba(244,114,182,0)}
+  0%{box-shadow:0 2px 8px rgba(129,140,248,.5), 0 0 0 2px rgba(20,20,24,.9), 0 0 0 0 rgba(129,140,248,.7)}
+  70%{box-shadow:0 2px 8px rgba(129,140,248,.5), 0 0 0 2px rgba(20,20,24,.9), 0 0 0 10px rgba(129,140,248,0)}
+  100%{box-shadow:0 2px 8px rgba(129,140,248,.5), 0 0 0 2px rgba(20,20,24,.9), 0 0 0 0 rgba(129,140,248,0)}
 }
 
-.wn-backdrop{
-  position:fixed;inset:0;background:rgba(0,0,0,.45);
-  z-index:2400;opacity:0;pointer-events:none;transition:opacity .25s;
-}
+.wn-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:2400;opacity:0;pointer-events:none;transition:opacity .25s}
 .wn-backdrop.open{opacity:1;pointer-events:auto}
 
+/* Panel: pure white, floating card style */
 .wn-panel{
-  position:fixed;top:0;right:0;height:100vh;width:460px;max-width:92vw;
+  position:fixed;top:16px;right:16px;height:calc(100vh - 32px);
+  width:460px;max-width:calc(100vw - 32px);
   background:#ffffff;color:#1a1a1a;z-index:2500;
-  display:flex;flex-direction:column;
-  transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);
-  box-shadow:-20px 0 60px rgba(0,0,0,.4);
-  font-family:inherit;
+  display:flex;flex-direction:column;border-radius:20px;
+  transform:translateX(calc(100% + 32px));transition:transform .35s cubic-bezier(.4,0,.2,1);
+  box-shadow:0 30px 80px rgba(0,0,0,.35), 0 0 0 1px rgba(0,0,0,.05);
+  font-family:inherit;overflow:hidden;
 }
 .wn-panel.open{transform:translateX(0)}
 
-.wn-head{padding:24px 26px 0;border-bottom:1px solid #ececec;flex-shrink:0}
+.wn-head{padding:24px 26px 0;flex-shrink:0;background:#fff}
 .wn-head-top{display:flex;justify-content:space-between;align-items:center}
-.wn-title{font-size:22px;font-weight:800;letter-spacing:-.4px;margin:0;display:flex;align-items:center;gap:10px;color:#1a1a1a}
-.wn-title .wn-sparkle{font-size:20px;background:linear-gradient(135deg,#f472b6,#a78bfa);-webkit-background-clip:text;background-clip:text;color:transparent}
-.wn-x{width:36px;height:36px;border-radius:10px;border:1px solid #e5e5e5;background:#fafafa;color:#555;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:inherit;line-height:1}
-.wn-x:hover{background:#f472b6;color:#fff;border-color:#f472b6}
-.wn-sub{font-size:12px;color:#888;margin:4px 0 0;font-weight:500}
-.wn-tabs{display:flex;gap:24px;margin-top:18px}
-.wn-tab{padding:12px 0;font-size:13px;font-weight:700;color:#888;cursor:pointer;border-bottom:2px solid transparent;letter-spacing:.2px;background:none;border-top:0;border-left:0;border-right:0;font-family:inherit}
-.wn-tab.active{color:#1a1a1a;border-bottom-color:#f472b6}
+.wn-title{font-size:24px;font-weight:800;letter-spacing:-.5px;margin:0;display:flex;align-items:center;gap:12px;color:#1a1a1a}
+.wn-title .wn-sparkle{font-size:22px;background:linear-gradient(135deg,#818cf8,#a78bfa);-webkit-background-clip:text;background-clip:text;color:transparent}
+.wn-x{width:40px;height:40px;border-radius:12px;border:1px solid #ececec;background:#f5f5f5;color:#555;font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:inherit;line-height:1;transition:all .15s}
+.wn-x:hover{background:#1a1a1a;color:#fff;border-color:#1a1a1a}
+.wn-sub{font-size:12.5px;color:#999;margin:4px 0 0;font-weight:500}
+
+.wn-tabs{display:flex;gap:24px;margin-top:18px;border-bottom:1px solid #ececec}
+.wn-tab{padding:12px 2px;font-size:13px;font-weight:700;color:#999;cursor:pointer;border-bottom:2px solid transparent;background:none;border-top:0;border-left:0;border-right:0;font-family:inherit;margin-bottom:-1px}
+.wn-tab.active{color:#1a1a1a;border-bottom-color:#818cf8}
 .wn-tab:hover{color:#1a1a1a}
 .wn-tab .wn-tag{background:#eee;color:#555;border-radius:999px;font-size:10px;padding:2px 7px;margin-left:6px;font-weight:700}
-.wn-tab.active .wn-tag{background:linear-gradient(135deg,#f472b6,#a78bfa);color:#fff}
+.wn-tab.active .wn-tag{background:linear-gradient(135deg,#818cf8,#a78bfa);color:#fff}
 
-.wn-body{flex:1;overflow-y:auto;padding:22px 26px 40px;background:#fafaf9}
+.wn-body{flex:1;overflow-y:auto;padding:24px 26px 20px;background:#fff}
 .wn-pane{display:none}
 .wn-pane.active{display:block}
 
-/* Timeline entries (Updates tab) — white cards on off-white bg */
-.wn-entry{position:relative;padding:0 0 24px 22px;margin-bottom:0;border-left:2px solid #ececec}
-.wn-entry:last-child{border-left-color:transparent;padding-bottom:4px}
-.wn-entry::before{content:"";position:absolute;left:-6px;top:4px;width:10px;height:10px;border-radius:50%;background:#f472b6;box-shadow:0 0 0 3px #fafaf9}
-.wn-entry.old::before{background:#bbb}
-.wn-entry-meta{display:flex;align-items:center;gap:8px;font-size:10.5px;color:#888;margin-bottom:8px;font-weight:700;letter-spacing:.4px}
-.wn-ver{background:linear-gradient(135deg,#f472b6,#a78bfa);color:#fff;padding:3px 9px;border-radius:4px;font-size:10px;font-weight:800;letter-spacing:.5px}
-.wn-ver.old{background:#d0d0d0;color:#555}
+/* Timeline entries — colored dots per version */
+.wn-entry{position:relative;padding:0 0 28px 24px;margin-bottom:0;border-left:2px solid #eee}
+.wn-entry:last-child{border-left-color:transparent;padding-bottom:0}
+.wn-entry::before{
+  content:"";position:absolute;left:-7px;top:4px;
+  width:12px;height:12px;border-radius:50%;
+  box-shadow:0 0 0 3px #fff, 0 0 0 4px rgba(0,0,0,.05);
+}
+.wn-entry.v-pink::before{background:#818cf8}
+.wn-entry.v-blue::before{background:#6366f1}
+.wn-entry.v-teal::before{background:#14b8a6}
+.wn-entry-meta{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}
+.wn-entry-left{display:flex;align-items:center;gap:8px}
+.wn-ver{padding:4px 10px;border-radius:6px;font-size:10.5px;font-weight:800;letter-spacing:.3px}
+.wn-ver.v-pink{background:#e0e7ff;color:#4338ca}
+.wn-ver.v-blue{background:#e0e7ff;color:#4338ca}
+.wn-ver.v-teal{background:#ccfbf1;color:#0f766e}
+.wn-new-tag{background:linear-gradient(135deg,#818cf8,#6366f1);color:#fff;font-size:9.5px;font-weight:800;padding:3px 7px;border-radius:4px;letter-spacing:.5px}
+.wn-date{font-size:11.5px;color:#999;font-weight:600}
 .wn-h{font-size:16px;font-weight:800;color:#1a1a1a;margin:0 0 10px;line-height:1.35;letter-spacing:-.2px}
-.wn-bullets{margin:0;padding:0;list-style:none;font-size:13px;color:#4a4a4a;line-height:1.6}
-.wn-bullets li{padding-left:18px;position:relative;margin-bottom:5px}
-.wn-bullets li::before{content:"→";position:absolute;left:0;color:#f472b6;font-weight:800}
+.wn-bullets{margin:0;padding:0;list-style:none;font-size:13px;color:#4a4a4a;line-height:1.65}
+.wn-bullets li{padding-left:16px;position:relative;margin-bottom:5px}
+.wn-bullets li::before{content:"•";position:absolute;left:4px;color:#999;font-weight:700}
 
-/* How To groups — white cards with subtle borders */
+/* How To groups */
 .wn-htgroup{margin-bottom:24px}
-.wn-hth{font-size:10.5px;text-transform:uppercase;letter-spacing:2.5px;color:#888;font-weight:800;margin:0 0 10px}
-.wn-htitem{background:#ffffff;border:1px solid #ececec;border-radius:10px;padding:13px 15px;margin-bottom:8px;font-size:13px;color:#4a4a4a;line-height:1.55;box-shadow:0 1px 2px rgba(0,0,0,.02)}
+.wn-hth{font-size:10.5px;text-transform:uppercase;letter-spacing:2.5px;color:#999;font-weight:800;margin:0 0 10px}
+.wn-htitem{background:#fafafa;border:1px solid #ececec;border-radius:12px;padding:14px 16px;margin-bottom:8px;font-size:13px;color:#4a4a4a;line-height:1.55}
 .wn-htitem strong{color:#1a1a1a;display:block;margin-bottom:4px;font-size:13.5px;font-weight:800}
-.wn-kw{color:#d4268b;font-weight:700}
+.wn-kw{color:#4338ca;font-weight:700}
 
-/* Coming Soon items — white cards with colored status pills */
-.wn-rmap{background:#ffffff;border:1px solid #ececec;border-radius:10px;padding:14px 15px;margin-bottom:10px;display:flex;gap:14px;align-items:flex-start;box-shadow:0 1px 2px rgba(0,0,0,.02)}
+/* Coming Soon items */
+.wn-rmap{background:#fafafa;border:1px solid #ececec;border-radius:12px;padding:14px 16px;margin-bottom:10px;display:flex;gap:12px;align-items:flex-start}
 .wn-rpill{font-size:9.5px;padding:4px 9px;border-radius:999px;font-weight:800;letter-spacing:.6px;flex-shrink:0;margin-top:2px}
-.wn-rpill.now{background:#1d7a3a;color:#fff}
-.wn-rpill.next{background:#d48a1c;color:#fff}
-.wn-rpill.later{background:#e5e5e5;color:#555}
-.wn-rpill.v2{background:linear-gradient(135deg,#f472b6,#a78bfa);color:#fff}
+.wn-rpill.now{background:#dcfce7;color:#15803d}
+.wn-rpill.next{background:#fef3c7;color:#a16207}
+.wn-rpill.later{background:#f1f5f9;color:#64748b}
+.wn-rpill.v2{background:linear-gradient(135deg,#e0e7ff,#ede9fe);color:#4338ca}
 .wn-rtitle{font-size:13.5px;color:#1a1a1a;font-weight:800;margin:0 0 4px}
 .wn-rbody{font-size:12.5px;color:#6a6a6a;line-height:1.5;margin:0}
 
-.wn-foot{border-top:1px solid #ececec;padding:14px 26px;font-size:11px;color:#888;display:flex;justify-content:space-between;flex-shrink:0;background:#fff;font-weight:600}
+.wn-foot{padding:14px 26px 18px;flex-shrink:0;background:#fff;border-top:1px solid #ececec}
+.wn-foot-btn{width:100%;background:#fafafa;border:1px solid #ececec;border-radius:10px;padding:12px 16px;font-size:13px;font-weight:700;color:#1a1a1a;display:flex;align-items:center;justify-content:space-between;cursor:pointer;font-family:inherit;transition:all .15s}
+.wn-foot-btn:hover{background:#1a1a1a;color:#fff;border-color:#1a1a1a}
 
 @media print{.wn-pill,.wn-panel,.wn-backdrop{display:none!important}}
 </style>
@@ -565,11 +593,12 @@ span.s.fd:hover{color:#e8e8e8}
 <body>
 
 <!-- ═══════════ WHAT'S NEW PILL ═══════════ -->
-<button class="wn-pill no-print" id="wnPill" onclick="wnOpen()" aria-label="What's New">
+<button class="wn-pill no-print" id="wnPill" onclick="wnOpen()" aria-label="What's New" style="position:fixed">
   <span class="wn-sparkle">&#10022;</span>
-  <span>What's New</span>
+  <span>What's new</span>
+  <span class="wn-sep">&middot;</span>
   <span class="wn-version" id="wnPillVersion">v2.1</span>
-  <span class="wn-dot"></span>
+  <span class="wn-count">3</span>
 </button>
 
 <!-- ═══════════ WHAT'S NEW PANEL ═══════════ -->
