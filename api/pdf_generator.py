@@ -26,6 +26,7 @@ GYMS = {
         'name': 'CAPITAL GYMNASTICS — Cedar Park', 'logo': 'logos/CCP_logo_transparent.png',
         'blue': '#1f53a3', 'red': '#bf0a30', 'gray': '#d8d8d8',
         'brand': '#bf0a30',
+        'ev_cool': '#1f53a3',  # CCP keeps its blue on Bars/Floor instead of shared gray
     },
     'CPF': {
         'name': 'CAPITAL GYMNASTICS — Pflugerville', 'logo': 'logos/CCP_logo_transparent.png',
@@ -307,11 +308,13 @@ WHITE      = hex_color('#ffffff')
 def _build_event_colors(gym):
     """A-B-A-B alternation per the spec:
       VAULT + BEAM  → event strip = gym['ev_brand'] if set, else gym['brand']
-      BARS  + FLOOR → event strip = #646262 (medium gray), skill strip = #1a1a1a
-    Each gym uses its own brand color for VAULT/BEAM — only BARS/FLOOR are shared grays.
+      BARS  + FLOOR → event strip = gym['ev_cool'] if set, else #646262 (gray)
+    Each gym uses its own brand color for VAULT/BEAM.
+    Gyms can override BARS/FLOOR by setting 'ev_cool' in their config
+    (e.g. CCP uses its blue on Bars/Floor instead of gray).
     """
     brand = hex_color(gym.get('ev_brand', gym.get('brand', gym['red'])))
-    dark  = hex_color('#646262')
+    dark  = hex_color(gym.get('ev_cool', '#646262'))
     stripe = hex_color('#e8e8e8')
     ev_dark = {
         'VAULT': brand, 'BEAM': brand,
@@ -654,14 +657,15 @@ def generate_pdf(gym_code, class_name, date, day, time,
         c.setFillColor(ev_color)
         c.rect(block_start_x, ev_name_y_bottom, block_w, ev_name_h, fill=1, stroke=0)
         # Skill-name zone (bottom) — per-gym pattern:
-        #   VAULT/BEAM  → 30% darker shade of gym's brand color (same family as event)
-        #   BARS/FLOOR  → #1a1a1a near-black (against the #646262 gray event strip)
+        #   VAULT/BEAM  → 40% darker shade of gym's brand color
+        #   BARS/FLOOR  → 40% darker shade of ev_cool (or near-black if no ev_cool set)
         # White text on both.
         is_bright_event = ev in ('VAULT', 'BEAM', 'SAFETY', 'P BARS', 'H BARS')
         if is_bright_event:
             skill_bg_hex = _darken(gym.get('ev_brand', gym.get('brand', gym['red'])), 0.40)
         else:
-            skill_bg_hex = '#1a1a1a'
+            ev_cool_hex = gym.get('ev_cool')
+            skill_bg_hex = _darken(ev_cool_hex, 0.40) if ev_cool_hex else '#1a1a1a'
         skill_fg_hex = '#ffffff'
         c.setFillColor(hex_color(skill_bg_hex))
         c.rect(block_start_x, skill_name_y_bottom, block_w, skill_name_h, fill=1, stroke=0)
