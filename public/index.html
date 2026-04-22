@@ -38,16 +38,71 @@ body{
   min-height:100vh;
 }
 
-/* ── LANDING PAGE ── */
-.landing{max-width:1000px;margin:0 auto;padding:40px 20px}
-.landing-header{text-align:center;margin-bottom:32px}
-.landing-badge{display:none}
-.landing-header h1{font-size:32px;font-weight:800;letter-spacing:-.5px;margin-bottom:8px;color:#fff}
-.landing-header h1 span{color:inherit}
-.landing-header p{font-size:14px;color:#ddd;max-width:500px;margin:0 auto}
-.gym-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:3px;color:#ddd;margin-bottom:16px;padding-left:4px}
-.gym-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:16px}
-@media(max-width:980px){.gym-grid{grid-template-columns:repeat(3,1fr)}}
+/* ── LANDING PAGE (matches Jayme's prototype) ── */
+.landing{max-width:1280px;margin:0 auto;padding:40px 40px 80px}
+@media(max-width:980px){.landing{padding:24px 18px 60px}}
+
+/* Topbar: title left, pill right */
+.topbar{display:flex;align-items:flex-start;justify-content:space-between;gap:24px;margin-bottom:32px}
+@media(max-width:720px){.topbar{flex-direction:column;align-items:flex-start}}
+.title-block h1{font-size:clamp(28px,3.2vw,38px);font-weight:800;letter-spacing:-.025em;line-height:1.1;color:#fff;margin-bottom:10px}
+.title-block h1 .iclass{background:linear-gradient(135deg,#7ae3db 0%,#14c4b8 40%,#6b6ce8 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.title-block p.subtitle{font-size:15px;color:#a1a5ae;line-height:1.5;max-width:62ch;margin:0}
+
+/* HERO */
+.hero{
+  background:linear-gradient(180deg,#2a2d3a 0%,#1e2029 100%);
+  border:1px solid rgba(255,255,255,.14);
+  border-radius:24px;padding:44px;
+  display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center;
+  position:relative;overflow:hidden;margin-bottom:44px;
+  box-shadow:0 20px 60px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.08);
+}
+.hero::before{content:'';position:absolute;top:-100px;right:-100px;width:400px;height:400px;background:radial-gradient(circle,rgba(20,196,184,.12),transparent 70%);z-index:0}
+.hero::after{content:'';position:absolute;bottom:-100px;left:-100px;width:400px;height:400px;background:radial-gradient(circle,rgba(91,92,224,.1),transparent 70%);z-index:0}
+.hero-left,.hero-right{position:relative;z-index:1}
+.hero h2{font-size:clamp(28px,2.8vw,40px);font-weight:700;line-height:1.1;letter-spacing:-.025em;margin:0 0 20px;color:#fff}
+.hero h2 .accent{background:linear-gradient(135deg,#7ae3db,#c495e0);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p.sub{color:#a1a5ae;font-size:16px;line-height:1.55;margin:0 0 28px;max-width:42ch}
+.hero .new-line{display:flex;align-items:center;gap:10px;font-size:14px;color:#cfd2d8}
+.hero .new-line .spark{color:#14c4b8}
+.hero .new-line a{color:#7ae3db;text-decoration:none;font-weight:600;cursor:pointer;margin-left:6px;transition:color .2s}
+.hero .new-line a:hover{color:#14c4b8}
+@media(max-width:980px){.hero{grid-template-columns:1fr;padding:32px}}
+.hero-cards-only{display:block;padding:28px}
+.hero-cards-only .action-cards{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+@media(max-width:720px){.hero-cards-only .action-cards{grid-template-columns:1fr}}
+
+/* Action cards inside hero */
+.action-cards{display:flex;flex-direction:column;gap:18px}
+.card-3d{position:relative;border-radius:22px;padding:24px 28px;display:flex;align-items:center;gap:20px;cursor:pointer;transition:transform .25s cubic-bezier(.22,1,.36,1),box-shadow .25s;border:1px solid rgba(255,255,255,.14);overflow:hidden;text-decoration:none;color:inherit}
+.card-3d:hover{transform:translateY(-3px)}
+.card-navy{background:radial-gradient(circle at 20% 20%,rgba(255,255,255,.08),transparent 40%),linear-gradient(135deg,#1e3a66 0%,#15294a 50%,#0d1b30 100%);box-shadow:0 20px 40px rgba(13,27,48,.5),inset 0 1px 0 rgba(255,255,255,.1),inset 0 -2px 0 rgba(0,0,0,.2)}
+.card-navy:hover{box-shadow:0 26px 50px rgba(13,27,48,.65),inset 0 1px 0 rgba(255,255,255,.15),inset 0 -2px 0 rgba(0,0,0,.2)}
+.card-navy .card-icon{background:rgba(91,143,220,.25);border-color:rgba(120,170,240,.5);color:#8fb5e8}
+.card-navy .card-eyebrow{color:#8fb5e8}
+.card-navy .card-steps{background:rgba(0,0,0,.4);border-color:rgba(143,181,232,.35);color:#8fb5e8}
+.card-indigo{background:radial-gradient(circle at 20% 20%,rgba(255,255,255,.06),transparent 40%),linear-gradient(135deg,#3a3f47 0%,#2a2e35 50%,#1a1d22 100%);box-shadow:0 20px 40px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.08),inset 0 -2px 0 rgba(0,0,0,.2)}
+.card-indigo:hover{box-shadow:0 26px 50px rgba(0,0,0,.65),inset 0 1px 0 rgba(255,255,255,.12),inset 0 -2px 0 rgba(0,0,0,.2)}
+.card-indigo .card-icon{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.22);color:#d5d8dd}
+.card-indigo .card-eyebrow{color:#b5b9c0}
+.card-icon{width:60px;height:60px;flex-shrink:0;border-radius:14px;display:grid;place-items:center;border:1px solid rgba(255,255,255,.35);box-shadow:inset 0 1px 0 rgba(255,255,255,.4),inset 0 -2px 4px rgba(0,0,0,.1),0 4px 12px rgba(0,0,0,.2);color:#fff}
+.card-body{flex:1;min-width:0}
+.card-eyebrow{font-size:10.5px;letter-spacing:.22em;font-weight:700;color:rgba(255,255,255,.8);margin-bottom:6px;text-transform:uppercase}
+.card-title{font-size:18px;font-weight:700;line-height:1.2;letter-spacing:-.015em;color:#fff;margin-bottom:4px}
+.card-sub{font-size:12.5px;color:rgba(255,255,255,.85);line-height:1.4}
+.card-steps{position:absolute;top:14px;right:54px;background:rgba(0,0,0,.28);border:1px solid rgba(255,255,255,.25);color:#fff;font-size:10.5px;font-weight:800;letter-spacing:.15em;padding:5px 11px;border-radius:999px;z-index:2}
+.card-caret{color:rgba(255,255,255,.9);font-size:22px;margin-left:6px;transition:transform .2s;flex-shrink:0}
+.card-3d:hover .card-caret{transform:translateX(4px)}
+
+/* Step head */
+.step-head{display:flex;align-items:center;justify-content:space-between;margin:0 0 20px}
+.step-head .step-label{display:flex;align-items:center;gap:10px;font-size:12px;font-weight:700;letter-spacing:.3em;color:#a1a5ae;text-transform:uppercase}
+.step-head .step-label .spark{color:#14c4b8;font-size:14px}
+.step-head .step-count{font-size:13px;color:#6b6f78;font-weight:500}
+
+/* Gym grid — original 3-col branded cards */
+.gym-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
 @media(max-width:700px){.gym-grid{grid-template-columns:repeat(2,1fr)}}
 
 /* ── FORMAT GUIDE ── */
@@ -101,38 +156,19 @@ body{
 .fg-copy.copied{background:#4caf50}
 
 .gym-card{
-  background:#f5f7fa;border:1px solid rgba(255,255,255,0.06);border-radius:18px;
-  padding:18px 16px 16px;cursor:pointer;text-align:center;position:relative;overflow:hidden;
-  transition:transform .2s ease,box-shadow .2s ease;
+  background:#ffffff;border-radius:14px;padding:16px 18px;
+  display:flex;align-items:center;gap:14px;
+  cursor:pointer;border-left:8px solid var(--card-color,#ccc);
+  box-shadow:0 10px 30px rgba(0,0,0,0.5),0 4px 10px rgba(0,0,0,0.3),0 0 0 1px rgba(0,0,0,0.08);
+  transition:transform .15s,box-shadow .2s;
 }
-.gym-card::before{
-  content:'';position:absolute;inset:0;
-  background:linear-gradient(135deg,var(--tile-tint,transparent) 0%,transparent 55%);
-  opacity:.55;pointer-events:none;
-}
-.gym-card:hover{transform:translateY(-3px);box-shadow:0 14px 30px rgba(0,0,0,.4),0 0 0 1px var(--chip-bg,rgba(255,255,255,.2))}
-.gym-card-chip{
-  width:70px;height:70px;border-radius:14px;
-  background:var(--chip-bg);color:#fff;
-  display:grid;place-items:center;
-  font-weight:800;font-size:17px;letter-spacing:.04em;
-  margin:0 auto 14px;position:relative;z-index:1;
-  box-shadow:0 6px 14px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.25),inset 0 -2px 0 rgba(0,0,0,.12);
-}
-.gym-card-name{font-size:13px;font-weight:700;line-height:1.3;color:#1a1f26;margin-bottom:10px;min-height:2.6em;position:relative;z-index:1}
-.gym-card-state{font-size:10px;letter-spacing:.22em;font-weight:800;color:var(--chip-bg);position:relative;z-index:1}
-
-/* Per-gym chip + tile tint colors (from Jayme's prototype) */
-.gym-card[data-gym="CCP"]{--chip-bg:#1b4c8f;--tile-tint:#dbe6f5}
-.gym-card[data-gym="CPF"]{--chip-bg:#1b4c8f;--tile-tint:#e2ebf6}
-.gym-card[data-gym="CRR"]{--chip-bg:#ec4a8a;--tile-tint:#fcd8e6}
-.gym-card[data-gym="HGA"]{--chip-bg:#b52027;--tile-tint:#fad4d2}
-.gym-card[data-gym="RBA"]{--chip-bg:#1f3b6b;--tile-tint:#e2e7f0}
-.gym-card[data-gym="RBK"]{--chip-bg:#10192c;--tile-tint:#dfe3ea}
-.gym-card[data-gym="OAS"]{--chip-bg:#6b2bb8;--tile-tint:#e4d5f3}
-.gym-card[data-gym="EST"]{--chip-bg:#141b2e;--tile-tint:#e3e6ec}
-.gym-card[data-gym="SGT"]{--chip-bg:#d63a27;--tile-tint:#fbd9d1}
-.gym-card[data-gym="TIG"]{--chip-bg:#ee8a29;--tile-tint:#fde1ca}
+.gym-card:hover{transform:translateY(-5px) scale(1.01);box-shadow:0 18px 40px rgba(0,0,0,0.45),0 4px 10px rgba(0,0,0,0.25)}
+.gym-card-logo-wrap{width:60px;height:60px;border-radius:18px;flex-shrink:0;display:flex;align-items:center;justify-content:center;padding:8px;box-shadow:0 4px 12px rgba(0,0,0,0.3),0 1px 3px rgba(0,0,0,0.2)}
+.gym-card-logo{width:100%;height:100%;border-radius:11px;object-fit:contain;background:#fff;padding:4px}
+.gym-card-info{flex:1;min-width:0}
+.gym-card-name{font-size:14px;font-weight:700;line-height:1.2;margin-bottom:2px;color:#1a1a1a}
+.gym-card-code{font-size:11px;color:#666;font-weight:600}
+.gym-card-arrow{font-size:18px;color:#aaa;flex-shrink:0}
 
 /* ── MODAL ── */
 .modal-overlay{
@@ -613,11 +649,12 @@ span.s.fd:hover{color:#e8e8e8}
 <body>
 
 <!-- ═══════════ WHAT'S NEW PILL ═══════════ -->
-<button class="wn-pill no-print" id="wnPill" onclick="wnOpen()" aria-label="What's New" style="position:fixed">
+<button class="wn-pill no-print" id="wnPill" onclick="wnOpen()" aria-label="Open What's New" style="position:fixed" title="See what's new, how-to, and what's coming">
   <span class="wn-sparkle">&#10022;</span>
-  <span>What's new</span>
+  <span>See what's new</span>
   <span class="wn-sep">&middot;</span>
   <span class="wn-version" id="wnPillVersion">v2.1</span>
+  <span style="opacity:.6;font-size:14px;margin-left:2px">&rarr;</span>
   <span class="wn-count">3</span>
 </button>
 
@@ -723,50 +760,59 @@ span.s.fd:hover{color:#e8e8e8}
 
   </div>
 
-  <div class="wn-foot">
-    <span>Posted by Jayme &amp; Kim</span>
-    <span>Feedback? Text Jayme.</span>
-  </div>
 </aside>
 
 <!-- ═══════════ LANDING PAGE ═══════════ -->
 <div class="landing no-print" id="landing">
-  <div class="landing-header">
-    <h1>iClass Eval Converter</h1>
-    <p>Upload your iClassPro Skill Evaluation XLS file. Get branded, print-ready evaluation grids.</p>
-  </div>
-  <div class="gym-label">SELECT YOUR GYM</div>
-  <div class="gym-grid" id="gymGrid"></div>
 
-  <div style="display:flex;flex-direction:column;gap:10px;margin-top:20px">
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-      <button class="wt-how-btn" onclick="wtOpen()" style="margin-top:0">
-        <span class="play-icon">&#9654;</span>
-        <span class="wt-how-btn-text">
-          <span class="wt-how-btn-label">Interactive Walkthrough</span>
-          <span class="wt-how-btn-title">How to Export &amp; Use This Tool</span>
-        </span>
-        <span style="font-size:10px;color:rgba(74,159,212,.7);font-weight:700;flex-shrink:0">7 STEPS</span>
-        <span class="wt-how-btn-arrow">&#8250;</span>
-      </button>
-      <a href="sop-guide.html" target="_blank" style="
-        display:flex;align-items:center;gap:12px;
-        background:linear-gradient(135deg,#2a2a2a 0%,#1a1a1a 100%);
-        border:1px solid #444;
-        color:#fff;padding:14px 22px;border-radius:12px;
-        font-size:13px;font-weight:800;cursor:pointer;
-        text-decoration:none;transition:all .2s;
-        box-shadow:0 4px 24px rgba(0,0,0,.3);
-      " onmouseover="this.style.borderColor='#888';this.style.transform='translateY(-1px)'" onmouseout="this.style.borderColor='#444';this.style.transform=''">
-        <span style="font-size:28px;flex-shrink:0">&#128196;</span>
-        <span style="display:flex;flex-direction:column;gap:1px">
-          <span style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#888;line-height:1">Printable Version</span>
-          <span style="font-size:14px;font-weight:800;color:#fff;line-height:1.2">Download SOP Guide</span>
-        </span>
-        <span style="margin-left:auto;font-size:18px;color:#666;flex-shrink:0">&#8599;</span>
-      </a>
+  <!-- Topbar: title (pill is fixed position, stays top-right globally) -->
+  <!-- HERO: title on left, action cards stacked on right -->
+  <section class="hero">
+    <div class="hero-left">
+      <h2 style="color:#fff;margin:0 0 14px"><span class="iclass">iClass</span> Eval Converter</h2>
+      <p class="sub">Upload your iClassPro Skill Evaluation XLS file. Get branded, print-ready evaluation grids.</p>
     </div>
+    <div class="hero-right">
+      <div class="action-cards">
+        <a class="card-3d card-navy" onclick="wtOpen()">
+          <div class="card-icon">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><path d="M6 4l14 8-14 8z"/></svg>
+          </div>
+          <div class="card-body">
+            <div class="card-eyebrow">Interactive Walkthrough</div>
+            <div class="card-title">How to Export &amp; Use This Tool</div>
+            <div class="card-sub">Click-through guide &middot; <span style="color:#ffb86b">older visuals &mdash; refresh coming soon</span></div>
+          </div>
+          <span class="card-steps">7 STEPS</span>
+          <span class="card-caret">&rsaquo;</span>
+        </a>
+        <a class="card-3d card-indigo" href="sop-guide.html" target="_blank">
+          <div class="card-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+              <line x1="9" y1="13" x2="15" y2="13"/>
+              <line x1="9" y1="17" x2="15" y2="17"/>
+            </svg>
+          </div>
+          <div class="card-body">
+            <div class="card-eyebrow">Printable SOP Guide</div>
+            <div class="card-title">Download SOP Guide</div>
+            <div class="card-sub">Download for binders, front desk, training</div>
+          </div>
+          <span class="card-caret">&rsaquo;</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Step 1 header -->
+  <div class="step-head">
+    <div class="step-label"><span class="spark">&#10022;</span> Step 1 — Select your gym</div>
+    <div class="step-count">10 gyms</div>
   </div>
+
+  <div class="gym-grid" id="gymGrid"></div>
 
   <div class="format-guide" id="format-guide" style="margin-top:10px">
     <div style="padding:16px 20px 4px">
@@ -1333,6 +1379,9 @@ span.s.fd:hover{color:#e8e8e8}
 <div class="wt-overlay" id="wtOverlay">
   <div class="wt-modal" id="wtModal">
     <div class="wt-accent" id="wtAccent"></div>
+    <div style="background:linear-gradient(90deg,#2a1f0a,#3a2a10);border-bottom:1px solid #6b4a1f;padding:10px 20px;font-size:12px;color:#ffb86b;font-weight:600;text-align:center;letter-spacing:.3px">
+      <span style="font-size:14px">&#9888;</span> The screenshots here show our previous UI. A refreshed walkthrough is coming soon &mdash; the steps themselves are still accurate.
+    </div>
     <div class="wt-segs" id="wtSegs"></div>
     <div class="wt-header">
       <div class="wt-ghost-num" id="wtGhostNum">01</div>
@@ -1486,16 +1535,20 @@ const gymGrid = document.getElementById('gymGrid');
 const modalOverlay = document.getElementById('modalOverlay');
 const modal = document.getElementById('modal');
 
-// State labels from existing GYMS config
-const _STATE = {CCP:'TEXAS',CPF:'TEXAS',CRR:'TEXAS',HGA:'TEXAS',RBA:'TEXAS',RBK:'TEXAS',OAS:'ARIZONA',EST:'ARIZONA',SGT:'ARIZONA',TIG:'COLORADO'};
 Object.entries(GYMS).forEach(([code, gym]) => {
   const card = document.createElement('div');
   card.className = 'gym-card';
-  card.dataset.gym = code;
+  card.style.setProperty('--card-color', gym.c1);
+  card.style.borderLeftColor = gym.c1;
   card.innerHTML = `
-    <div class="gym-card-chip">${code}</div>
-    <div class="gym-card-name">${gym.name}</div>
-    <div class="gym-card-state">${_STATE[code] || ''}</div>
+    <div class="gym-card-logo-wrap" style="background:${gym.c1}">
+      <img class="gym-card-logo" src="${gym.logo}" alt="${code}">
+    </div>
+    <div class="gym-card-info">
+      <div class="gym-card-name">${gym.name}</div>
+      <div class="gym-card-code">${code}</div>
+    </div>
+    <div class="gym-card-arrow">&rsaquo;</div>
   `;
   card.addEventListener('click', () => openGymModal(code));
   gymGrid.appendChild(card);
